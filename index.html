@@ -178,45 +178,44 @@
     width: min(780px, calc(100% - 32px));
     padding: 14px 28px 14px 14px;
     
-    /* Liquid Glass translucent background (adapts dynamically to any bg image) */
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.05) 50%, rgba(0, 0, 0, 0.3) 100%);
-    backdrop-filter: blur(28px) saturate(200%) brightness(1.08);
-    -webkit-backdrop-filter: blur(28px) saturate(200%) brightness(1.08);
+    /* Dark Liquid Glass translucent background (adapts smoothly to bg scenes without harsh glare) */
+    background: linear-gradient(135deg, rgba(25, 16, 12, 0.45) 0%, rgba(12, 8, 6, 0.55) 100%);
+    backdrop-filter: blur(28px) saturate(180%) brightness(0.95);
+    -webkit-backdrop-filter: blur(28px) saturate(180%) brightness(0.95);
     border-radius: 999px;
     
-    /* Liquid Specular Border Highlights */
-    border: 1.5px solid rgba(255, 255, 255, 0.38);
-    border-bottom-color: rgba(255, 255, 255, 0.18);
-    border-right-color: rgba(255, 255, 255, 0.22);
+    /* Subtle Liquid Border (lowered white intensity) */
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+    border-right-color: rgba(255, 255, 255, 0.1);
     
     box-shadow: 
-      0 30px 60px rgba(0, 0, 0, 0.55),
-      0 10px 20px rgba(0, 0, 0, 0.35),
-      inset 0 1.5px 2px rgba(255, 255, 255, 0.6),
-      inset 0 -2px 4px rgba(0, 0, 0, 0.4),
-      inset 0 0 20px rgba(255, 255, 255, 0.08);
+      0 30px 60px rgba(0, 0, 0, 0.65),
+      0 10px 20px rgba(0, 0, 0, 0.45),
+      inset 0 1px 1px rgba(255, 255, 255, 0.14),
+      inset 0 -1.5px 3px rgba(0, 0, 0, 0.5);
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  /* Liquid Glass Top Gloss Shine */
+  /* Ultra-subtle Top Gloss Reflective Shine */
   .glass-player-pill::before {
     content: "";
     position: absolute;
-    top: 0; left: 0; right: 0; height: 50%;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.03) 70%, transparent 100%);
+    top: 0; left: 0; right: 0; height: 45%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 70%, transparent 100%);
     border-top-left-radius: 999px;
     border-top-right-radius: 999px;
     pointer-events: none;
   }
 
   .glass-player-pill:hover{
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.07) 50%, rgba(0, 0, 0, 0.24) 100%);
-    border-color: rgba(255, 255, 255, 0.5);
+    background: linear-gradient(135deg, rgba(35, 22, 17, 0.52) 0%, rgba(18, 11, 8, 0.62) 100%);
+    border-color: rgba(255, 255, 255, 0.22);
     box-shadow: 
-      0 34px 75px rgba(0, 0, 0, 0.65),
-      0 12px 25px rgba(0, 0, 0, 0.4),
-      inset 0 2px 3px rgba(255, 255, 255, 0.7),
-      inset 0 -2px 4px rgba(0, 0, 0, 0.4);
+      0 34px 75px rgba(0, 0, 0, 0.75),
+      0 12px 25px rgba(0, 0, 0, 0.5),
+      inset 0 1px 1.5px rgba(255, 255, 255, 0.22),
+      inset 0 -1.5px 3px rgba(0, 0, 0, 0.5);
   }
 
   /* Disc (Left) */
@@ -448,10 +447,10 @@
   </div>
 
   <div class="view-switch">
-    <button class="active" id="switchOutside" aria-label="Outside view">
+    <button id="switchOutside" aria-label="Outside view">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 20l4-11h10l4 11"/><path d="M7 20v-4h10v4"/><circle cx="7.5" cy="17.5" r="1"/><circle cx="16.5" cy="17.5" r="1"/></svg>
     </button>
-    <button id="switchInside" aria-label="Inside view">
+    <button class="active" id="switchInside" aria-label="Inside view">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 12h18M9 6v13M15 6v13"/></svg>
     </button>
   </div>
@@ -691,7 +690,7 @@ var TRACKS = [
   var bgInside = document.getElementById('bgInside');
   bgOutside.style.backgroundImage = "url('assets/bg-outside.jpg')";
   bgInside.style.backgroundImage = "url('assets/bg-inside.jpg')";
-  bgOutside.classList.add('active');
+  bgInside.classList.add('active');
   var switchOutside = document.getElementById('switchOutside');
   var switchInside = document.getElementById('switchInside');
   switchOutside.addEventListener('click', function(){

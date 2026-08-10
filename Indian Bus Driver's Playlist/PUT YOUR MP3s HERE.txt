@@ -1,0 +1,3 @@
+Put your mp3 files in this folder, named 01.mp3, 02.mp3, 03.mp3 (etc.)
+or rename the "src" entries in the TRACKS list near the bottom of index.html
+to match your real file names exactly.

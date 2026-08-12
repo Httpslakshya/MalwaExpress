@@ -11,6 +11,9 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Space+Mono:wght@400;700&display=swap"
     rel="stylesheet">
+  <!-- Firebase Realtime Presence SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <style>
     :root {
       --rust: #B23A2A;
@@ -1631,14 +1634,44 @@
     }
     tickClock(); setInterval(tickClock, 15000);
 
+    /* Real-Time Active Users Presence System */
     var aboardEl = document.getElementById('aboardCount');
-    var aboardCount = 41;
-    setInterval(function () {
-      aboardCount += Math.round((Math.random() - 0.5) * 4);
-      if (aboardCount < 28) aboardCount = 28;
-      if (aboardCount > 58) aboardCount = 58;
-      aboardEl.textContent = aboardCount;
-    }, 7000);
+
+    // To enable 100% real-time global active user tracking across all visitors worldwide,
+    // create a free Firebase Realtime Database and paste its URL here (e.g. "https://your-app-default-rtdb.firebaseio.com")
+    var FIREBASE_DB_URL = "";
+
+    function setupLivePresence() {
+      if (FIREBASE_DB_URL && window.firebase && firebase.database) {
+        try {
+          if (!firebase.apps.length) {
+            firebase.initializeApp({ databaseURL: FIREBASE_DB_URL });
+          }
+          var db = firebase.database();
+          var myPresenceRef = db.ref('online_passengers/' + Math.random().toString(36).substring(2, 9));
+          var connectedRef = db.ref('.info/connected');
+
+          connectedRef.on('value', function (snap) {
+            if (snap.val() === true) {
+              myPresenceRef.onDisconnect().remove();
+              myPresenceRef.set({ onlineAt: firebase.database.ServerValue.TIMESTAMP });
+            }
+          });
+
+          db.ref('online_passengers').on('value', function (snap) {
+            var liveCount = snap.numChildren();
+            if (aboardEl) aboardEl.textContent = liveCount > 0 ? liveCount : 1;
+          });
+          return;
+        } catch (err) {
+          console.warn("Firebase live presence warning:", err);
+        }
+      }
+
+      // Default active presence counter
+      if (aboardEl) aboardEl.textContent = 1;
+    }
+    setupLivePresence();
 
     /* conductor audios & music volume ducking */
     var CONDUCTOR_AUDIOS = [

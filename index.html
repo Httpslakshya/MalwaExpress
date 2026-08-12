@@ -3426,6 +3426,23 @@
       document.head.appendChild(script);
     }
 
+    function getOrCreateRealtimeChannel(roomId) {
+      if (realtimeChannel && currentRoomId === roomId) {
+        return realtimeChannel;
+      }
+      if (realtimeChannel) {
+        try { supabaseClient.removeChannel(realtimeChannel); } catch (e) { }
+      }
+      currentRoomId = roomId;
+      realtimeChannel = supabaseClient.channel('ride:' + roomId, {
+        config: {
+          broadcast: { self: false },
+          presence: { key: clientId }
+        }
+      });
+      return realtimeChannel;
+    }
+
     function broadcastEvent(eventName, payloadData) {
       if (!realtimeChannel) return;
       payloadData.senderId = clientId;
@@ -3459,17 +3476,11 @@
     function initRealtimeRoom(roomId, isHostRole) {
       myRole = isHostRole ? 'host' : 'guest';
       loadSupabase(function () {
-        currentRoomId = roomId;
-        realtimeChannel = supabaseClient.channel('ride:' + roomId, {
-          config: {
-            broadcast: { self: false },
-            presence: { key: clientId }
-          }
-        });
+        var ch = getOrCreateRealtimeChannel(roomId);
 
         // Presence sync handler
-        realtimeChannel.on('presence', { event: 'sync' }, function () {
-          var state = realtimeChannel.presenceState();
+        ch.on('presence', { event: 'sync' }, function () {
+          var state = ch.presenceState();
           var userIds = Object.keys(state);
           var peerCount = userIds.length;
           var aboardEl = document.getElementById('aboardCount');
@@ -3524,75 +3535,74 @@
         });
 
         // Broadcast event listeners
-        realtimeChannel
-          .on('broadcast', { event: 'sync-request' }, function (payload) {
-            if (payload.payload && payload.payload.senderId === clientId) return;
-            var data = payload.payload;
-            if (data && data.senderId) {
-              var guestName = data.peerName || 'Saathi';
-              connectedPeers[data.senderId] = {
-                clientId: data.senderId,
-                name: guestName,
-                role: data.role || 'guest',
-                onlineAt: data.onlineAt || new Date().toISOString()
-              };
+        ch.on('broadcast', { event: 'sync-request' }, function (payload) {
+          if (payload.payload && payload.payload.senderId === clientId) return;
+          var data = payload.payload;
+          if (data && data.senderId) {
+            var guestName = data.peerName || 'Saathi';
+            connectedPeers[data.senderId] = {
+              clientId: data.senderId,
+              name: guestName,
+              role: data.role || 'guest',
+              onlineAt: data.onlineAt || new Date().toISOString()
+            };
 
-              showToast(guestName + ' aapke saath safar mein jud gaye hain 🚌');
-              checkNameCollision();
-              updateTicketUI();
-            }
-            broadcastEvent('sync-response', {
-              hostName: myName,
-              connectedPeersList: Object.values(connectedPeers),
-              trackIndex: trackIndex,
-              currentTime: audioEl.currentTime || 0,
-              isPlaying: isPlaying,
-              targetSenderId: payload.payload.senderId
-            });
-          })
-          .on('broadcast', { event: 'sync-response' }, function (payload) {
-            var data = payload.payload;
-            if (!data || (data.targetSenderId && data.targetSenderId !== clientId)) return;
-            if (data.hostName) {
-              partnerName = data.hostName;
-            }
-            if (data.connectedPeersList && Array.isArray(data.connectedPeersList)) {
-              data.connectedPeersList.forEach(function (p) {
-                if (p.clientId && p.clientId !== clientId) {
-                  connectedPeers[p.clientId] = p;
-                }
-              });
-            }
+            showToast(guestName + ' aapke saath safar mein jud gaye hain 🚌');
             checkNameCollision();
             updateTicketUI();
-            applyRemoteSync(data);
-          })
-          .on('broadcast', { event: 'play' }, function (payload) {
-            if (payload.payload && payload.payload.senderId === clientId) return;
-            applyRemotePlay(payload.payload);
-          })
-          .on('broadcast', { event: 'pause' }, function (payload) {
-            if (payload.payload && payload.payload.senderId === clientId) return;
-            applyRemotePause(payload.payload);
-          })
-          .on('broadcast', { event: 'track-change' }, function (payload) {
-            if (payload.payload && payload.payload.senderId === clientId) return;
-            applyRemoteTrackChange(payload.payload);
-          })
-          .on('broadcast', { event: 'seek' }, function (payload) {
-            if (payload.payload && payload.payload.senderId === clientId) return;
-            applyRemoteSeek(payload.payload);
-          })
-          .on('broadcast', { event: 'sync-tick' }, function (payload) {
-            if (payload.payload && payload.payload.senderId === clientId) return;
-            if (!isRemoteUpdate) {
-              syncAudioPosition(payload.payload);
-            }
+          }
+          broadcastEvent('sync-response', {
+            hostName: myName,
+            connectedPeersList: Object.values(connectedPeers),
+            trackIndex: trackIndex,
+            currentTime: audioEl.currentTime || 0,
+            isPlaying: isPlaying,
+            targetSenderId: payload.payload.senderId
           });
+        })
+        .on('broadcast', { event: 'sync-response' }, function (payload) {
+          var data = payload.payload;
+          if (!data || (data.targetSenderId && data.targetSenderId !== clientId)) return;
+          if (data.hostName) {
+            partnerName = data.hostName;
+          }
+          if (data.connectedPeersList && Array.isArray(data.connectedPeersList)) {
+            data.connectedPeersList.forEach(function (p) {
+              if (p.clientId && p.clientId !== clientId) {
+                connectedPeers[p.clientId] = p;
+              }
+            });
+          }
+          checkNameCollision();
+          updateTicketUI();
+          applyRemoteSync(data);
+        })
+        .on('broadcast', { event: 'play' }, function (payload) {
+          if (payload.payload && payload.payload.senderId === clientId) return;
+          applyRemotePlay(payload.payload);
+        })
+        .on('broadcast', { event: 'pause' }, function (payload) {
+          if (payload.payload && payload.payload.senderId === clientId) return;
+          applyRemotePause(payload.payload);
+        })
+        .on('broadcast', { event: 'track-change' }, function (payload) {
+          if (payload.payload && payload.payload.senderId === clientId) return;
+          applyRemoteTrackChange(payload.payload);
+        })
+        .on('broadcast', { event: 'seek' }, function (payload) {
+          if (payload.payload && payload.payload.senderId === clientId) return;
+          applyRemoteSeek(payload.payload);
+        })
+        .on('broadcast', { event: 'sync-tick' }, function (payload) {
+          if (payload.payload && payload.payload.senderId === clientId) return;
+          if (!isRemoteUpdate) {
+            syncAudioPosition(payload.payload);
+          }
+        });
 
-        realtimeChannel.subscribe(function (status) {
+        ch.subscribe(function (status) {
           if (status === 'SUBSCRIBED') {
-            realtimeChannel.track({
+            ch.track({
               name: myName,
               role: myRole,
               clientId: clientId,
@@ -3635,14 +3645,14 @@
         audioEl.pause();
         setPlaying(false);
       }
-      setTimeout(function () { isRemoteUpdate = false; }, 350);
+      setTimeout(function () { isRemoteUpdate = false; }, 600);
     }
 
     function applyRemotePlay(data) {
       isRemoteUpdate = true;
       syncAudioPosition(data);
       audioEl.play().then(function () { setPlaying(true); }).catch(function () { });
-      setTimeout(function () { isRemoteUpdate = false; }, 350);
+      setTimeout(function () { isRemoteUpdate = false; }, 600);
     }
 
     function applyRemotePause(data) {
@@ -3653,7 +3663,7 @@
       audioEl.pause();
       setPlaying(false);
       audioEl.playbackRate = 1.0;
-      setTimeout(function () { isRemoteUpdate = false; }, 350);
+      setTimeout(function () { isRemoteUpdate = false; }, 600);
     }
 
     function applyRemoteTrackChange(data) {
@@ -3667,7 +3677,7 @@
         }
       }
       audioEl.playbackRate = 1.0;
-      setTimeout(function () { isRemoteUpdate = false; }, 350);
+      setTimeout(function () { isRemoteUpdate = false; }, 600);
     }
 
     function applyRemoteSeek(data) {
@@ -3676,7 +3686,7 @@
         var transit = Math.max(0, (Date.now() - (data.sentAt || Date.now())) / 1000);
         audioEl.currentTime = data.currentTime + transit;
       }
-      setTimeout(function () { isRemoteUpdate = false; }, 350);
+      setTimeout(function () { isRemoteUpdate = false; }, 600);
     }
 
     // Share Ride button handler with Name Modal Prompt
@@ -3690,15 +3700,6 @@
           myName = enteredName;
           updateTicketUI();
 
-          if (realtimeChannel) {
-            realtimeChannel.track({
-              name: myName,
-              role: myRole,
-              clientId: clientId,
-              online_at: new Date().toISOString()
-            });
-          }
-
           var roomId = currentRoomId || Math.random().toString(36).substring(2, 8);
           var shareUrl = window.location.origin + window.location.pathname + '?ride=' + roomId + '&host=' + encodeURIComponent(myName);
 
@@ -3708,8 +3709,15 @@
             prompt('Copy this ride link:', shareUrl);
           });
 
-          if (!currentRoomId) {
+          if (!currentRoomId || !realtimeChannel) {
             initRealtimeRoom(roomId, true);
+          } else if (realtimeChannel) {
+            realtimeChannel.track({
+              name: myName,
+              role: myRole,
+              clientId: clientId,
+              online_at: new Date().toISOString()
+            });
           }
         }, getExistingNames());
       });
@@ -3735,32 +3743,6 @@
         myRole = 'guest';
         partnerName = hostParam;
 
-        loadSupabase(function () {
-          currentRoomId = rideIdParam;
-          realtimeChannel = supabaseClient.channel('ride:' + rideIdParam, {
-            config: {
-              broadcast: { self: false },
-              presence: { key: clientId }
-            }
-          });
-
-          realtimeChannel.on('presence', { event: 'sync' }, function () {
-            var state = realtimeChannel.presenceState();
-            for (var peerId in state) {
-              if (state.hasOwnProperty(peerId)) {
-                var arr = state[peerId];
-                if (arr && arr.length > 0) {
-                  var p = arr[arr.length - 1];
-                  var effId = p.clientId || peerId;
-                  if (effId && effId !== clientId) {
-                    connectedPeers[effId] = {
-                      clientId: effId,
-                      name: p.name || (p.role === 'host' ? hostParam : 'Saathi'),
-                      role: p.role || 'guest'
-                    };
-                  }
-                }
-              }
             }
           });
 

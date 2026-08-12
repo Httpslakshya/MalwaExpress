@@ -364,7 +364,153 @@
     .journey-status {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
+    }
+
+    .topbar-btn {
+      background: rgba(15, 10, 6, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--cream);
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-size: 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: all 0.25s ease;
+      font-family: inherit;
+    }
+
+    .topbar-btn:hover {
+      background: rgba(232, 166, 60, 0.25);
+      border-color: rgba(232, 166, 60, 0.6);
+      transform: translateY(-1px);
+    }
+
+    .topbar-btn.active {
+      background: var(--marigold);
+      color: var(--ink);
+      border-color: var(--marigold);
+      font-weight: 700;
+      box-shadow: 0 0 12px rgba(232, 166, 60, 0.4);
+    }
+
+    #rainCanvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 3;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+
+    #rainCanvas.active {
+      opacity: 1;
+    }
+
+    /* Lighting Shift Overlay */
+    .lighting-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      background: transparent;
+      mix-blend-mode: multiply;
+      transition: background 2s ease, opacity 2s ease;
+      opacity: 0;
+    }
+
+    /* Bus Route Progress Bar */
+    .bus-route-bar {
+      position: absolute;
+      top: 76px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(680px, calc(100% - 340px));
+      z-index: 6;
+      user-select: none;
+    }
+
+    .route-line {
+      position: absolute;
+      top: 7px;
+      left: 7.5px;
+      right: 7.5px;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.18);
+      border-radius: 2px;
+      z-index: 1;
+    }
+
+    .route-line-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--marigold);
+      border-radius: 2px;
+      transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 0 8px var(--marigold);
+    }
+
+    .bus-stops {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .stop-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      transition: transform 0.25s ease;
+    }
+
+    .stop-node:hover {
+      transform: translateY(-2px);
+    }
+
+    .stop-dot {
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: #160f0a;
+      border: 2.5px solid rgba(255, 255, 255, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .stop-node.active .stop-dot {
+      background: var(--marigold);
+      border-color: #ffffff;
+      box-shadow: 0 0 10px var(--marigold);
+      transform: scale(1.2);
+    }
+
+    .stop-name {
+      font-size: 10.5px;
+      color: var(--cream);
+      opacity: 0.7;
+      font-weight: 500;
+      white-space: nowrap;
+      transition: opacity 0.3s ease, color 0.3s ease;
+    }
+
+    .stop-node.active .stop-name,
+    .stop-node:hover .stop-name {
+      opacity: 1;
+      color: var(--marigold);
+      font-weight: 700;
+    }
+
+    .ctrl-btn.active {
+      color: var(--marigold);
+      opacity: 1;
+      filter: drop-shadow(0 0 6px var(--marigold));
     }
 
     .clock {
@@ -401,39 +547,6 @@
       }
     }
 
-    /* side switch */
-    .view-switch {
-      position: fixed;
-      right: 22px;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 8;
-      display: flex;
-      flex-direction: column;
-      background: rgba(15, 10, 6, .35);
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      border-radius: 999px;
-      padding: 5px;
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-    }
-
-    .view-switch button {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      border: none;
-      cursor: pointer;
-      background: transparent;
-      color: var(--cream);
-      opacity: .6;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background .2s ease, opacity .2s ease;
-    }
-
     /* left conductor side panel */
     .conductor-switch {
       position: fixed;
@@ -443,6 +556,7 @@
       z-index: 8;
       display: flex;
       flex-direction: column;
+      gap: 5px;
       background: rgba(15, 10, 6, .35);
       border: 1px solid rgba(255, 255, 255, 0.25);
       border-radius: 999px;
@@ -464,7 +578,393 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: background .2s ease, opacity .2s ease, transform .2s ease;
+      transition: background .2s ease, opacity .2s ease, transform .2s ease, box-shadow .2s ease;
+    }
+
+    .conductor-switch button:hover {
+      opacity: 1;
+      background: rgba(232, 166, 60, 0.25);
+      transform: scale(1.08);
+    }
+
+    .conductor-switch button.playing {
+      background: var(--marigold);
+      color: var(--ink);
+      opacity: 1;
+      box-shadow: 0 0 16px var(--marigold);
+      animation: conductorPulse 0.8s infinite alternate ease-in-out;
+    }
+
+    /* right view dock with slowed sliding active indicator */
+    .view-switch {
+      position: fixed;
+      right: 22px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 8;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      background: rgba(15, 10, 6, .35);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 999px;
+      padding: 5px;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .view-switch .view-indicator {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--rust);
+      box-shadow: 0 0 14px var(--rust);
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .view-switch button {
+      position: relative;
+      z-index: 2;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      background: transparent;
+      color: var(--cream);
+      opacity: .8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color .3s ease, opacity .3s ease, transform .25s ease;
+    }
+
+    .view-switch button:hover {
+      opacity: 1;
+      transform: scale(1.08);
+    }
+
+    .view-switch button.active {
+      color: #ffffff;
+      opacity: 1;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    /* One-time Keyboard Shortcut Hint */
+    .first-visit-hint {
+      position: fixed;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 35;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      color: rgba(243, 230, 206, 0.85);
+      background: rgba(15, 10, 6, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      padding: 6px 16px;
+      border-radius: 999px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    }
+
+    .first-visit-hint.show {
+      opacity: 1;
+    }
+
+    /* Auto-hide Idle UI (Screensaver Mode) */
+    .idle-fade {
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transition: opacity 0.6s ease !important;
+    }
+
+    .idle-dim-player {
+      opacity: 0.45 !important;
+      transition: opacity 0.6s ease !important;
+    }
+
+    .journey-topbar, .bus-route-bar, .conductor-switch, .view-switch, .ticket-mini, .creator-credit {
+      transition: opacity 0.4s ease;
+    }
+
+    .glass-player-pill {
+      transition: opacity 0.4s ease;
+    }
+
+    /* Journey End Overlay ("देवास आ गया") */
+    .journey-end-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      background: #050302;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 1.5s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+    }
+
+    .journey-end-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .end-title {
+      font-family: 'Baloo 2', sans-serif;
+      font-weight: 800;
+      color: var(--cream);
+      font-size: clamp(36px, 6vw, 64px);
+      line-height: 1.2;
+    }
+
+    .end-sub {
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--marigold);
+      margin: 14px 0 36px;
+    }
+
+    .end-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .end-link-primary {
+      background: none;
+      border: none;
+      color: var(--cream);
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      opacity: 0.9;
+      transition: opacity 0.25s ease, transform 0.25s ease, color 0.25s ease;
+    }
+
+    .end-link-primary:hover {
+      opacity: 1;
+      color: var(--marigold);
+      transform: scale(1.04);
+    }
+
+    .end-link-secondary {
+      background: none;
+      border: none;
+      color: var(--cream);
+      font-family: inherit;
+      font-size: 12px;
+      opacity: 0.5;
+      cursor: pointer;
+      transition: opacity 0.25s ease;
+    }
+
+    .end-link-secondary:hover {
+      opacity: 0.85;
+    }
+
+    /* Share Ride Button */
+    .share-ride-btn {
+      margin-top: 10px;
+      width: 100%;
+      background: #241608;
+      color: #f3e6ce;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 10.5px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .share-ride-btn:hover {
+      background: var(--rust);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .share-ride-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* Co-passenger Ticket Card */
+    .ticket-mini.co-passenger {
+      position: fixed;
+      bottom: 22px;
+      right: 225px;
+      z-index: 10;
+      opacity: 0;
+      transform: translateY(20px) rotate(-1deg) scale(0.95);
+      pointer-events: none;
+      transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+      border-color: rgba(232, 166, 60, 0.5);
+      background: #f1dfbc;
+    }
+
+    .ticket-mini.co-passenger.show {
+      opacity: 0.95;
+      transform: translateY(0) rotate(-1.5deg) scale(1);
+      pointer-events: auto;
+    }
+
+    /* Toast Notification Overlay */
+    .malwa-toast {
+      position: fixed;
+      top: 22px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      z-index: 70;
+      background: rgba(15, 10, 6, 0.88);
+      border: 1px solid rgba(232, 166, 60, 0.4);
+      color: var(--cream);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 18px;
+      border-radius: 999px;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+
+    .malwa-toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Name Input Modal */
+    .name-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(12, 8, 5, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+    }
+
+    .name-modal-backdrop.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .name-modal-card {
+      background: linear-gradient(145deg, #f7ebcf 0%, #e6d3a8 100%);
+      border: 1.5px solid rgba(255, 255, 255, 0.6);
+      border-radius: 18px;
+      padding: 24px 28px;
+      width: min(340px, 100%);
+      text-align: center;
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.75);
+      transform: scale(0.92);
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      color: #241608;
+    }
+
+    .name-modal-backdrop.show .name-modal-card {
+      transform: scale(1);
+    }
+
+    .nm-title {
+      font-family: 'Baloo 2', sans-serif;
+      font-weight: 800;
+      font-size: 20px;
+      color: #241608;
+      line-height: 1.3;
+    }
+
+    .nm-sub {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      opacity: 0.75;
+      margin: 4px 0 16px;
+    }
+
+    .nm-input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.75);
+      border: 1.5px solid rgba(36, 22, 8, 0.25);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-family: 'Baloo 2', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: #241608;
+      outline: none;
+      text-align: center;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .nm-input:focus {
+      background: #ffffff;
+      border-color: var(--rust);
+      box-shadow: 0 0 10px rgba(184, 61, 41, 0.3);
+    }
+
+    .nm-btn {
+      margin-top: 16px;
+      width: 100%;
+      background: var(--rust);
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      padding: 11px 16px;
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(184, 61, 41, 0.35);
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .nm-btn:hover {
+      background: #a0301d;
+      transform: translateY(-1px);
+    }
+
+    .tm-co-badge {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--rust);
+      margin-top: 2px;
+      letter-spacing: 0.2px;
+    }
+
+    .centered-copass-stub {
+      margin-top: 6px;
+      padding-top: 2px;
     }
 
     .conductor-switch button:hover {
@@ -489,11 +989,6 @@
       to {
         transform: scale(1.15);
       }
-    }
-
-    .view-switch button.active {
-      background: var(--rust);
-      opacity: 1;
     }
 
     .view-switch button svg {
@@ -910,7 +1405,12 @@
       }
 
       .journey-center {
-        padding: 0 12px 64px 12px;
+        padding: 0 12px 20px 12px;
+      }
+
+      .bus-route-bar {
+        top: 60px;
+        width: calc(100% - 24px);
       }
 
       .creator-credit {
@@ -1059,7 +1559,7 @@
       }
     }
 
-    /* ================= CREATOR CREDIT ================= */
+    /* ================= CREATOR CREDIT (EXPAND ON HOVER) ================= */
     .creator-credit {
       position: fixed;
       bottom: 22px;
@@ -1067,48 +1567,66 @@
       z-index: 40;
       display: inline-flex;
       align-items: center;
-      gap: 7px;
-      font-size: 11.5px;
-      font-weight: 500;
-      letter-spacing: 0.3px;
+      justify-content: center;
+      height: 38px;
+      width: 38px;
+      border-radius: 50%;
       color: var(--cream);
       background: rgba(18, 12, 8, 0.55);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(243, 230, 206, 0.22);
-      padding: 7px 16px 7px 13px;
-      border-radius: 999px;
       text-decoration: none;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
-      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+      overflow: hidden;
+      white-space: nowrap;
+      transition: width 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-radius 0.45s cubic-bezier(0.16, 1, 0.3, 1),
                   background 0.3s ease,
                   border-color 0.3s ease,
-                  box-shadow 0.3s ease,
-                  color 0.3s ease;
+                  box-shadow 0.3s ease;
       user-select: none;
-    }
-
-    .creator-credit:hover {
-      background: rgba(232, 166, 60, 0.22);
-      border-color: rgba(232, 166, 60, 0.6);
-      color: #ffffff;
-      transform: translateY(-2.5px) scale(1.03);
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.65), 0 0 16px rgba(232, 166, 60, 0.3);
-    }
-
-    .creator-credit:active {
-      transform: translateY(0) scale(0.98);
     }
 
     .creator-credit svg {
       color: var(--marigold);
       flex-shrink: 0;
+      width: 16px;
+      height: 16px;
       transition: transform 0.3s ease, color 0.3s ease;
+    }
+
+    .creator-credit .credit-text {
+      opacity: 0;
+      width: 0;
+      visibility: hidden;
+      font-size: 11.5px;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      transition: opacity 0.35s ease 0.05s, width 0.45s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.35s;
+    }
+
+    .creator-credit:hover {
+      width: 215px;
+      border-radius: 999px;
+      justify-content: flex-start;
+      padding: 0 16px 0 12px;
+      background: rgba(232, 166, 60, 0.25);
+      border-color: rgba(232, 166, 60, 0.6);
+      color: #ffffff;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.65), 0 0 16px rgba(232, 166, 60, 0.3);
     }
 
     .creator-credit:hover svg {
       color: #ffffff;
-      transform: rotate(-8deg) scale(1.1);
+      transform: rotate(-10deg) scale(1.1);
+    }
+
+    .creator-credit:hover .credit-text {
+      opacity: 1;
+      width: auto;
+      visibility: visible;
+      margin-left: 8px;
     }
 
     .creator-credit .heart {
@@ -1156,6 +1674,7 @@
       <div class="bg-img" id="bgInside"></div>
       <div class="bg-shade"></div>
     </div>
+    <canvas id="rainCanvas"></canvas>
     <div class="grain"></div>
 
     <div class="journey-topbar">
@@ -1166,6 +1685,43 @@
       <div class="journey-status">
         <div class="clock" id="clock">--:--</div>
         <div class="aboard"><span class="dot"></span><span id="aboardCount">41</span>&nbsp;aboard</div>
+      </div>
+    </div>
+
+    <!-- Bus Route Progress Bar (7 Stops) -->
+    <div class="bus-route-bar">
+      <div class="route-line">
+        <div class="route-line-fill" id="routeFill"></div>
+      </div>
+      <div class="bus-stops" id="busStops">
+        <div class="stop-node active" data-stop="0" title="Click to hear conductor announcement: Indore">
+          <span class="stop-dot"></span>
+          <span class="stop-name">इंदौर</span>
+        </div>
+        <div class="stop-node" data-stop="1" title="Click to hear conductor announcement: Bhanwarkuan">
+          <span class="stop-dot"></span>
+          <span class="stop-name">भावरकुआं</span>
+        </div>
+        <div class="stop-node" data-stop="2" title="Click to hear conductor announcement: Geeta Bhawan">
+          <span class="stop-dot"></span>
+          <span class="stop-name">गीता भवन</span>
+        </div>
+        <div class="stop-node" data-stop="3" title="Click to hear conductor announcement: Lasudia">
+          <span class="stop-dot"></span>
+          <span class="stop-name">लसूडिया</span>
+        </div>
+        <div class="stop-node" data-stop="4" title="Click to hear conductor announcement: Mangliya">
+          <span class="stop-dot"></span>
+          <span class="stop-name">मांगलिया</span>
+        </div>
+        <div class="stop-node" data-stop="5" title="Click to hear conductor announcement: Dewas Bypass">
+          <span class="stop-dot"></span>
+          <span class="stop-name">देवास Bypass</span>
+        </div>
+        <div class="stop-node" data-stop="6" title="Click to hear conductor announcement: Dewas Bus Stand">
+          <span class="stop-dot"></span>
+          <span class="stop-name">देवास बस स्टैंड</span>
+        </div>
       </div>
     </div>
 
@@ -1213,6 +1769,7 @@
       </div>
     </div>
 
+    <!-- Left Floating Side Panel (Conductor) -->
     <div class="conductor-switch">
       <button id="conductorBtn" aria-label="Play Conductor Announcement" title="कंडक्टर की आवाज (Play Announcement)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
@@ -1224,8 +1781,10 @@
       </button>
     </div>
 
-    <div class="view-switch">
-      <button id="switchOutside" aria-label="Outside view">
+    <!-- Right Floating Side Panel (Sliding View Indicator + Rain + Fullscreen) -->
+    <div class="view-switch" id="viewSwitch">
+      <div class="view-indicator" id="viewIndicator"></div>
+      <button id="switchOutside" aria-label="Outside view" title="बाहर का दृश्य (Outside View)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
           <path d="M3 20l4-11h10l4 11" />
           <path d="M7 20v-4h10v4" />
@@ -1233,23 +1792,50 @@
           <circle cx="16.5" cy="17.5" r="1" />
         </svg>
       </button>
-      <button class="active" id="switchInside" aria-label="Inside view">
+      <button class="active" id="switchInside" aria-label="Inside view" title="बस का अंदरूनी दृश्य (Inside View)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
           <rect x="3" y="6" width="18" height="13" rx="2" />
           <path d="M3 12h18M9 6v13M15 6v13" />
         </svg>
       </button>
+      <button id="rainBtn" aria-label="Toggle Rain Ambience Mode" title="बारिश (Toggle Rain Ambience)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 16.2A4.5 4.5 0 0 0 17.5 8h-1.8A7 7 0 1 0 4 14.9"/>
+          <path d="M16 14v6M8 14v6M12 16v6"/>
+        </svg>
+      </button>
+      <button id="fullscreenBtn" aria-label="Toggle Fullscreen" title="फुलस्क्रीन (Toggle Fullscreen)">
+        <svg id="fullscreenIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3m18-5h-3a2 2 0 0 0-2 2v3M3 16v3a2 2 0 0 2 2h3m13 0h-3a2 2 0 0 1-2-2v-3"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- One-time Keyboard Shortcut Hint -->
+    <div id="firstVisitHint" class="first-visit-hint">Space to play/pause · F for fullscreen</div>
+
+    <!-- Journey End Overlay ("देवास आ गया") -->
+    <div id="journeyEndOverlay" class="journey-end-overlay">
+      <div class="end-content">
+        <div class="end-title">देवास आ गया</div>
+        <div class="end-sub">JOURNEY COMPLETE</div>
+        <div class="end-actions">
+          <button id="replayBtn" class="end-link-primary">फिर से यात्रा करें · Replay</button>
+          <button id="stayBtn" class="end-link-secondary">बस यही रुकिए</button>
+        </div>
+      </div>
     </div>
 
     <div class="ticket-backdrop" id="ticketBackdrop"></div>
-    <div class="ticket-mini">
+    <div class="ticket-mini" id="myTicket">
       <div class="mobile-ticket-icon">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z" />
           <path d="M9 6v12M15 6v12" stroke-dasharray="2 2" />
         </svg>
       </div>
-      <div class="tm-row"><span class="tm-title">Driver's Mixtape</span><span class="tm-no">FA-4178</span></div>
+      <div class="tm-row"><span class="tm-title" id="ticketPassengerName">Passenger: Lakshya</span><span class="tm-no" id="ticketNo">FA-4178</span></div>
+      <div class="tm-co-badge" id="coTravelBadge" style="display: none;">Travelling with Lakshya ❤️</div>
       <hr class="tm-div">
       <div class="tm-fields">
         <div>
@@ -1258,24 +1844,65 @@
         </div>
         <div>
           <div class="tm-field-label">Seat</div>
-          <div class="tm-field-value">14 · Window</div>
+          <div class="tm-field-value" id="ticketSeat">14 · Window</div>
         </div>
         <div>
-          <div class="tm-field-label">Fare</div>
-          <div class="tm-field-value">Non-stop</div>
+          <div class="tm-field-label" id="ticketFareLabel">Fare</div>
+          <div class="tm-field-value" id="ticketFareValue">Non-stop</div>
         </div>
       </div>
+
+      <!-- Secondary Co-passenger Stub (Only visible inside centered modal when Host is viewing & Guest joined) -->
+      <div class="centered-copass-stub" id="centeredCoPassStub" style="display: none;">
+        <hr class="tm-div">
+        <div class="tm-row"><span class="tm-title" id="coPassStubName">Co-Passenger: Saathi</span><span class="tm-no">SEAT-15</span></div>
+        <div class="tm-fields" style="margin-top: 6px;">
+          <div>
+            <div class="tm-field-label">Status</div>
+            <div class="tm-field-value">Riding together 🚌</div>
+          </div>
+          <div>
+            <div class="tm-field-label">Seat</div>
+            <div class="tm-field-value">15 · Co-pass</div>
+          </div>
+          <div>
+            <div class="tm-field-label">Sync</div>
+            <div class="tm-field-value">Live 🟢</div>
+          </div>
+        </div>
+      </div>
+
+      <button id="shareRideBtn" class="share-ride-btn" title="Share this ride with a friend">
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+        </svg>
+        Share this ride
+      </button>
     </div>
+
+    <!-- Name Prompt Modal -->
+    <div id="nameModal" class="name-modal-backdrop">
+      <div class="name-modal-card">
+        <div class="nm-title" id="nmTitle">सफर के लिए अपना नाम लिखें</div>
+        <div class="nm-sub" id="nmSub">Enter your name for the ride ticket</div>
+        <input type="text" id="nameInput" class="nm-input" placeholder="आपका नाम (e.g. Lakshya)" maxlength="20" autocomplete="off" />
+        <button id="nameSubmitBtn" class="nm-btn">सफर शुरू करें · Continue</button>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="malwaToast" class="malwa-toast"></div>
   </div>
 
-  <!-- Creator Credit Badge -->
+  <!-- Creator Credit Badge (Expand on Hover) -->
   <a href="https://www.instagram.com/chasing.lakshyaa/" target="_blank" rel="noopener noreferrer" class="creator-credit" title="Instagram: @chasing.lakshyaa">
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
       <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
       <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
     </svg>
-    <span>made by lakshya with</span> <span class="heart">❤️</span>
+    <span class="credit-text">made by lakshya with <span class="heart">❤️</span></span>
   </a>
 
   <script>
@@ -1526,6 +2153,26 @@
       }
       npTime.textContent = "0:00 / 0:00";
       progressFill.style.width = "0%";
+      updateRouteProgress(trackIndex);
+
+      // Mobile Lockscreen MediaSession API Integration
+      if ('mediaSession' in navigator) {
+        try {
+          var fullCover = t.cover ? (window.location.origin + '/' + t.cover) : (window.location.origin + '/assets/covers/cover_01.jpg');
+          navigator.mediaSession.metadata = new MediaMetadata({
+            title: t.title,
+            artist: t.artist,
+            album: 'Malwa Express — Bus Driver\'s Cassette',
+            artwork: [
+              { src: fullCover, sizes: '512x512', type: 'image/jpeg' }
+            ]
+          });
+        } catch (err) { }
+      }
+
+      if (typeof realtimeChannel !== 'undefined' && realtimeChannel && !isRemoteUpdate) {
+        broadcastEvent('track-change', { trackIndex: trackIndex, currentTime: 0 });
+      }
 
       if (autoplay) {
         if (withFadeIn) {
@@ -1567,6 +2214,10 @@
         disc.classList.remove('playing');
         playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
       }
+      if (realtimeChannel && !isRemoteUpdate) {
+        if (playing) broadcastEvent('play', { currentTime: audioEl.currentTime || 0 });
+        else broadcastEvent('pause', { currentTime: audioEl.currentTime || 0 });
+      }
     }
 
     playBtn.addEventListener('click', function () {
@@ -1599,7 +2250,25 @@
       }
     });
 
+    /* Cassette Motor Tape Scrub Sound on Seek/Drag */
+    var tapeScrubAudio = new Audio('fx/freesound_community-sfx-cassette-tape-motor-30698.mp3');
+    tapeScrubAudio.volume = 0.7;
+    var scrubTimeout = null;
+
+    function playTapeScrub() {
+      try {
+        if (scrubTimeout) clearTimeout(scrubTimeout);
+        // Play a crisp 0.75s slice from a random position in the 59s tape motor audio
+        tapeScrubAudio.currentTime = Math.random() * 45;
+        tapeScrubAudio.play().catch(function () { });
+        scrubTimeout = setTimeout(function () {
+          tapeScrubAudio.pause();
+        }, 750);
+      } catch (e) { }
+    }
+
     progressBar.addEventListener('click', function (e) {
+      playTapeScrub();
       if (audioEl.duration) {
         var rect = progressBar.getBoundingClientRect();
         var clickX = e.clientX - rect.left;
@@ -1669,6 +2338,240 @@
       "conductor audios/thoda sarak jao_part01.wav",
       "conductor audios/ticket ticket (mp3cut.net).wav"
     ];
+
+    /* ---------------------------------------------------------------
+       WEB AUDIO API ENGINE (Tape Click, Lo-Fi Radio, Rain Ambience)
+    --------------------------------------------------------------- */
+    var audioCtx = null;
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    // Procedural Mechanical Cassette Click
+    function playTapeClick() {
+      try {
+        var ctx = getAudioContext();
+        var osc = ctx.createOscillator();
+        var gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(160, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(30, ctx.currentTime + 0.05);
+        gain.gain.setValueAtTime(0.25, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.05);
+      } catch (e) { }
+    }
+
+    // Highway Rain Ambience & Glass Raindrops Engine
+    var rainGainNode = null;
+    var isRainActive = false;
+    var rainBtn = document.getElementById('rainBtn');
+    var rainCanvas = document.getElementById('rainCanvas');
+    var rainAnimId = null;
+
+    function initRainAudio() {
+      if (rainGainNode) return;
+      try {
+        var ctx = getAudioContext();
+        var bufferSize = 2 * ctx.sampleRate;
+        var noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        var output = noiseBuffer.getChannelData(0);
+        var b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+        for (var i = 0; i < bufferSize; i++) {
+          var white = Math.random() * 2 - 1;
+          b0 = 0.99886 * b0 + white * 0.0555179;
+          b1 = 0.99332 * b1 + white * 0.0750759;
+          b2 = 0.96900 * b2 + white * 0.1538520;
+          b3 = 0.86650 * b3 + white * 0.3104856;
+          b4 = 0.55000 * b4 + white * 0.5329522;
+          b5 = -0.7616 * b5 - white * 0.0168980;
+          output[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+          output[i] *= 0.04;
+          b6 = white * 0.115926;
+        }
+        var whiteNoise = ctx.createBufferSource();
+        whiteNoise.buffer = noiseBuffer;
+        whiteNoise.loop = true;
+
+        var filter = ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 1100;
+
+        rainGainNode = ctx.createGain();
+        rainGainNode.gain.setValueAtTime(0, ctx.currentTime);
+
+        whiteNoise.connect(filter);
+        filter.connect(rainGainNode);
+        rainGainNode.connect(ctx.destination);
+        whiteNoise.start(0);
+      } catch (e) { }
+    }
+
+    // Glass Raindrops Canvas Animation
+    var drops = [];
+    function startRainCanvas() {
+      if (!rainCanvas) return;
+      var ctx = rainCanvas.getContext('2d');
+      var width = rainCanvas.width = window.innerWidth;
+      var height = rainCanvas.height = window.innerHeight;
+
+      drops = [];
+      for (var i = 0; i < 90; i++) {
+        drops.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          length: Math.random() * 20 + 10,
+          speed: Math.random() * 10 + 6,
+          opacity: Math.random() * 0.4 + 0.15
+        });
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, width, height);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.lineWidth = 1.2;
+        ctx.lineCap = 'round';
+
+        for (var i = 0; i < drops.length; i++) {
+          var d = drops[i];
+          ctx.beginPath();
+          ctx.moveTo(d.x, d.y);
+          ctx.lineTo(d.x - 2, d.y + d.length);
+          ctx.stroke();
+
+          d.y += d.speed;
+          d.x -= 0.5;
+          if (d.y > height) {
+            d.y = -d.length;
+            d.x = Math.random() * width;
+          }
+        }
+        rainAnimId = requestAnimationFrame(draw);
+      }
+      draw();
+    }
+
+    function stopRainCanvas() {
+      if (rainAnimId) cancelAnimationFrame(rainAnimId);
+      if (rainCanvas) {
+        var ctx = rainCanvas.getContext('2d');
+        ctx.clearRect(0, 0, rainCanvas.width, rainCanvas.height);
+      }
+    }
+
+    window.addEventListener('resize', function () {
+      if (isRainActive && rainCanvas) {
+        rainCanvas.width = window.innerWidth;
+        rainCanvas.height = window.innerHeight;
+      }
+    });
+
+    function enableRain() {
+      if (isRainActive) return;
+      isRainActive = true;
+      var ctx = getAudioContext();
+      initRainAudio();
+      if (rainCanvas) rainCanvas.classList.add('active');
+      if (rainGainNode) {
+        rainGainNode.gain.setValueAtTime(rainGainNode.gain.value, ctx.currentTime);
+        rainGainNode.gain.linearRampToValueAtTime(0.18, ctx.currentTime + 1.2);
+      }
+      startRainCanvas();
+    }
+
+    function disableRain() {
+      if (!isRainActive) return;
+      isRainActive = false;
+      var ctx = getAudioContext();
+      if (rainCanvas) rainCanvas.classList.remove('active');
+      if (rainGainNode) {
+        rainGainNode.gain.setValueAtTime(rainGainNode.gain.value, ctx.currentTime);
+        rainGainNode.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.8);
+      }
+      stopRainCanvas();
+    }
+
+    /* ---------------------------------------------------------------
+       INTERACTIVE BUS ROUTE MAP & CONDUCTOR AUDIO TRIGGERS (7 STOPS)
+    --------------------------------------------------------------- */
+    var BUS_STOPS = [
+      { name: "इंदौर", audio: "conductor audios/agla stop aane wala he.wav" },
+      { name: "भावरकुआं", audio: "conductor audios/bhawarkua wale taiyar rhena.wav" },
+      { name: "गीता भवन", audio: "conductor audios/agla stop geetabhavan.wav" },
+      { name: "लसूडिया", audio: "conductor audios/lasudhia.wav" },
+      { name: "मांगलिया", audio: "conductor audios/mangliya.wav" },
+      { name: "देवास Bypass", audio: "conductor audios/agla stop dewas bypass.wav" },
+      { name: "देवास बस स्टैंड", audio: "conductor audios/dewas aane wala he indore piche chuth gya.wav" }
+    ];
+
+    var stopNodes = document.querySelectorAll('.stop-node');
+    var routeFill = document.getElementById('routeFill');
+
+    function updateRouteProgress(tIndex) {
+      if (!BUS_STOPS.length || !TRACKS.length) return;
+      var stopIdx = Math.floor((tIndex / (TRACKS.length - 1)) * (BUS_STOPS.length - 1));
+      if (stopIdx >= BUS_STOPS.length) stopIdx = BUS_STOPS.length - 1;
+
+      var pct = (stopIdx / (BUS_STOPS.length - 1)) * 100;
+      if (routeFill) routeFill.style.width = pct + "%";
+
+      stopNodes.forEach(function (node, idx) {
+        if (idx === stopIdx) {
+          node.classList.add('active');
+        } else {
+          node.classList.remove('active');
+        }
+      });
+    }
+
+    stopNodes.forEach(function (node) {
+      node.addEventListener('click', function () {
+        playTapeClick();
+        var stopIdx = parseInt(node.getAttribute('data-stop'), 10);
+        if (isNaN(stopIdx) || !BUS_STOPS[stopIdx]) return;
+
+        // Highlight selected stop & update route line fill
+        stopNodes.forEach(function (n, i) {
+          if (i === stopIdx) n.classList.add('active'); else n.classList.remove('active');
+        });
+        if (routeFill) routeFill.style.width = (stopIdx / (BUS_STOPS.length - 1)) * 100 + "%";
+
+        // Jump playlist track to match this stop
+        var targetTrack = Math.round((stopIdx / (BUS_STOPS.length - 1)) * (TRACKS.length - 1));
+        if (targetTrack !== trackIndex) {
+          loadTrack(targetTrack, true, false);
+        }
+
+        // Play conductor announcement for this stop
+        var stopAudioSrc = BUS_STOPS[stopIdx].audio;
+        conductorAudioEl.src = stopAudioSrc;
+        conductorAudioEl.currentTime = 0;
+        if (conductorBtn) conductorBtn.classList.add('playing');
+
+        duckMusic();
+        conductorAudioEl.play().catch(function (err) {
+          if (conductorBtn) conductorBtn.classList.remove('playing');
+          restoreMusic();
+        });
+      });
+    });
+
+    // Register MediaSession global event handlers for lockscreen / Bluetooth controls
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.setActionHandler('play', function () { playBtn.click(); });
+      navigator.mediaSession.setActionHandler('pause', function () { playBtn.click(); });
+      navigator.mediaSession.setActionHandler('previoustrack', function () { prevBtn.click(); });
+      navigator.mediaSession.setActionHandler('nexttrack', function () { nextBtn.click(); });
+    }
     var conductorAudioEl = new Audio();
     var conductorBtn = document.getElementById('conductorBtn');
     var isDucked = false;
@@ -1759,6 +2662,7 @@
           ticketBackdrop.classList.remove('show');
         }
       }
+      if (typeof updateTicketUI === 'function') updateTicketUI();
     }
 
     if (ticketMini) {
@@ -1768,21 +2672,639 @@
       ticketBackdrop.addEventListener('click', toggleTicket);
     }
 
-    /* image switch */
+    /* image & mode switch with 4-way sliding active indicator */
     var bgOutside = document.getElementById('bgOutside');
     var bgInside = document.getElementById('bgInside');
     bgOutside.style.backgroundImage = "url('assets/bg-outside.jpg')";
     bgInside.style.backgroundImage = "url('assets/bg-inside.jpg')";
     bgInside.classList.add('active');
+
     var switchOutside = document.getElementById('switchOutside');
     var switchInside = document.getElementById('switchInside');
+    var fullscreenBtn = document.getElementById('fullscreenBtn');
+    var fullscreenIcon = document.getElementById('fullscreenIcon');
+    var viewIndicator = document.getElementById('viewIndicator');
+
+    function moveViewIndicator(targetBtn) {
+      if (!viewIndicator || !targetBtn) return;
+      var topPos = targetBtn.offsetTop - 5;
+      viewIndicator.style.transform = 'translateY(' + topPos + 'px)';
+    }
+
+    function setActiveDockButton(activeBtn) {
+      [switchOutside, switchInside, rainBtn, fullscreenBtn].forEach(function (b) {
+        if (b) {
+          if (b === activeBtn) b.classList.add('active');
+          else b.classList.remove('active');
+        }
+      });
+      moveViewIndicator(activeBtn);
+    }
+
     switchOutside.addEventListener('click', function () {
+      playTapeClick();
+      disableRain();
       bgInside.classList.remove('active'); bgOutside.classList.add('active');
-      switchOutside.classList.add('active'); switchInside.classList.remove('active');
+      setActiveDockButton(switchOutside);
     });
+
     switchInside.addEventListener('click', function () {
+      playTapeClick();
+      disableRain();
       bgOutside.classList.remove('active'); bgInside.classList.add('active');
-      switchInside.classList.add('active'); switchOutside.classList.remove('active');
+      setActiveDockButton(switchInside);
+    });
+
+    if (rainBtn) {
+      rainBtn.addEventListener('click', function () {
+        playTapeClick();
+        enableRain();
+        bgInside.classList.remove('active'); bgOutside.classList.add('active');
+        setActiveDockButton(rainBtn);
+      });
+    }
+
+    // Fullscreen Toggle
+    function toggleFullscreen() {
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen();
+        } else if (document.documentElement.webkitRequestFullscreen) {
+          document.documentElement.webkitRequestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        }
+      }
+    }
+
+    function updateFullscreenIcon() {
+      var isFS = !!(document.fullscreenElement || document.webkitFullscreenElement);
+      if (fullscreenIcon) {
+        if (isFS) {
+          fullscreenIcon.innerHTML = '<path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3m13-3v3a2 2 0 0 1-2-2h-3"/>';
+        } else {
+          fullscreenIcon.innerHTML = '<path d="M8 3H5a2 2 0 0 0-2 2v3m18-5h-3a2 2 0 0 0-2 2v3M3 16v3a2 2 0 0 2 2h3m13 0h-3a2 2 0 0 1-2-2v-3"/>';
+        }
+      }
+    }
+
+    if (fullscreenBtn) {
+      fullscreenBtn.addEventListener('click', function () {
+        playTapeClick();
+        toggleFullscreen();
+      });
+    }
+    document.addEventListener('fullscreenchange', updateFullscreenIcon);
+    document.addEventListener('webkitfullscreenchange', updateFullscreenIcon);
+
+    // Keyboard Shortcuts (Space: Play/Pause, F: Fullscreen)
+    document.addEventListener('keydown', function (e) {
+      var activeEl = document.activeElement;
+      var isInput = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.isContentEditable);
+      
+      if (e.code === 'Space' || e.key === ' ') {
+        if (!isInput) {
+          e.preventDefault();
+          playBtn.click();
+        }
+      } else if (e.code === 'KeyF' || e.key === 'f' || e.key === 'F') {
+        if (!isInput) {
+          e.preventDefault();
+          toggleFullscreen();
+        }
+      }
+    });
+
+    // One-time Keyboard Hint
+    function showFirstVisitHint() {
+      if (!localStorage.getItem('malwa_hintShown')) {
+        var hintEl = document.getElementById('firstVisitHint');
+        if (hintEl) {
+          setTimeout(function () {
+            hintEl.classList.add('show');
+            setTimeout(function () {
+              hintEl.classList.remove('show');
+              localStorage.setItem('malwa_hintShown', 'true');
+            }, 3500);
+          }, 1200);
+        }
+      }
+    }
+
+    // Auto-hide Idle UI (Screensaver Engine)
+    var idleTimer = null;
+    var isIdle = false;
+    var IDLE_DELAY = 4000;
+
+    function resetIdleTimer() {
+      if (document.visibilityState === 'hidden') return;
+      var ticketModal = document.querySelector('.ticket-mini.centered');
+      var endOverlay = document.getElementById('journeyEndOverlay');
+      if (ticketModal || (endOverlay && endOverlay.classList.contains('show'))) {
+        wakeUI();
+        return;
+      }
+
+      wakeUI();
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(goIdle, IDLE_DELAY);
+    }
+
+    function goIdle() {
+      if (document.visibilityState === 'hidden') return;
+      var ticketModal = document.querySelector('.ticket-mini.centered');
+      var endOverlay = document.getElementById('journeyEndOverlay');
+      if (ticketModal || (endOverlay && endOverlay.classList.contains('show'))) return;
+
+      isIdle = true;
+      var elementsToHide = [
+        document.querySelector('.journey-topbar'),
+        document.querySelector('.bus-route-bar'),
+        document.querySelector('.conductor-switch'),
+        document.querySelector('.view-switch'),
+        document.querySelector('.ticket-mini'),
+        document.querySelector('.creator-credit'),
+        document.getElementById('firstVisitHint')
+      ];
+
+      elementsToHide.forEach(function (el) {
+        if (el) el.classList.add('idle-fade');
+      });
+
+      var playerPill = document.querySelector('.glass-player-pill');
+      if (playerPill) playerPill.classList.add('idle-dim-player');
+
+      if (document.fullscreenElement || document.webkitFullscreenElement) {
+        document.body.style.cursor = 'none';
+      }
+    }
+
+    function wakeUI() {
+      if (!isIdle) return;
+      isIdle = false;
+      var elementsToHide = [
+        document.querySelector('.journey-topbar'),
+        document.querySelector('.bus-route-bar'),
+        document.querySelector('.conductor-switch'),
+        document.querySelector('.view-switch'),
+        document.querySelector('.ticket-mini'),
+        document.querySelector('.creator-credit'),
+        document.getElementById('firstVisitHint')
+      ];
+
+      elementsToHide.forEach(function (el) {
+        if (el) el.classList.remove('idle-fade');
+      });
+
+      var playerPill = document.querySelector('.glass-player-pill');
+      if (playerPill) playerPill.classList.remove('idle-dim-player');
+
+      document.body.style.cursor = '';
+    }
+
+    ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'].forEach(function (evt) {
+      window.addEventListener(evt, resetIdleTimer, { passive: true });
+    });
+
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'hidden') {
+        clearTimeout(idleTimer);
+        wakeUI();
+      } else {
+        resetIdleTimer();
+      }
+    });
+
+    // Progress-Based Lighting Shift (Golden Hour / Dusk Drift)
+    function updateLightingShift() {
+      var overlayEl = document.getElementById('lightingOverlay');
+      if (!overlayEl || !TRACKS.length) return;
+
+      var currentTrackPos = (audioEl.currentTime && audioEl.duration) ? (audioEl.currentTime / audioEl.duration) : 0;
+      var totalProgress = (trackIndex + currentTrackPos) / TRACKS.length;
+
+      if (totalProgress < 0.25) {
+        // Stage 1 (0-25%): Default bright afternoon look
+        overlayEl.style.opacity = '0';
+        overlayEl.style.background = 'transparent';
+      } else if (totalProgress < 0.60) {
+        // Stage 2 (25-60%): Warm golden hour tone
+        var p = (totalProgress - 0.25) / 0.35;
+        overlayEl.style.opacity = (p * 0.30).toFixed(2);
+        overlayEl.style.background = 'radial-gradient(ellipse at center, rgba(232, 166, 60, 0.18) 0%, rgba(180, 90, 20, 0.38) 100%)';
+      } else if (totalProgress < 0.85) {
+        // Stage 3 (60-85%): Dusk golden-hour tone
+        var p2 = (totalProgress - 0.60) / 0.25;
+        overlayEl.style.opacity = (0.30 + p2 * 0.25).toFixed(2);
+        overlayEl.style.background = 'radial-gradient(ellipse at center, rgba(210, 110, 30, 0.30) 0%, rgba(100, 35, 10, 0.55) 100%)';
+      } else {
+        // Stage 4 (85-100%): Twilight / near-dusk cooler shadows
+        var p3 = (totalProgress - 0.85) / 0.15;
+        overlayEl.style.opacity = (0.55 + p3 * 0.15).toFixed(2); // Capped at ~70% max opacity
+        overlayEl.style.background = 'radial-gradient(ellipse at center, rgba(160, 70, 40, 0.32) 0%, rgba(15, 10, 25, 0.68) 100%)';
+      }
+    }
+
+    // Journey End Screen Handler
+    function triggerJourneyEnd() {
+      var endOverlay = document.getElementById('journeyEndOverlay');
+      if (!endOverlay) return;
+
+      var startVol = audioEl.volume;
+      var startTime = Date.now();
+      var durationMs = 1500;
+      var fadeInterval = setInterval(function () {
+        var elapsed = Date.now() - startTime;
+        var pct = 1 - (elapsed / durationMs);
+        if (pct <= 0) {
+          audioEl.volume = 0;
+          audioEl.pause();
+          setPlaying(false);
+          clearInterval(fadeInterval);
+        } else {
+          audioEl.volume = startVol * pct;
+        }
+      }, 30);
+
+      endOverlay.classList.add('show');
+    }
+
+    document.getElementById('replayBtn').addEventListener('click', function () {
+      var endOverlay = document.getElementById('journeyEndOverlay');
+      if (endOverlay) endOverlay.classList.remove('show');
+      audioEl.volume = 1;
+      loadTrack(0, true, true);
+    });
+
+    document.getElementById('stayBtn').addEventListener('click', function () {
+      var endOverlay = document.getElementById('journeyEndOverlay');
+      if (endOverlay) endOverlay.classList.remove('show');
+      audioEl.volume = 1;
+    });
+
+    // Update track ended listener to trigger Journey End on final song
+    audioEl.addEventListener('ended', function () {
+      if (trackIndex >= TRACKS.length - 1) {
+        triggerJourneyEnd();
+      } else {
+        loadTrack(trackIndex + 1, true, false);
+      }
+    });
+
+    // Hook lighting shift update into timeupdate
+    audioEl.addEventListener('timeupdate', function () {
+      updateLightingShift();
+    });
+
+    // Initial position for switchInside
+    setTimeout(function () {
+      setActiveDockButton(switchInside);
+    }, 100);
+
+    /* ---------------------------------------------------------------
+       LAZY-LOADED SUPABASE REALTIME CO-LISTENING ENGINE ("SHARE THIS RIDE")
+    --------------------------------------------------------------- */
+    var supabaseClient = null;
+    var currentRoomId = null;
+    var realtimeChannel = null;
+    var clientId = 'user_' + Math.random().toString(36).substring(2, 9);
+    var isRemoteUpdate = false;
+    var myRole = 'host'; // 'host' or 'guest'
+    var myName = 'Lakshya';
+    var partnerName = '';
+
+    function showToast(msg) {
+      var toast = document.getElementById('malwaToast');
+      if (!toast) return;
+      toast.innerText = msg;
+      toast.classList.add('show');
+      setTimeout(function () {
+        toast.classList.remove('show');
+      }, 3200);
+    }
+
+    function promptName(titleText, subText, defaultVal, callback) {
+      var modal = document.getElementById('nameModal');
+      var nmTitle = document.getElementById('nmTitle');
+      var nmSub = document.getElementById('nmSub');
+      var nameInput = document.getElementById('nameInput');
+      var submitBtn = document.getElementById('nameSubmitBtn');
+
+      if (!modal) {
+        if (callback) callback(defaultVal);
+        return;
+      }
+
+      if (titleText) nmTitle.textContent = titleText;
+      if (subText) nmSub.textContent = subText;
+      nameInput.value = defaultVal || '';
+      modal.classList.add('show');
+
+      setTimeout(function () { nameInput.focus(); nameInput.select(); }, 150);
+
+      function handleSubmit() {
+        var val = nameInput.value.trim() || defaultVal || 'Passenger';
+        modal.classList.remove('show');
+        submitBtn.removeEventListener('click', handleSubmit);
+        nameInput.removeEventListener('keydown', handleKey);
+        if (callback) callback(val);
+      }
+
+      function handleKey(e) {
+        if (e.key === 'Enter') handleSubmit();
+      }
+
+      submitBtn.addEventListener('click', handleSubmit);
+      nameInput.addEventListener('keydown', handleKey);
+    }
+
+    function updateTicketUI() {
+      var passengerNameEl = document.getElementById('ticketPassengerName');
+      var coBadgeEl = document.getElementById('coTravelBadge');
+      var seatEl = document.getElementById('ticketSeat');
+      var fareLabelEl = document.getElementById('ticketFareLabel');
+      var fareValueEl = document.getElementById('ticketFareValue');
+      var stubNameEl = document.getElementById('coPassStubName');
+      var centeredStub = document.getElementById('centeredCoPassStub');
+      var ticketCard = document.getElementById('myTicket');
+      var isCentered = ticketCard && ticketCard.classList.contains('centered');
+
+      if (myRole === 'guest') {
+        if (passengerNameEl) passengerNameEl.textContent = "Passenger: " + myName;
+        if (coBadgeEl) {
+          coBadgeEl.style.display = 'block';
+          coBadgeEl.textContent = "Travelling with " + (partnerName || 'Host') + " ❤️";
+        }
+        if (seatEl) seatEl.textContent = "15 · Co-pass";
+        if (fareLabelEl) fareLabelEl.textContent = "Sync";
+        if (fareValueEl) fareValueEl.textContent = "Live 🟢";
+        if (shareBtn) shareBtn.style.display = 'none'; // Hide share button on guest screen
+        if (centeredStub) centeredStub.style.display = 'none';
+      } else {
+        if (passengerNameEl) passengerNameEl.textContent = "Passenger: " + myName;
+        if (coBadgeEl) coBadgeEl.style.display = 'none';
+        if (seatEl) seatEl.textContent = "14 · Window";
+        if (fareLabelEl) fareLabelEl.textContent = "Fare";
+        if (fareValueEl) fareValueEl.textContent = "Non-stop";
+        if (shareBtn) shareBtn.style.display = 'flex';
+
+        // Only show co-passenger stub inside centered view when partner is connected!
+        if (partnerName && isCentered) {
+          if (stubNameEl) stubNameEl.textContent = "Co-Passenger: " + partnerName;
+          if (centeredStub) centeredStub.style.display = 'block';
+        } else {
+          if (centeredStub) centeredStub.style.display = 'none';
+        }
+      }
+    }
+
+    function getSupabaseConfig() {
+      var url = (typeof window.ENV !== 'undefined' && window.ENV.SUPABASE_URL)
+        || 'https://gygabtjqyvlscjwtfqco.supabase.co';
+      var key = (typeof window.ENV !== 'undefined' && window.ENV.SUPABASE_ANON_KEY)
+        || 'sb_publishable_VTUaSSoOpVm1m3FkK3sgkg_MWn3A2Mb';
+      return { url: url, key: key };
+    }
+
+    function loadSupabase(callback) {
+      var cfg = getSupabaseConfig();
+      if (window.supabase && supabaseClient) {
+        if (callback) callback();
+        return;
+      }
+      if (window.supabase) {
+        supabaseClient = window.supabase.createClient(cfg.url, cfg.key);
+        if (callback) callback();
+        return;
+      }
+      var script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+      script.onload = function () {
+        supabaseClient = window.supabase.createClient(cfg.url, cfg.key);
+        if (callback) callback();
+      };
+      document.head.appendChild(script);
+    }
+
+    function broadcastEvent(eventName, payloadData) {
+      if (!realtimeChannel) return;
+      payloadData.senderId = clientId;
+      realtimeChannel.send({
+        type: 'broadcast',
+        event: eventName,
+        payload: payloadData
+      });
+    }
+
+    function initRealtimeRoom(roomId, isHostRole) {
+      myRole = isHostRole ? 'host' : 'guest';
+      loadSupabase(function () {
+        currentRoomId = roomId;
+        realtimeChannel = supabaseClient.channel('ride:' + roomId, {
+          config: {
+            broadcast: { self: false },
+            presence: { key: clientId }
+          }
+        });
+
+        // Presence sync handler
+        realtimeChannel.on('presence', { event: 'sync' }, function () {
+          var state = realtimeChannel.presenceState();
+          var userIds = Object.keys(state);
+          var peerCount = userIds.length;
+          var aboardEl = document.getElementById('aboardCount');
+
+          if (peerCount > 1) {
+            updateTicketUI();
+            if (aboardEl && !aboardEl.dataset.synced) {
+              aboardEl.dataset.synced = "true";
+              var baseVal = parseInt(aboardEl.innerText, 10) || 15;
+              aboardEl.innerText = baseVal + 1;
+              aboardEl.style.color = '#57D06B';
+            }
+          } else {
+            if (myRole === 'host') partnerName = '';
+            updateTicketUI();
+            if (aboardEl && aboardEl.dataset.synced) {
+              delete aboardEl.dataset.synced;
+              var baseVal = parseInt(aboardEl.innerText, 10) || 16;
+              aboardEl.innerText = Math.max(1, baseVal - 1);
+              aboardEl.style.color = '';
+            }
+          }
+        });
+
+        // Broadcast event listeners
+        realtimeChannel
+          .on('broadcast', { event: 'sync-request' }, function (payload) {
+            if (payload.payload && payload.payload.senderId === clientId) return;
+            var data = payload.payload;
+            if (data && data.peerName) {
+              partnerName = data.peerName;
+              showToast(partnerName + ' aapke saath safar mein jud gaye hain 🚌');
+              updateTicketUI();
+            }
+            broadcastEvent('sync-response', {
+              hostName: myName,
+              trackIndex: trackIndex,
+              currentTime: audioEl.currentTime || 0,
+              isPlaying: isPlaying,
+              targetSenderId: payload.payload.senderId
+            });
+          })
+          .on('broadcast', { event: 'sync-response' }, function (payload) {
+            var data = payload.payload;
+            if (!data || (data.targetSenderId && data.targetSenderId !== clientId)) return;
+            if (data.hostName) {
+              partnerName = data.hostName;
+              updateTicketUI();
+            }
+            applyRemoteSync(data);
+          })
+          .on('broadcast', { event: 'play' }, function (payload) {
+            if (payload.payload && payload.payload.senderId === clientId) return;
+            applyRemotePlay(payload.payload);
+          })
+          .on('broadcast', { event: 'pause' }, function (payload) {
+            if (payload.payload && payload.payload.senderId === clientId) return;
+            applyRemotePause(payload.payload);
+          })
+          .on('broadcast', { event: 'track-change' }, function (payload) {
+            if (payload.payload && payload.payload.senderId === clientId) return;
+            applyRemoteTrackChange(payload.payload);
+          })
+          .on('broadcast', { event: 'seek' }, function (payload) {
+            if (payload.payload && payload.payload.senderId === clientId) return;
+            applyRemoteSeek(payload.payload);
+          });
+
+        realtimeChannel.subscribe(function (status) {
+          if (status === 'SUBSCRIBED') {
+            realtimeChannel.track({ online_at: new Date().toISOString() });
+            if (!isHostRole) {
+              broadcastEvent('sync-request', { senderId: clientId, peerName: myName });
+              setTimeout(function () {
+                if (!partnerName) {
+                  showToast('Ye ride mil nahi rahi, naya safar shuru karo 🚌');
+                }
+              }, 3500);
+            }
+          }
+        });
+      });
+    }
+
+    function applyRemoteSync(data) {
+      isRemoteUpdate = true;
+      if (typeof data.trackIndex === 'number' && data.trackIndex !== trackIndex) {
+        loadTrack(data.trackIndex, data.isPlaying, false);
+      }
+      if (typeof data.currentTime === 'number') {
+        audioEl.currentTime = data.currentTime;
+      }
+      if (data.isPlaying && !isPlaying) {
+        audioEl.play().then(function () { setPlaying(true); }).catch(function () { });
+      } else if (!data.isPlaying && isPlaying) {
+        audioEl.pause();
+        setPlaying(false);
+      }
+      setTimeout(function () { isRemoteUpdate = false; }, 300);
+    }
+
+    function applyRemotePlay(data) {
+      isRemoteUpdate = true;
+      if (typeof data.currentTime === 'number' && Math.abs(audioEl.currentTime - data.currentTime) > 1.5) {
+        audioEl.currentTime = data.currentTime;
+      }
+      audioEl.play().then(function () { setPlaying(true); }).catch(function () { });
+      setTimeout(function () { isRemoteUpdate = false; }, 300);
+    }
+
+    function applyRemotePause(data) {
+      isRemoteUpdate = true;
+      if (typeof data.currentTime === 'number') {
+        audioEl.currentTime = data.currentTime;
+      }
+      audioEl.pause();
+      setPlaying(false);
+      setTimeout(function () { isRemoteUpdate = false; }, 300);
+    }
+
+    function applyRemoteTrackChange(data) {
+      isRemoteUpdate = true;
+      if (typeof data.trackIndex === 'number') {
+        loadTrack(data.trackIndex, true, false);
+        if (typeof data.currentTime === 'number') audioEl.currentTime = data.currentTime;
+      }
+      setTimeout(function () { isRemoteUpdate = false; }, 300);
+    }
+
+    function applyRemoteSeek(data) {
+      isRemoteUpdate = true;
+      if (typeof data.currentTime === 'number') {
+        audioEl.currentTime = data.currentTime;
+      }
+      setTimeout(function () { isRemoteUpdate = false; }, 300);
+    }
+
+    // Share Ride button handler with Name Modal Prompt
+    var shareBtn = document.getElementById('shareRideBtn');
+    if (shareBtn) {
+      shareBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        playTapeClick();
+
+        promptName('सफर के लिए अपना नाम लिखें', 'Enter your name for the ride ticket:', myName || 'Lakshya', function (enteredName) {
+          myName = enteredName;
+          updateTicketUI();
+
+          var roomId = currentRoomId || Math.random().toString(36).substring(2, 8);
+          var shareUrl = window.location.origin + window.location.pathname + '?ride=' + roomId + '&host=' + encodeURIComponent(myName);
+
+          navigator.clipboard.writeText(shareUrl).then(function () {
+            showToast('Link copied — bhej do apne saathi ko 🚌');
+          }).catch(function () {
+            prompt('Copy this ride link:', shareUrl);
+          });
+
+          if (!currentRoomId) {
+            initRealtimeRoom(roomId, true);
+          }
+        });
+      });
+    }
+
+    if (progressBar) {
+      progressBar.addEventListener('click', function () {
+        if (realtimeChannel && !isRemoteUpdate) {
+          setTimeout(function () {
+            broadcastEvent('seek', { currentTime: audioEl.currentTime || 0 });
+          }, 50);
+        }
+      });
+    }
+
+    // Auto-join if URL contains ?ride=xyz123&host=Lakshya
+    window.addEventListener('load', function () {
+      var urlParams = new URLSearchParams(window.location.search);
+      var rideIdParam = urlParams.get('ride');
+      var hostParam = urlParams.get('host') || 'Host';
+
+      if (rideIdParam) {
+        myRole = 'guest';
+        partnerName = hostParam;
+
+        promptName(hostParam + ' के साथ सफर के लिए अपना नाम बताएं', 'Enter your name to join ' + hostParam + '\'s ride:', 'Saathi', function (enteredName) {
+          myName = enteredName;
+          updateTicketUI();
+          showToast('Aap ' + hostParam + ' ke saath safar mein jud gaye hain 🚌');
+          initRealtimeRoom(rideIdParam, false);
+        });
+      }
     });
 
     /* landing -> transition -> journey */
@@ -1798,6 +3320,9 @@
       setTimeout(function () {
         landingView.style.display = 'none';
         journeyView.style.display = 'block';
+        setActiveDockButton(switchInside);
+        showFirstVisitHint();
+        resetIdleTimer();
       }, 2100);
       setTimeout(function () {
         overlay.classList.remove('show-text');

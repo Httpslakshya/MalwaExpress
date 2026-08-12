@@ -1834,8 +1834,8 @@
           <path d="M9 6v12M15 6v12" stroke-dasharray="2 2" />
         </svg>
       </div>
-      <div class="tm-row"><span class="tm-title" id="ticketPassengerName">Passenger: Lakshya</span><span class="tm-no" id="ticketNo">FA-4178</span></div>
-      <div class="tm-co-badge" id="coTravelBadge" style="display: none;">Travelling with Lakshya ❤️</div>
+      <div class="tm-row"><span class="tm-title" id="ticketPassengerName">Passenger: Yatri</span><span class="tm-no" id="ticketNo">FA-4178</span></div>
+      <div class="tm-co-badge" id="coTravelBadge" style="display: none;">Travelling with Yatri ❤️</div>
       <hr class="tm-div">
       <div class="tm-fields">
         <div>
@@ -1886,7 +1886,7 @@
       <div class="name-modal-card">
         <div class="nm-title" id="nmTitle">सफर के लिए अपना नाम लिखें</div>
         <div class="nm-sub" id="nmSub">Enter your name for the ride ticket</div>
-        <input type="text" id="nameInput" class="nm-input" placeholder="आपका नाम (e.g. Lakshya)" maxlength="20" autocomplete="off" />
+        <input type="text" id="nameInput" class="nm-input" placeholder="आपका नाम (e.g. Yatri)" maxlength="20" autocomplete="off" />
         <button id="nameSubmitBtn" class="nm-btn">सफर शुरू करें · Continue</button>
       </div>
     </div>
@@ -2545,13 +2545,7 @@
         });
         if (routeFill) routeFill.style.width = (stopIdx / (BUS_STOPS.length - 1)) * 100 + "%";
 
-        // Jump playlist track to match this stop
-        var targetTrack = Math.round((stopIdx / (BUS_STOPS.length - 1)) * (TRACKS.length - 1));
-        if (targetTrack !== trackIndex) {
-          loadTrack(targetTrack, true, false);
-        }
-
-        // Play conductor announcement for this stop
+        // Play conductor announcement for this stop (without auto-switching music track)
         var stopAudioSrc = BUS_STOPS[stopIdx].audio;
         conductorAudioEl.src = stopAudioSrc;
         conductorAudioEl.currentTime = 0;
@@ -2974,7 +2968,7 @@
     var clientId = 'user_' + Math.random().toString(36).substring(2, 9);
     var isRemoteUpdate = false;
     var myRole = 'host'; // 'host' or 'guest'
-    var myName = 'Lakshya';
+    var myName = 'Yatri';
     var partnerName = '';
 
     function showToast(msg) {
@@ -3258,7 +3252,7 @@
         e.stopPropagation();
         playTapeClick();
 
-        promptName('सफर के लिए अपना नाम लिखें', 'Enter your name for the ride ticket:', myName || 'Lakshya', function (enteredName) {
+        promptName('सफर के लिए अपना नाम लिखें', 'Enter your name for the ride ticket:', myName || 'Yatri', function (enteredName) {
           myName = enteredName;
           updateTicketUI();
 

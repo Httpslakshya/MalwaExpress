@@ -1386,31 +1386,63 @@
       line-height: 1.2;
     }
 
+    /* ================= MOBILE RESPONSIVE STYLES (NO CHANGE TO DESKTOP) ================= */
+    @media (max-width: 768px) {
+      .bus-route-bar {
+        top: 66px;
+        width: calc(100% - 32px);
+      }
+
+      .stop-name {
+        font-size: 9px;
+      }
+
+      .glass-player-pill {
+        max-width: calc(100% - 24px);
+      }
+
+      .ticket-mini.centered {
+        width: min(310px, 90vw);
+        transform: translate(50%, 50%) rotate(0deg) scale(1.1);
+      }
+    }
+
     @media (max-width: 480px) {
       .journey-topbar {
-        padding: 14px 14px 0;
+        padding: 12px 14px 0;
       }
 
       .brand-dev {
-        font-size: 16px;
+        font-size: 15px;
       }
 
       .brand-en {
-        font-size: 9px;
-        letter-spacing: 2px;
+        font-size: 8.5px;
+        letter-spacing: 1.5px;
       }
 
       .clock, .aboard {
-        font-size: 11px;
+        font-size: 10.5px;
       }
 
       .journey-center {
-        padding: 0 12px 20px 12px;
+        padding: 0 10px 16px 10px;
       }
 
       .bus-route-bar {
-        top: 60px;
+        top: 56px;
         width: calc(100% - 24px);
+      }
+
+      .stop-dot {
+        width: 11px;
+        height: 11px;
+      }
+
+      .stop-name {
+        font-size: 8px;
+        margin-top: 3px;
+        letter-spacing: 0;
       }
 
       .creator-credit {
@@ -1428,21 +1460,22 @@
 
       /* Responsive Floating Side Controls for Mobile */
       .view-switch {
-        right: 10px;
+        right: 8px;
         top: 38%;
-        padding: 4px;
+        padding: 3px;
+        gap: 5px;
       }
 
       .conductor-switch {
-        left: 10px;
+        left: 8px;
         top: 38%;
-        padding: 4px;
+        padding: 3px;
       }
 
       .view-switch button,
       .conductor-switch button {
-        width: 35px;
-        height: 35px;
+        width: 34px;
+        height: 34px;
       }
 
       .view-switch button svg,
@@ -1453,55 +1486,64 @@
 
       /* Responsive Player Pill for Mobile Phones Only */
       .glass-player-pill {
-        padding: 10px 14px 10px 10px;
-        gap: 10px;
+        padding: 8px 12px 8px 8px;
+        gap: 8px;
+        border-radius: 18px;
       }
 
       .player-disc-wrap {
-        width: 58px;
-        height: 58px;
+        width: 52px;
+        height: 52px;
       }
 
       .disc-hole {
-        width: 14px;
-        height: 14px;
+        width: 12px;
+        height: 12px;
         border-width: 2px;
       }
 
       .player-title {
-        font-size: 14px;
+        font-size: 13px;
+        max-width: 130px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       .player-artist {
-        font-size: 11.5px;
+        font-size: 11px;
+        max-width: 130px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       .player-time {
-        font-size: 10.5px;
-        margin-top: 3px;
+        font-size: 10px;
+        margin-top: 2px;
       }
 
       .player-controls {
-        gap: 6px;
+        gap: 4px;
       }
 
       .ctrl-btn {
-        padding: 4px;
+        padding: 3px;
       }
 
       .ctrl-btn svg {
-        width: 15px;
-        height: 15px;
+        width: 14px;
+        height: 14px;
       }
 
       .play-pause-btn {
-        width: 38px;
-        height: 38px;
+        width: 36px;
+        height: 36px;
       }
 
       .play-pause-btn svg {
-        width: 16px;
-        height: 16px;
+        width: 15px;
+        height: 15px;
       }
 
       /* Mobile Ticket Button -> Expands to Centered Ticket Modal */
@@ -1529,8 +1571,9 @@
 
       .ticket-mini:not(.centered) .tm-row,
       .ticket-mini:not(.centered) .tm-div,
-      .ticket-mini:not(.centered) .tm-fields {
-        display: none;
+      .ticket-mini:not(.centered) .tm-fields,
+      .ticket-mini:not(.centered) .share-ride-btn {
+        display: none !important;
       }
 
       .ticket-mini:not(.centered) .mobile-ticket-icon {
@@ -1547,15 +1590,20 @@
       .ticket-mini.centered {
         right: 50%;
         bottom: 50%;
-        width: 275px;
+        width: min(290px, 90vw);
         border-radius: 14px;
-        padding: 16px 20px;
-        transform: translate(50%, 50%) rotate(0deg) scale(1.15);
+        padding: 14px 18px;
+        transform: translate(50%, 50%) rotate(0deg) scale(1.05);
         box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
       }
 
       .board-btn {
         padding: 13px 22px 13px 16px;
+      }
+
+      .name-modal-card {
+        padding: 20px 20px;
+        width: min(300px, 90vw);
       }
     }
 

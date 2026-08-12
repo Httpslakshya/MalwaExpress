@@ -1631,51 +1631,17 @@
     }
     tickClock(); setInterval(tickClock, 15000);
 
-    /* Real-Time Active Users Presence System (Zero Render Blocking) */
+    /* Aboard Count: Random number between 1 and 40 (changes on refresh & dynamically) */
     var aboardEl = document.getElementById('aboardCount');
-    var FIREBASE_DB_URL = ""; // Set your Firebase Realtime DB URL here if needed
+    var currentAboard = Math.floor(Math.random() * 40) + 1;
+    if (aboardEl) aboardEl.textContent = currentAboard;
 
-    function setupLivePresence() {
-      if (!FIREBASE_DB_URL) {
-        if (aboardEl) aboardEl.textContent = 1;
-        return;
-      }
-
-      function loadScript(src, cb) {
-        var s = document.createElement('script');
-        s.src = src; s.async = true;
-        s.onload = cb;
-        document.head.appendChild(s);
-      }
-
-      loadScript("https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js", function () {
-        loadScript("https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js", function () {
-          try {
-            if (!firebase.apps.length) {
-              firebase.initializeApp({ databaseURL: FIREBASE_DB_URL });
-            }
-            var db = firebase.database();
-            var myPresenceRef = db.ref('online_passengers/' + Math.random().toString(36).substring(2, 9));
-            var connectedRef = db.ref('.info/connected');
-
-            connectedRef.on('value', function (snap) {
-              if (snap.val() === true) {
-                myPresenceRef.onDisconnect().remove();
-                myPresenceRef.set({ onlineAt: firebase.database.ServerValue.TIMESTAMP });
-              }
-            });
-
-            db.ref('online_passengers').on('value', function (snap) {
-              var liveCount = snap.numChildren();
-              if (aboardEl) aboardEl.textContent = liveCount > 0 ? liveCount : 1;
-            });
-          } catch (err) {
-            console.warn("Firebase live presence warning:", err);
-          }
-        });
-      });
-    }
-    setupLivePresence();
+    setInterval(function () {
+      currentAboard += Math.round((Math.random() - 0.5) * 4);
+      if (currentAboard < 1) currentAboard = 1;
+      if (currentAboard > 40) currentAboard = 40;
+      if (aboardEl) aboardEl.textContent = currentAboard;
+    }, 6000);
 
     /* conductor audios & music volume ducking */
     var CONDUCTOR_AUDIOS = [

@@ -2307,11 +2307,32 @@
         disc.classList.remove('playing');
         playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
       }
-      if (realtimeChannel && !isRemoteUpdate) {
-        if (playing) broadcastEvent('play', { currentTime: audioEl.currentTime || 0 });
-        else broadcastEvent('pause', { currentTime: audioEl.currentTime || 0 });
-      }
     }
+
+    // Native audio play/pause/seek event listeners to guarantee sync across all triggers (UI, lockscreen, media keys, spacebar, track change)
+    audioEl.addEventListener('play', function () {
+      isPlaying = true;
+      disc.classList.add('playing');
+      playIcon.innerHTML = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
+      if (typeof realtimeChannel !== 'undefined' && realtimeChannel && !isRemoteUpdate) {
+        broadcastEvent('play', { currentTime: audioEl.currentTime || 0, sentAt: Date.now() });
+      }
+    });
+
+    audioEl.addEventListener('pause', function () {
+      isPlaying = false;
+      disc.classList.remove('playing');
+      playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+      if (typeof realtimeChannel !== 'undefined' && realtimeChannel && !isRemoteUpdate) {
+        broadcastEvent('pause', { currentTime: audioEl.currentTime || 0, sentAt: Date.now() });
+      }
+    });
+
+    audioEl.addEventListener('seeked', function () {
+      if (typeof realtimeChannel !== 'undefined' && realtimeChannel && !isRemoteUpdate) {
+        broadcastEvent('seek', { currentTime: audioEl.currentTime || 0, sentAt: Date.now() });
+      }
+    });
 
     playBtn.addEventListener('click', function () {
       if (!audioEl.src) {
@@ -3126,7 +3147,7 @@
 
     function getExistingNames() {
       var names = [];
-      if (myName) names.push(myName);
+      if (myName && myName !== 'Yatri' && myName !== 'Passenger') names.push(myName);
       if (partnerName) names.push(partnerName);
 
       for (var key in connectedPeers) {
@@ -3157,6 +3178,33 @@
       return names;
     }
 
+    function checkNameCollision() {
+      if (!myName || myName === 'Yatri' || myName === 'Passenger') return;
+      var myLower = myName.trim().toLowerCase();
+
+      for (var id in connectedPeers) {
+        if (connectedPeers.hasOwnProperty(id)) {
+          var p = connectedPeers[id];
+          if (p.name && p.name.trim().toLowerCase() === myLower) {
+            showToast("Saathi, '" + myName + "' naam pehle se safar mein hai, kripya naya naam chunein");
+            promptName('नया नाम चुनें (Name taken)', 'Name taken by another passenger in this ride:', '', function (newName) {
+              myName = newName;
+              updateTicketUI();
+              if (realtimeChannel) {
+                realtimeChannel.track({
+                  name: myName,
+                  role: myRole,
+                  clientId: clientId,
+                  online_at: new Date().toISOString()
+                });
+              }
+            });
+            break;
+          }
+        }
+      }
+    }
+
     function promptName(titleText, subText, defaultVal, callback, existingNamesList) {
       var modal = document.getElementById('nameModal');
       var nmTitle = document.getElementById('nmTitle');
@@ -3182,10 +3230,6 @@
       modal.classList.add('show');
       setTimeout(function () { nameInput.focus(); nameInput.select(); }, 150);
 
-      var staticList = existingNamesList || [];
-      var dynamicList = getExistingNames();
-      var namesToCheck = staticList.concat(dynamicList);
-
       function showError(msg) {
         if (errorEl) {
           errorEl.textContent = msg;
@@ -3203,7 +3247,10 @@
       function handleSubmit() {
         var val = nameInput.value.trim() || defaultVal || 'Passenger';
 
-        // Duplicate name validation
+        var staticList = existingNamesList || [];
+        var dynamicList = getExistingNames();
+        var namesToCheck = staticList.concat(dynamicList);
+
         if (namesToCheck && Array.isArray(namesToCheck)) {
           var lowerVal = val.toLowerCase();
           var isDuplicate = namesToCheck.some(function (n) {
@@ -3263,8 +3310,10 @@
         if (fareValueEl) fareValueEl.textContent = "Live 🟢";
         if (shareBtn) shareBtn.style.display = 'none';
 
-        if (isCentered && centeredStub) {
-          centeredStub.style.display = 'block';
+        if (centeredStub) {
+          if (isCentered) centeredStub.style.display = 'block';
+          else centeredStub.style.display = 'none';
+
           var html = '<hr class="tm-div">';
           html += '<div class="tm-row"><span class="tm-title">Host: ' + escapeHtml(partnerName || 'Yatri') + '</span><span class="tm-no">SEAT-14</span></div>';
           html += '<div class="tm-fields" style="margin-top: 6px;">';
@@ -3287,8 +3336,6 @@
             html += '</div>';
           }
           centeredStub.innerHTML = html;
-        } else {
-          if (centeredStub) centeredStub.style.display = 'none';
         }
       } else {
         // HOST ROLE
@@ -3302,16 +3349,18 @@
           if (coBadgeEl) {
             coBadgeEl.style.display = 'block';
             if (guests.length === 1) {
-              coBadgeEl.textContent = "Travelling with " + guests[0].name + " ❤️";
+              coBadgeEl.textContent = "Travelling with " + escapeHtml(guests[0].name) + " ❤️";
             } else if (guests.length === 2) {
-              coBadgeEl.textContent = "Travelling with " + guests[0].name + " & " + guests[1].name + " ❤️";
+              coBadgeEl.textContent = "Travelling with " + escapeHtml(guests[0].name) + " & " + escapeHtml(guests[1].name) + " ❤️";
             } else {
-              coBadgeEl.textContent = "Travelling with " + guests[0].name + " & " + (guests.length - 1) + " others ❤️";
+              coBadgeEl.textContent = "Travelling with " + escapeHtml(guests[0].name) + " & " + (guests.length - 1) + " others ❤️";
             }
           }
 
-          if (isCentered && centeredStub) {
-            centeredStub.style.display = 'block';
+          if (centeredStub) {
+            if (isCentered) centeredStub.style.display = 'block';
+            else centeredStub.style.display = 'none';
+
             var html = '<hr class="tm-div">';
             if (guests.length === 1) {
               var g = guests[0];
@@ -3338,12 +3387,13 @@
               html += '</div>';
             }
             centeredStub.innerHTML = html;
-          } else {
-            if (centeredStub) centeredStub.style.display = 'none';
           }
         } else {
           if (coBadgeEl) coBadgeEl.style.display = 'none';
-          if (centeredStub) centeredStub.style.display = 'none';
+          if (centeredStub) {
+            centeredStub.style.display = 'none';
+            centeredStub.innerHTML = '';
+          }
         }
       }
     }
@@ -3379,11 +3429,31 @@
     function broadcastEvent(eventName, payloadData) {
       if (!realtimeChannel) return;
       payloadData.senderId = clientId;
+      payloadData.sentAt = Date.now();
       realtimeChannel.send({
         type: 'broadcast',
         event: eventName,
         payload: payloadData
       });
+    }
+
+    function syncAudioPosition(data) {
+      if (!data || typeof data.currentTime !== 'number') return;
+
+      var transit = Math.max(0, (Date.now() - (data.sentAt || Date.now())) / 1000);
+      var targetTime = data.currentTime + (data.isPlaying ? transit : 0);
+      var diff = targetTime - audioEl.currentTime;
+
+      if (Math.abs(diff) > 1.2) {
+        audioEl.currentTime = targetTime;
+        audioEl.playbackRate = 1.0;
+      } else if (diff > 0.08) {
+        audioEl.playbackRate = 1.04;
+      } else if (diff < -0.08) {
+        audioEl.playbackRate = 0.96;
+      } else {
+        audioEl.playbackRate = 1.0;
+      }
     }
 
     function initRealtimeRoom(roomId, isHostRole) {
@@ -3405,17 +3475,18 @@
           var aboardEl = document.getElementById('aboardCount');
 
           var newPeers = {};
-          for (var key in state) {
-            if (state.hasOwnProperty(key)) {
-              var presArray = state[key];
+          for (var peerId in state) {
+            if (state.hasOwnProperty(peerId)) {
+              var presArray = state[peerId];
               if (presArray && presArray.length > 0) {
                 var p = presArray[presArray.length - 1];
-                if (p.clientId && p.clientId !== clientId) {
-                  newPeers[p.clientId] = {
+                var effectiveClientId = p.clientId || peerId;
+                if (effectiveClientId && effectiveClientId !== clientId) {
+                  newPeers[effectiveClientId] = {
+                    clientId: effectiveClientId,
                     name: p.name || (p.role === 'host' ? 'Host' : 'Saathi'),
                     role: p.role || 'guest',
-                    onlineAt: p.online_at || '',
-                    clientId: p.clientId
+                    onlineAt: p.online_at || ''
                   };
                   if (p.role === 'host' && p.name) {
                     partnerName = p.name;
@@ -3424,7 +3495,17 @@
               }
             }
           }
-          connectedPeers = newPeers;
+
+          for (var id in newPeers) {
+            connectedPeers[id] = newPeers[id];
+          }
+          for (var id in connectedPeers) {
+            if (!newPeers[id] && connectedPeers[id].role !== 'host') {
+              delete connectedPeers[id];
+            }
+          }
+
+          checkNameCollision();
           updateTicketUI();
 
           if (aboardEl) {
@@ -3457,6 +3538,7 @@
               };
 
               showToast(guestName + ' aapke saath safar mein jud gaye hain 🚌');
+              checkNameCollision();
               updateTicketUI();
             }
             broadcastEvent('sync-response', {
@@ -3481,6 +3563,7 @@
                 }
               });
             }
+            checkNameCollision();
             updateTicketUI();
             applyRemoteSync(data);
           })
@@ -3499,6 +3582,12 @@
           .on('broadcast', { event: 'seek' }, function (payload) {
             if (payload.payload && payload.payload.senderId === clientId) return;
             applyRemoteSeek(payload.payload);
+          })
+          .on('broadcast', { event: 'sync-tick' }, function (payload) {
+            if (payload.payload && payload.payload.senderId === clientId) return;
+            if (!isRemoteUpdate) {
+              syncAudioPosition(payload.payload);
+            }
           });
 
         realtimeChannel.subscribe(function (status) {
@@ -3522,30 +3611,38 @@
       });
     }
 
+    // Periodic Host sync tick every 3 seconds for low-latency drift compensation
+    setInterval(function () {
+      if (myRole === 'host' && realtimeChannel && isPlaying && !isRemoteUpdate) {
+        broadcastEvent('sync-tick', {
+          trackIndex: trackIndex,
+          currentTime: audioEl.currentTime || 0,
+          isPlaying: isPlaying,
+          sentAt: Date.now()
+        });
+      }
+    }, 3000);
+
     function applyRemoteSync(data) {
       isRemoteUpdate = true;
       if (typeof data.trackIndex === 'number' && data.trackIndex !== trackIndex) {
         loadTrack(data.trackIndex, data.isPlaying, false);
       }
-      if (typeof data.currentTime === 'number') {
-        audioEl.currentTime = data.currentTime;
-      }
+      syncAudioPosition(data);
       if (data.isPlaying && !isPlaying) {
         audioEl.play().then(function () { setPlaying(true); }).catch(function () { });
       } else if (!data.isPlaying && isPlaying) {
         audioEl.pause();
         setPlaying(false);
       }
-      setTimeout(function () { isRemoteUpdate = false; }, 300);
+      setTimeout(function () { isRemoteUpdate = false; }, 350);
     }
 
     function applyRemotePlay(data) {
       isRemoteUpdate = true;
-      if (typeof data.currentTime === 'number' && Math.abs(audioEl.currentTime - data.currentTime) > 1.5) {
-        audioEl.currentTime = data.currentTime;
-      }
+      syncAudioPosition(data);
       audioEl.play().then(function () { setPlaying(true); }).catch(function () { });
-      setTimeout(function () { isRemoteUpdate = false; }, 300);
+      setTimeout(function () { isRemoteUpdate = false; }, 350);
     }
 
     function applyRemotePause(data) {
@@ -3555,24 +3652,31 @@
       }
       audioEl.pause();
       setPlaying(false);
-      setTimeout(function () { isRemoteUpdate = false; }, 300);
+      audioEl.playbackRate = 1.0;
+      setTimeout(function () { isRemoteUpdate = false; }, 350);
     }
 
     function applyRemoteTrackChange(data) {
       isRemoteUpdate = true;
       if (typeof data.trackIndex === 'number') {
-        loadTrack(data.trackIndex, true, false);
-        if (typeof data.currentTime === 'number') audioEl.currentTime = data.currentTime;
+        var transit = Math.max(0, (Date.now() - (data.sentAt || Date.now())) / 1000);
+        var targetPos = (data.currentTime || 0) + (data.isPlaying !== false ? transit : 0);
+        loadTrack(data.trackIndex, data.isPlaying !== false, false);
+        if (targetPos > 0 && audioEl.duration && targetPos < audioEl.duration) {
+          audioEl.currentTime = targetPos;
+        }
       }
-      setTimeout(function () { isRemoteUpdate = false; }, 300);
+      audioEl.playbackRate = 1.0;
+      setTimeout(function () { isRemoteUpdate = false; }, 350);
     }
 
     function applyRemoteSeek(data) {
       isRemoteUpdate = true;
       if (typeof data.currentTime === 'number') {
-        audioEl.currentTime = data.currentTime;
+        var transit = Math.max(0, (Date.now() - (data.sentAt || Date.now())) / 1000);
+        audioEl.currentTime = data.currentTime + transit;
       }
-      setTimeout(function () { isRemoteUpdate = false; }, 300);
+      setTimeout(function () { isRemoteUpdate = false; }, 350);
     }
 
     // Share Ride button handler with Name Modal Prompt
@@ -3632,27 +3736,37 @@
         partnerName = hostParam;
 
         loadSupabase(function () {
-          var tempChannel = supabaseClient.channel('ride:' + rideIdParam);
-          tempChannel.subscribe(function (status) {
-            if (status === 'SUBSCRIBED') {
-              setTimeout(function () {
-                var state = tempChannel.presenceState();
-                for (var key in state) {
-                  if (state.hasOwnProperty(key)) {
-                    var presArray = state[key];
-                    if (presArray && presArray.length > 0) {
-                      var p = presArray[presArray.length - 1];
-                      if (p.clientId && p.clientId !== clientId) {
-                        connectedPeers[p.clientId] = {
-                          name: p.name || (p.role === 'host' ? hostParam : 'Saathi'),
-                          role: p.role || 'guest',
-                          clientId: p.clientId
-                        };
-                      }
-                    }
+          currentRoomId = rideIdParam;
+          realtimeChannel = supabaseClient.channel('ride:' + rideIdParam, {
+            config: {
+              broadcast: { self: false },
+              presence: { key: clientId }
+            }
+          });
+
+          realtimeChannel.on('presence', { event: 'sync' }, function () {
+            var state = realtimeChannel.presenceState();
+            for (var peerId in state) {
+              if (state.hasOwnProperty(peerId)) {
+                var arr = state[peerId];
+                if (arr && arr.length > 0) {
+                  var p = arr[arr.length - 1];
+                  var effId = p.clientId || peerId;
+                  if (effId && effId !== clientId) {
+                    connectedPeers[effId] = {
+                      clientId: effId,
+                      name: p.name || (p.role === 'host' ? hostParam : 'Saathi'),
+                      role: p.role || 'guest'
+                    };
                   }
                 }
-              }, 150);
+              }
+            }
+          });
+
+          realtimeChannel.subscribe(function (status) {
+            if (status === 'SUBSCRIBED') {
+              // Pre-subscribed
             }
           });
         });

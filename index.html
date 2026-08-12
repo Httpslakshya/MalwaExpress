@@ -1720,6 +1720,7 @@
     <div class="bg-layer">
       <div class="bg-img" id="bgOutside"></div>
       <div class="bg-img" id="bgInside"></div>
+      <div class="bg-img" id="bgRain"></div>
       <div class="bg-shade"></div>
     </div>
     <canvas id="rainCanvas"></canvas>
@@ -2541,6 +2542,8 @@
       isRainActive = false;
       var ctx = getAudioContext();
       if (rainCanvas) rainCanvas.classList.remove('active');
+      var bgRainEl = document.getElementById('bgRain');
+      if (bgRainEl) bgRainEl.classList.remove('active');
       if (rainGainNode) {
         rainGainNode.gain.setValueAtTime(rainGainNode.gain.value, ctx.currentTime);
         rainGainNode.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.8);
@@ -2717,9 +2720,11 @@
     /* image & mode switch with 4-way sliding active indicator */
     var bgOutside = document.getElementById('bgOutside');
     var bgInside = document.getElementById('bgInside');
-    bgOutside.style.backgroundImage = "url('assets/bg-outside.jpg')";
-    bgInside.style.backgroundImage = "url('assets/bg-inside.jpg')";
-    bgInside.classList.add('active');
+    var bgRain = document.getElementById('bgRain');
+    if (bgOutside) bgOutside.style.backgroundImage = "url('assets/bg-outside.jpg')";
+    if (bgInside) bgInside.style.backgroundImage = "url('assets/bg-inside.jpg')";
+    if (bgRain) bgRain.style.backgroundImage = "url('assets/rain-bg-image.png')";
+    if (bgInside) bgInside.classList.add('active');
 
     var switchOutside = document.getElementById('switchOutside');
     var switchInside = document.getElementById('switchInside');
@@ -2746,14 +2751,18 @@
     switchOutside.addEventListener('click', function () {
       playTapeClick();
       disableRain();
-      bgInside.classList.remove('active'); bgOutside.classList.add('active');
+      if (bgInside) bgInside.classList.remove('active');
+      if (bgRain) bgRain.classList.remove('active');
+      if (bgOutside) bgOutside.classList.add('active');
       setActiveDockButton(switchOutside);
     });
 
     switchInside.addEventListener('click', function () {
       playTapeClick();
       disableRain();
-      bgOutside.classList.remove('active'); bgInside.classList.add('active');
+      if (bgOutside) bgOutside.classList.remove('active');
+      if (bgRain) bgRain.classList.remove('active');
+      if (bgInside) bgInside.classList.add('active');
       setActiveDockButton(switchInside);
     });
 
@@ -2761,7 +2770,9 @@
       rainBtn.addEventListener('click', function () {
         playTapeClick();
         enableRain();
-        bgInside.classList.remove('active'); bgOutside.classList.add('active');
+        if (bgInside) bgInside.classList.remove('active');
+        if (bgOutside) bgOutside.classList.remove('active');
+        if (bgRain) bgRain.classList.add('active');
         setActiveDockButton(rainBtn);
       });
     }

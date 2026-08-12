@@ -11,6 +11,9 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Space+Mono:wght@400;700&display=swap"
     rel="stylesheet">
+  <!-- Asset Preloading for Fast Initial Load -->
+  <link rel="preload" as="image" href="assets/malwa.png">
+  <link rel="preload" as="image" href="assets/bg-inside.jpg">
   <style>
     :root {
       --rust: #B23A2A;
@@ -2485,23 +2488,31 @@
       }
 
       function draw() {
-        ctx.clearRect(0, 0, width, height);
+        if (!rainCanvas) return;
+        var w = rainCanvas.width = window.innerWidth;
+        var h = rainCanvas.height = window.innerHeight;
+        ctx.clearRect(0, 0, w, h);
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
         ctx.lineWidth = 1.2;
         ctx.lineCap = 'round';
 
         for (var i = 0; i < drops.length; i++) {
           var d = drops[i];
-          ctx.beginPath();
-          ctx.moveTo(d.x, d.y);
-          ctx.lineTo(d.x - 2, d.y + d.length);
-          ctx.stroke();
+          var startY = d.y;
+          var endY = Math.min(h, d.y + d.length);
+
+          if (startY < h && endY > startY) {
+            ctx.beginPath();
+            ctx.moveTo(d.x, startY);
+            ctx.lineTo(d.x - 2, endY);
+            ctx.stroke();
+          }
 
           d.y += d.speed;
           d.x -= 0.5;
-          if (d.y > height) {
-            d.y = -d.length;
-            d.x = Math.random() * width;
+          if (d.y >= h) {
+            d.y = -d.length - (Math.random() * 20);
+            d.x = Math.random() * w;
           }
         }
         rainAnimId = requestAnimationFrame(draw);
@@ -2723,7 +2734,7 @@
     var bgRain = document.getElementById('bgRain');
     if (bgOutside) bgOutside.style.backgroundImage = "url('assets/bg-outside.jpg')";
     if (bgInside) bgInside.style.backgroundImage = "url('assets/bg-inside.jpg')";
-    if (bgRain) bgRain.style.backgroundImage = "url('assets/rain-bg-image.png')";
+    if (bgRain) bgRain.style.backgroundImage = "url('assets/rain-bg-image.jpg')";
     if (bgInside) bgInside.classList.add('active');
 
     var switchOutside = document.getElementById('switchOutside');

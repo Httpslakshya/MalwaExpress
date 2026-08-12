@@ -1,726 +1,1649 @@
 <!DOCTYPE html>
 <html lang="hi">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Malwa Express — मालवा एक्सप्रेस</title>
-<meta name="description" content="Malwa Express — board the bus.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --rust:#B23A2A;
-    --marigold:#E8A63C;
-    --dusk:#3E6E93;
-    --charcoal:#160F0A;
-    --cream:#F3E6CE;
-    --amber:#FFB300;
-    --ink:#241608;
-    --line: rgba(243,230,206,0.22);
-  }
-  *{box-sizing:border-box;}
-  html,body{
-    margin:0; height:100%; width:100%;
-    background:var(--charcoal);
-    color:var(--cream);
-    font-family:'Space Mono', monospace;
-    overflow:hidden;
-  }
-  ::selection{ background:var(--rust); color:var(--cream); }
-  button{ font-family:inherit; }
-
-  .view{ position:fixed; inset:0; }
-
-  /* ================= LANDING ================= */
-  #landingView{ z-index:2; }
-  .landing-bg{
-    position:absolute; inset:0;
-    background-image:url('assets/bg-outside.jpg');
-    background-size:cover; background-position:center;
-    transform:scale(1.05);
-    animation:slowzoom 22s ease-in-out infinite alternate;
-  }
-  @keyframes slowzoom{ from{ transform:scale(1.05);} to{ transform:scale(1.14);} }
-  .landing-shade{
-    position:absolute; inset:0;
-    background:
-      linear-gradient(180deg, rgba(10,6,3,.55) 0%, rgba(10,6,3,.15) 30%, rgba(10,6,3,.35) 60%, rgba(10,6,3,.88) 100%);
-  }
-  .landing-content{
-    position:relative; z-index:2; height:100%;
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    text-align:center; padding:24px;
-    transform: translateY(-32px);
-  }
-  .eyebrow{
-    font-size:12.5px; letter-spacing:4px; text-transform:uppercase;
-    color:var(--marigold); margin-bottom:12px; opacity:.9;
-  }
-  .landing-logo-img{
-    max-width: clamp(260px, 45vw, 500px);
-    width: 100%;
-    height: auto;
-    filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.65));
-    margin: 8px 0 12px;
-    user-select: none;
-    -webkit-user-drag: none;
-  }
-  .tagline{ margin-top:4px; font-size:13.5px; letter-spacing:.5px; opacity:.9; max-width:480px; text-shadow:0 2px 8px rgba(0,0,0,0.7); }
-
-  .board-btn{
-    margin-top:20px; position:relative;
-    display:inline-flex; align-items:center; gap:10px;
-    background:var(--cream); color:var(--ink);
-    border:none; border-radius:999px; cursor:pointer;
-    padding:15px 28px 15px 20px;
-    font-size:13.5px; font-weight:700; letter-spacing:.5px;
-    box-shadow:0 16px 34px rgba(0,0,0,.45);
-    transition:transform .25s ease, box-shadow .25s ease;
-  }
-  .board-btn:hover{ transform:translateY(-2px); box-shadow:0 20px 40px rgba(0,0,0,.55); }
-  .board-btn:active{ transform:translateY(0) scale(.98); }
-  .board-btn .punch{
-    width:26px; height:26px; border-radius:50%;
-    border:2px dashed rgba(36,22,8,.4);
-    display:flex; align-items:center; justify-content:center; flex:none;
-  }
-  .board-btn svg{ width:12px; height:12px; }
-
-  /* ================= TRANSITION ================= */
-  #transitionOverlay{
-    position:fixed; inset:0; z-index:50;
-    background:#050302;
-    opacity:0; pointer-events:none;
-    transition:opacity .8s ease;
-    display:flex; align-items:center; justify-content:center;
-    text-align:center; padding:24px;
-  }
-  #transitionOverlay.show{ opacity:1; pointer-events:auto; }
-  .welcome-text{
-    font-family:'Baloo 2', sans-serif; font-weight:800; color:var(--cream);
-    font-size:clamp(30px, 6vw, 58px); line-height:1.25;
-    opacity:0; transform:scale(.94);
-    transition:opacity .6s ease, transform .6s ease;
-  }
-  .welcome-text .sub{
-    display:block; font-family:'Space Mono', monospace; font-weight:400;
-    font-size:13px; letter-spacing:3px; text-transform:uppercase; color:var(--marigold);
-    margin-top:14px;
-  }
-  #transitionOverlay.show-text .welcome-text{ opacity:1; transform:scale(1); }
-
-  /* ================= JOURNEY ================= */
-  #journeyView{ z-index:1; display:none; }
-  .bg-layer{ position:absolute; inset:0; }
-  .bg-img{
-    position:absolute; inset:0;
-    background-size:cover; background-position:center;
-    opacity:0; transform:scale(1.06);
-    transition:opacity 1.4s ease;
-  }
-  .bg-img.active{ opacity:1; animation:kenburns 20s ease-in-out infinite alternate; }
-  @keyframes kenburns{ from{ transform:scale(1.06);} to{ transform:scale(1.15) translate3d(-1%,-1%,0);} }
-  .bg-shade{
-    position:absolute; inset:0;
-    background:
-      radial-gradient(ellipse at center, rgba(10,6,3,.15) 0%, rgba(10,6,3,.55) 78%),
-      linear-gradient(180deg, rgba(10,6,3,.45) 0%, rgba(10,6,3,0) 20%, rgba(10,6,3,0) 70%, rgba(10,6,3,.55) 100%);
-  }
-  .grain{
-    position:fixed; inset:0; z-index:1; pointer-events:none; opacity:.05; mix-blend-mode:overlay;
-    background-image:radial-gradient(rgba(255,255,255,.9) 1px, transparent 1px);
-    background-size:3px 3px;
-  }
-
-  .journey-topbar{
-    position:relative; z-index:5;
-    display:flex; align-items:center; justify-content:space-between;
-    padding:22px 26px 0;
-  }
-  .brand{ display:flex; flex-direction:column; gap:2px; }
-  .brand-dev{ font-family:'Baloo 2', sans-serif; font-weight:700; font-size:19px; }
-  .brand-en{ font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--marigold); opacity:.9; }
-  .journey-status{ display:flex; align-items:center; gap:16px; }
-  .clock{ font-size:13px; opacity:.85; }
-  .aboard{ display:flex; align-items:center; gap:7px; font-size:12px; opacity:.85; }
-  .dot{ width:7px; height:7px; border-radius:50%; background:#57D06B; box-shadow:0 0 6px #57D06B; animation:pulse 1.8s ease-in-out infinite; }
-  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:.35;} }
-
-  /* side switch */
-  .view-switch{
-    position:fixed; right:22px; top:50%; transform:translateY(-50%); z-index:8;
-    display:flex; flex-direction:column;
-    background:rgba(15,10,6,.35); border:1px solid rgba(255,255,255,0.25); border-radius:999px;
-    padding:5px; backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-  }
-  .view-switch button{
-    width:38px; height:38px; border-radius:50%; border:none; cursor:pointer;
-    background:transparent; color:var(--cream); opacity:.6;
-    display:flex; align-items:center; justify-content:center;
-    transition:background .2s ease, opacity .2s ease;
-  }
-  .view-switch button.active{ background:var(--rust); opacity:1; }
-  .view-switch button svg{ width:17px; height:17px; }
-
-  /* ================= REAL LIQUID GLASSMORPHISM MUSIC PLAYER ================= */
-  .journey-center{
-    position:relative; z-index:5; height:calc(100% - 74px);
-    display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
-    padding: 0 20px 50px 20px;
-  }
-
-  .glass-player-pill{
-    position: relative;
-    overflow: hidden;
-    display:flex; align-items:center; gap:20px;
-    width: min(780px, calc(100% - 32px));
-    padding: 14px 28px 14px 14px;
-    
-    /* Dark Liquid Glass translucent background (adapts smoothly to bg scenes without harsh glare) */
-    background: linear-gradient(135deg, rgba(25, 16, 12, 0.45) 0%, rgba(12, 8, 6, 0.55) 100%);
-    backdrop-filter: blur(28px) saturate(180%) brightness(0.95);
-    -webkit-backdrop-filter: blur(28px) saturate(180%) brightness(0.95);
-    border-radius: 999px;
-    
-    /* Subtle Liquid Border (lowered white intensity) */
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-bottom-color: rgba(255, 255, 255, 0.08);
-    border-right-color: rgba(255, 255, 255, 0.1);
-    
-    box-shadow: 
-      0 30px 60px rgba(0, 0, 0, 0.65),
-      0 10px 20px rgba(0, 0, 0, 0.45),
-      inset 0 1px 1px rgba(255, 255, 255, 0.14),
-      inset 0 -1.5px 3px rgba(0, 0, 0, 0.5);
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  /* Ultra-subtle Top Gloss Reflective Shine */
-  .glass-player-pill::before {
-    content: "";
-    position: absolute;
-    top: 0; left: 0; right: 0; height: 45%;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 70%, transparent 100%);
-    border-top-left-radius: 999px;
-    border-top-right-radius: 999px;
-    pointer-events: none;
-  }
-
-  .glass-player-pill:hover{
-    background: linear-gradient(135deg, rgba(35, 22, 17, 0.52) 0%, rgba(18, 11, 8, 0.62) 100%);
-    border-color: rgba(255, 255, 255, 0.22);
-    box-shadow: 
-      0 34px 75px rgba(0, 0, 0, 0.75),
-      0 12px 25px rgba(0, 0, 0, 0.5),
-      inset 0 1px 1.5px rgba(255, 255, 255, 0.22),
-      inset 0 -1.5px 3px rgba(0, 0, 0, 0.5);
-  }
-
-  /* Disc (Left) */
-  .player-disc-wrap{
-    position: relative; flex-shrink: 0;
-    width: 96px; height: 96px;
-    cursor: pointer;
-  }
-  .player-disc{
-    width: 100%; height: 100%; border-radius: 50%;
-    position: relative; overflow: hidden;
-    box-shadow: 0 8px 22px rgba(0,0,0,0.6), inset 0 0 0 1.5px rgba(255,255,255,0.25);
-    animation: spinDisc 12s linear infinite;
-    animation-play-state: paused;
-    background: #110d0b;
-  }
-  .player-disc.playing{
-    animation-play-state: running;
-  }
-  @keyframes spinDisc{
-    from{ transform: rotate(0deg); }
-    to{ transform: rotate(360deg); }
-  }
-  .disc-cover-img{
-    width: 100%; height: 100%;
-    object-fit: cover; border-radius: 50%;
-    display: block; pointer-events: none;
-  }
-  .disc-hole{
-    position: absolute; top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 22px; height: 22px; border-radius: 50%;
-    background: #160f0a;
-    border: 2.5px solid rgba(255, 255, 255, 0.4);
-    box-shadow: inset 0 0 6px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.5);
-    z-index: 3; pointer-events: none;
-  }
-  .disc-grooves{
-    position: absolute; inset: 0; border-radius: 50%;
-    background:
-      repeating-radial-gradient(circle at center, transparent 0 3px, rgba(0,0,0,0.12) 3px 5px),
-      conic-gradient(from 0deg, rgba(255,255,255,0.2) 0deg, transparent 45deg, rgba(255,255,255,0.12) 180deg, transparent 220deg);
-    pointer-events: none; z-index: 2;
-  }
-
-  /* Player Center (Metadata & Progress) */
-  .player-main-info{
-    flex: 1; min-width: 0;
-    display: flex; flex-direction: column; justify-content: center; gap: 4px;
-  }
-  .player-title{
-    font-family: 'Baloo 2', sans-serif; font-weight: 700;
-    font-size: 19px; color: #ffffff;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    line-height: 1.2; letter-spacing: 0.2px;
-  }
-  .player-artist{
-    font-size: 13.5px; color: rgba(243, 230, 206, 0.85);
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    font-weight: 400;
-  }
-  .player-progress-area{
-    width: 100%; margin-top: 6px;
-  }
-  .progress-bar-bg{
-    width: 100%; height: 5px;
-    background: rgba(255, 255, 255, 0.25);
-    border-radius: 4px; cursor: pointer;
-    position: relative; overflow: hidden;
-  }
-  .progress-bar-fill{
-    height: 100%; width: 0%;
-    background: #ffffff; border-radius: 4px;
-    transition: width 0.1s linear;
-  }
-  .player-time{
-    font-size: 12.5px; color: rgba(243, 230, 206, 0.85);
-    font-weight: 400; margin-top: 5px; letter-spacing: 0.5px;
-  }
-
-  /* Player Right Controls */
-  .player-controls{
-    display: flex; align-items: center; gap: 14px;
-    flex-shrink: 0;
-  }
-  .ctrl-btn{
-    background: none; border: none; color: #ffffff;
-    cursor: pointer; opacity: 0.85;
-    display: flex; align-items: center; justify-content: center;
-    padding: 6px; transition: opacity 0.2s ease, transform 0.2s ease;
-  }
-  .ctrl-btn:hover{ opacity: 1; transform: scale(1.12); }
-  .ctrl-btn:active{ transform: scale(0.95); }
-  .ctrl-btn svg{ width: 18px; height: 18px; fill: currentColor; }
-
-  .play-pause-btn{
-    width: 50px; height: 50px; border-radius: 50%;
-    background: #ffffff; color: #160f0a; border: none;
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.35);
-    transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
-    flex-shrink: 0;
-  }
-  .play-pause-btn:hover{
-    transform: scale(1.07);
-    box-shadow: 0 8px 22px rgba(0,0,0,0.45);
-    background: #ffffff;
-  }
-  .play-pause-btn:active{ transform: scale(0.95); }
-  .play-pause-btn svg{ width: 20px; height: 20px; fill: #160f0a; }
-
-  /* ================= VINTAGE TICKET ================= */
-  .ticket-mini{
-    position:fixed; right:28px; bottom:32px; z-index:6;
-    width:220px; background:#F4E7CF; color:#241608;
-    border-radius:14px; padding:14px 18px 14px;
-    box-shadow:0 16px 36px rgba(0,0,0,0.45);
-    transform:rotate(2deg);
-    border:1px solid rgba(180,140,100,0.3);
-  }
-  .ticket-mini::before, .ticket-mini::after{
-    content:""; position:absolute; width:14px; height:14px; border-radius:50%;
-    background:var(--charcoal); top:50%; transform:translateY(-50%);
-  }
-  .ticket-mini::before{ left:-7px; }
-  .ticket-mini::after{ right:-7px; }
-  
-  .tm-row{ display:flex; justify-content:space-between; align-items:center; margin-bottom:2px; }
-  .tm-title{ font-family:'Baloo 2', sans-serif; font-weight:800; font-size:13.5px; color:#241608; }
-  .tm-no{ font-size:9.5px; opacity:.6; font-weight:700; }
-  .tm-div{ border:none; border-top:1.5px dashed rgba(36,22,8,0.3); margin:8px 0 10px; }
-  .tm-fields{ display:flex; justify-content:space-between; gap:8px; }
-  .tm-field-label{ font-size:8px; letter-spacing:1px; text-transform:uppercase; opacity:.55; font-weight:700; }
-  .tm-field-value{ font-family:'Baloo 2', sans-serif; font-weight:700; font-size:11px; margin-top:2px; color:#241608; line-height:1.2; }
-
-  @media (max-width: 680px){
-    .journey-topbar{ padding:16px 16px 0; }
-    .journey-center{ padding-bottom: 24px; }
-    .view-switch{ right:14px; }
-    .ticket-mini{ display:none; }
-    .board-btn{ padding:13px 22px 13px 16px; }
-    .glass-player-pill{
-      padding: 10px 16px 10px 10px; gap: 12px; width: calc(100% - 20px);
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Malwa Express — मालवा एक्सप्रेस</title>
+  <meta name="description" content="Malwa Express — board the bus.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Space+Mono:wght@400;700&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --rust: #B23A2A;
+      --marigold: #E8A63C;
+      --dusk: #3E6E93;
+      --charcoal: #160F0A;
+      --cream: #F3E6CE;
+      --amber: #FFB300;
+      --ink: #241608;
+      --line: rgba(243, 230, 206, 0.22);
     }
-    .player-disc-wrap{ width: 72px; height: 72px; }
-    .play-pause-btn{ width: 42px; height: 42px; }
-    .play-pause-btn svg{ width: 17px; height: 17px; }
-    .player-title{ font-size: 15px; }
-    .player-artist{ font-size: 12px; }
-    .player-time{ font-size: 11px; }
-  }
-</style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+      width: 100%;
+      background: var(--charcoal);
+      color: var(--cream);
+      font-family: 'Space Mono', monospace;
+      overflow: hidden;
+    }
+
+    ::selection {
+      background: var(--rust);
+      color: var(--cream);
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .view {
+      position: fixed;
+      inset: 0;
+    }
+
+    /* ================= LANDING ================= */
+    #landingView {
+      z-index: 2;
+    }
+
+    .landing-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('assets/bg-outside.jpg');
+      background-size: cover;
+      background-position: center;
+      transform: scale(1.05);
+      animation: slowzoom 22s ease-in-out infinite alternate;
+    }
+
+    @keyframes slowzoom {
+      from {
+        transform: scale(1.05);
+      }
+
+      to {
+        transform: scale(1.14);
+      }
+    }
+
+    .landing-shade {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(10, 6, 3, .55) 0%, rgba(10, 6, 3, .15) 30%, rgba(10, 6, 3, .35) 60%, rgba(10, 6, 3, .88) 100%);
+    }
+
+    .landing-content {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+      transform: translateY(-32px);
+    }
+
+    .eyebrow {
+      font-size: 12.5px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--marigold);
+      margin-bottom: 12px;
+      opacity: .9;
+    }
+
+    .landing-logo-img {
+      max-width: clamp(260px, 45vw, 500px);
+      width: 100%;
+      height: auto;
+      filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.65));
+      margin: 8px 0 12px;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .tagline {
+      margin-top: 4px;
+      font-size: 13.5px;
+      letter-spacing: .5px;
+      opacity: .9;
+      max-width: 480px;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+    }
+
+    .board-btn {
+      margin-top: 20px;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--cream);
+      color: var(--ink);
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      padding: 15px 28px 15px 20px;
+      font-size: 13.5px;
+      font-weight: 700;
+      letter-spacing: .5px;
+      box-shadow: 0 16px 34px rgba(0, 0, 0, .45);
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+
+    .board-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, .55);
+    }
+
+    .board-btn:active {
+      transform: translateY(0) scale(.98);
+    }
+
+    .board-btn .punch {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 2px dashed rgba(36, 22, 8, .4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: none;
+    }
+
+    .board-btn svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    /* ================= TRANSITION ================= */
+    #transitionOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: #050302;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .8s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+    }
+
+    #transitionOverlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .welcome-text {
+      font-family: 'Baloo 2', sans-serif;
+      font-weight: 800;
+      color: var(--cream);
+      font-size: clamp(30px, 6vw, 58px);
+      line-height: 1.25;
+      opacity: 0;
+      transform: scale(.94);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+
+    .welcome-text .sub {
+      display: block;
+      font-family: 'Space Mono', monospace;
+      font-weight: 400;
+      font-size: 13px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--marigold);
+      margin-top: 14px;
+    }
+
+    #transitionOverlay.show-text .welcome-text {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* ================= JOURNEY ================= */
+    #journeyView {
+      z-index: 1;
+      display: none;
+    }
+
+    .bg-layer {
+      position: absolute;
+      inset: 0;
+    }
+
+    .bg-img {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0;
+      transform: scale(1.06);
+      transition: opacity 1.4s ease;
+    }
+
+    .bg-img.active {
+      opacity: 1;
+      animation: kenburns 20s ease-in-out infinite alternate;
+    }
+
+    @keyframes kenburns {
+      from {
+        transform: scale(1.06);
+      }
+
+      to {
+        transform: scale(1.15) translate3d(-1%, -1%, 0);
+      }
+    }
+
+    .bg-shade {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at center, rgba(10, 6, 3, .15) 0%, rgba(10, 6, 3, .55) 78%),
+        linear-gradient(180deg, rgba(10, 6, 3, .45) 0%, rgba(10, 6, 3, 0) 20%, rgba(10, 6, 3, 0) 70%, rgba(10, 6, 3, .55) 100%);
+    }
+
+    .grain {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: .05;
+      mix-blend-mode: overlay;
+      background-image: radial-gradient(rgba(255, 255, 255, .9) 1px, transparent 1px);
+      background-size: 3px 3px;
+    }
+
+    .journey-topbar {
+      position: relative;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 26px 0;
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .brand-dev {
+      font-family: 'Baloo 2', sans-serif;
+      font-weight: 700;
+      font-size: 19px;
+    }
+
+    .brand-en {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--marigold);
+      opacity: .9;
+    }
+
+    .journey-status {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .clock {
+      font-size: 13px;
+      opacity: .85;
+    }
+
+    .aboard {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      opacity: .85;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #57D06B;
+      box-shadow: 0 0 6px #57D06B;
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: .35;
+      }
+    }
+
+    /* side switch */
+    .view-switch {
+      position: fixed;
+      right: 22px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 8;
+      display: flex;
+      flex-direction: column;
+      background: rgba(15, 10, 6, .35);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 999px;
+      padding: 5px;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .view-switch button {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      background: transparent;
+      color: var(--cream);
+      opacity: .6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .2s ease, opacity .2s ease;
+    }
+
+    /* left conductor side panel */
+    .conductor-switch {
+      position: fixed;
+      left: 22px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 8;
+      display: flex;
+      flex-direction: column;
+      background: rgba(15, 10, 6, .35);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 999px;
+      padding: 5px;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .conductor-switch button {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      background: transparent;
+      color: var(--cream);
+      opacity: .8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .2s ease, opacity .2s ease, transform .2s ease;
+    }
+
+    .conductor-switch button:hover {
+      opacity: 1;
+      background: rgba(232, 166, 60, 0.25);
+      transform: scale(1.08);
+    }
+
+    .conductor-switch button.playing {
+      background: var(--marigold);
+      color: var(--ink);
+      opacity: 1;
+      box-shadow: 0 0 16px var(--marigold);
+      animation: conductorPulse 0.8s infinite alternate ease-in-out;
+    }
+
+    @keyframes conductorPulse {
+      from {
+        transform: scale(1);
+      }
+
+      to {
+        transform: scale(1.15);
+      }
+    }
+
+    .view-switch button.active {
+      background: var(--rust);
+      opacity: 1;
+    }
+
+    .view-switch button svg {
+      width: 17px;
+      height: 17px;
+    }
+
+    /* ================= REAL LIQUID GLASSMORPHISM MUSIC PLAYER ================= */
+    .journey-center {
+      position: relative;
+      z-index: 5;
+      height: calc(100% - 74px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0 20px 50px 20px;
+    }
+
+    .glass-player-pill {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      width: min(780px, calc(100% - 32px));
+      max-width: 780px;
+      padding: 14px 28px 14px 14px;
+
+      /* Dark Liquid Glass translucent background (adapts smoothly to bg scenes without harsh glare) */
+      background: linear-gradient(135deg, rgba(25, 16, 12, 0.45) 0%, rgba(12, 8, 6, 0.55) 100%);
+      backdrop-filter: blur(28px) saturate(180%) brightness(0.95);
+      -webkit-backdrop-filter: blur(28px) saturate(180%) brightness(0.95);
+      border-radius: 999px;
+
+      /* Subtle Liquid Border (lowered white intensity) */
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-bottom-color: rgba(255, 255, 255, 0.08);
+      border-right-color: rgba(255, 255, 255, 0.1);
+
+      box-shadow:
+        0 30px 60px rgba(0, 0, 0, 0.65),
+        0 10px 20px rgba(0, 0, 0, 0.45),
+        inset 0 1px 1px rgba(255, 255, 255, 0.14),
+        inset 0 -1.5px 3px rgba(0, 0, 0, 0.5);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Ultra-subtle Top Gloss Reflective Shine */
+    .glass-player-pill::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 45%;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 70%, transparent 100%);
+      border-top-left-radius: 999px;
+      border-top-right-radius: 999px;
+      pointer-events: none;
+    }
+
+    .glass-player-pill:hover {
+      background: linear-gradient(135deg, rgba(35, 22, 17, 0.52) 0%, rgba(18, 11, 8, 0.62) 100%);
+      border-color: rgba(255, 255, 255, 0.22);
+      box-shadow:
+        0 34px 75px rgba(0, 0, 0, 0.75),
+        0 12px 25px rgba(0, 0, 0, 0.5),
+        inset 0 1px 1.5px rgba(255, 255, 255, 0.22),
+        inset 0 -1.5px 3px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Disc (Left) */
+    .player-disc-wrap {
+      position: relative;
+      flex-shrink: 0;
+      width: 96px;
+      height: 96px;
+      cursor: pointer;
+    }
+
+    .player-disc {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.6), inset 0 0 0 1.5px rgba(255, 255, 255, 0.25);
+      animation: spinDisc 12s linear infinite;
+      animation-play-state: paused;
+      background: #110d0b;
+    }
+
+    .player-disc.playing {
+      animation-play-state: running;
+    }
+
+    @keyframes spinDisc {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .disc-cover-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      display: block;
+      pointer-events: none;
+    }
+
+    .disc-hole {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #160f0a;
+      border: 2.5px solid rgba(255, 255, 255, 0.4);
+      box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.5);
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .disc-grooves {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background:
+        repeating-radial-gradient(circle at center, transparent 0 3px, rgba(0, 0, 0, 0.12) 3px 5px),
+        conic-gradient(from 0deg, rgba(255, 255, 255, 0.2) 0deg, transparent 45deg, rgba(255, 255, 255, 0.12) 180deg, transparent 220deg);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* Player Center (Metadata & Progress) */
+    .player-main-info {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .player-title {
+      font-family: 'Baloo 2', sans-serif;
+      font-weight: 700;
+      font-size: 19px;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.2;
+      letter-spacing: 0.2px;
+    }
+
+    .player-artist {
+      font-size: 13.5px;
+      color: rgba(243, 230, 206, 0.85);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: 400;
+    }
+
+    .player-progress-area {
+      width: 100%;
+      margin-top: 6px;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 4px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: #ffffff;
+      border-radius: 4px;
+      transition: width 0.1s linear;
+    }
+
+    .player-time {
+      font-size: 12.5px;
+      color: rgba(243, 230, 206, 0.85);
+      font-weight: 400;
+      margin-top: 5px;
+      letter-spacing: 0.5px;
+    }
+
+    /* Player Right Controls */
+    .player-controls {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-shrink: 0;
+    }
+
+    .ctrl-btn {
+      background: none;
+      border: none;
+      color: #ffffff;
+      cursor: pointer;
+      opacity: 0.85;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .ctrl-btn:hover {
+      opacity: 1;
+      transform: scale(1.12);
+    }
+
+    .ctrl-btn:active {
+      transform: scale(0.95);
+    }
+
+    .ctrl-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+
+    .play-pause-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #ffffff;
+      color: #160f0a;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+      transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .play-pause-btn:hover {
+      transform: scale(1.07);
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+      background: #ffffff;
+    }
+
+    .play-pause-btn:active {
+      transform: scale(0.95);
+    }
+
+    .play-pause-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: #160f0a;
+    }
+
+    /* ================= VINTAGE TICKET ================= */
+    .mobile-ticket-icon {
+      display: none;
+    }
+
+    .ticket-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 6, 3, 0.65);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 55;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    .ticket-backdrop.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .ticket-mini {
+      position: fixed;
+      right: 28px;
+      bottom: 32px;
+      z-index: 6;
+      width: 220px;
+      background: #F4E7CF;
+      color: #241608;
+      border-radius: 14px;
+      padding: 14px 18px 14px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+      transform: rotate(2deg) scale(1);
+      border: 1px solid rgba(180, 140, 100, 0.3);
+      cursor: pointer;
+      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+                  right 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+                  bottom 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.4s ease;
+      user-select: none;
+    }
+
+    .ticket-mini:hover:not(.centered) {
+      transform: rotate(0deg) translateY(-4px) scale(1.03);
+      box-shadow: 0 22px 48px rgba(0, 0, 0, 0.6);
+    }
+
+    .ticket-mini.centered {
+      right: 50%;
+      bottom: 50%;
+      transform: translate(50%, 50%) rotate(0deg) scale(1.45);
+      z-index: 60;
+      box-shadow: 0 35px 90px rgba(0, 0, 0, 0.85), 0 12px 35px rgba(0, 0, 0, 0.6);
+    }
+
+    .ticket-mini::before,
+    .ticket-mini::after {
+      content: "";
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--charcoal);
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .ticket-mini::before {
+      left: -7px;
+    }
+
+    .ticket-mini::after {
+      right: -7px;
+    }
+
+    .tm-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2px;
+    }
+
+    .tm-title {
+      font-family: 'Baloo 2', sans-serif;
+      font-weight: 800;
+      font-size: 13.5px;
+      color: #241608;
+    }
+
+    .tm-no {
+      font-size: 9.5px;
+      opacity: .6;
+      font-weight: 700;
+    }
+
+    .tm-div {
+      border: none;
+      border-top: 1.5px dashed rgba(36, 22, 8, 0.3);
+      margin: 8px 0 10px;
+    }
+
+    .tm-fields {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .tm-field-label {
+      font-size: 8px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      opacity: .55;
+      font-weight: 700;
+    }
+
+    .tm-field-value {
+      font-family: 'Baloo 2', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      margin-top: 2px;
+      color: #241608;
+      line-height: 1.2;
+    }
+
+    @media (max-width: 480px) {
+      .journey-topbar {
+        padding: 14px 14px 0;
+      }
+
+      .brand-dev {
+        font-size: 16px;
+      }
+
+      .brand-en {
+        font-size: 9px;
+        letter-spacing: 2px;
+      }
+
+      .clock, .aboard {
+        font-size: 11px;
+      }
+
+      .journey-center {
+        padding: 0 12px 20px 12px;
+      }
+
+      /* Responsive Floating Side Controls for Mobile */
+      .view-switch {
+        right: 10px;
+        top: 38%;
+        padding: 4px;
+      }
+
+      .conductor-switch {
+        left: 10px;
+        top: 38%;
+        padding: 4px;
+      }
+
+      .view-switch button,
+      .conductor-switch button {
+        width: 35px;
+        height: 35px;
+      }
+
+      .view-switch button svg,
+      .conductor-switch button svg {
+        width: 15px;
+        height: 15px;
+      }
+
+      /* Responsive Player Pill for Mobile Phones Only */
+      .glass-player-pill {
+        padding: 10px 14px 10px 10px;
+        gap: 10px;
+      }
+
+      .player-disc-wrap {
+        width: 58px;
+        height: 58px;
+      }
+
+      .disc-hole {
+        width: 14px;
+        height: 14px;
+        border-width: 2px;
+      }
+
+      .player-title {
+        font-size: 14px;
+      }
+
+      .player-artist {
+        font-size: 11.5px;
+      }
+
+      .player-time {
+        font-size: 10.5px;
+        margin-top: 3px;
+      }
+
+      .player-controls {
+        gap: 6px;
+      }
+
+      .ctrl-btn {
+        padding: 4px;
+      }
+
+      .ctrl-btn svg {
+        width: 15px;
+        height: 15px;
+      }
+
+      .play-pause-btn {
+        width: 38px;
+        height: 38px;
+      }
+
+      .play-pause-btn svg {
+        width: 16px;
+        height: 16px;
+      }
+
+      /* Mobile Ticket Button -> Expands to Centered Ticket Modal */
+      .ticket-mini:not(.centered) {
+        right: 12px;
+        bottom: 14px;
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+        border: 1.5px solid rgba(255, 255, 255, 0.35);
+        background: #F4E7CF;
+        transform: rotate(0deg) scale(1);
+        z-index: 20;
+      }
+
+      .ticket-mini:not(.centered)::before,
+      .ticket-mini:not(.centered)::after {
+        display: none;
+      }
+
+      .ticket-mini:not(.centered) .tm-row,
+      .ticket-mini:not(.centered) .tm-div,
+      .ticket-mini:not(.centered) .tm-fields {
+        display: none;
+      }
+
+      .ticket-mini:not(.centered) .mobile-ticket-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #241608;
+      }
+
+      .ticket-mini.centered .mobile-ticket-icon {
+        display: none;
+      }
+
+      .ticket-mini.centered {
+        right: 50%;
+        bottom: 50%;
+        width: 275px;
+        border-radius: 14px;
+        padding: 16px 20px;
+        transform: translate(50%, 50%) rotate(0deg) scale(1.15);
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
+      }
+
+      .board-btn {
+        padding: 13px 22px 13px 16px;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="view" id="landingView">
-  <div class="landing-bg"></div>
-  <div class="landing-shade"></div>
-  <div class="landing-content">
-    <div class="eyebrow">The Bus Driver's Cassette</div>
-    <img src="assets/malwa.png" alt="मालवा एक्सप्रेस — Malwa Express" class="landing-logo-img">
-    <p class="tagline">Dusty highways, dhaba chai stops and the songs that played on every night bus home.</p>
-    <button class="board-btn" id="boardBtn">
-      <span class="punch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-      यात्रा शुरू करें · Board the bus
-    </button>
-  </div>
-</div>
-
-<div id="transitionOverlay">
-  <div class="welcome-text">मालवा एक्सप्रेस में<br>आपका स्वागत है<span class="sub">Welcome aboard</span></div>
-</div>
-
-<div class="view" id="journeyView">
-  <div class="bg-layer">
-    <div class="bg-img" id="bgOutside"></div>
-    <div class="bg-img" id="bgInside"></div>
-    <div class="bg-shade"></div>
-  </div>
-  <div class="grain"></div>
-
-  <div class="journey-topbar">
-    <div class="brand">
-      <div class="brand-dev">मालवा एक्सप्रेस</div>
-      <div class="brand-en">Bus Driver's Cassette</div>
-    </div>
-    <div class="journey-status">
-      <div class="clock" id="clock">--:--</div>
-      <div class="aboard"><span class="dot"></span><span id="aboardCount">41</span>&nbsp;aboard</div>
+  <div class="view" id="landingView">
+    <div class="landing-bg"></div>
+    <div class="landing-shade"></div>
+    <div class="landing-content">
+      <div class="eyebrow">The Bus Driver's Cassette</div>
+      <img src="assets/malwa.png" alt="मालवा एक्सप्रेस — Malwa Express" class="landing-logo-img">
+      <p class="tagline">Dusty highways, dhaba chai stops and the songs that played on every night bus home.</p>
+      <button class="board-btn" id="boardBtn">
+        <span class="punch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg></span>
+        यात्रा शुरू करें · Board the bus
+      </button>
     </div>
   </div>
 
-  <div class="journey-center">
-    <div class="glass-player-pill">
-      <!-- Spinning Disc with Song Artwork (Left) -->
-      <div class="player-disc-wrap" id="discWrap">
-        <div class="player-disc" id="disc">
-          <img src="assets/covers/cover_39.jpg" id="discCover" class="disc-cover-img" alt="Album Cover">
-          <div class="disc-hole"></div>
-          <div class="disc-grooves"></div>
-        </div>
+  <div id="transitionOverlay">
+    <div class="welcome-text">मालवा एक्सप्रेस में<br>आपका स्वागत है<span class="sub">Welcome aboard</span></div>
+  </div>
+
+  <div class="view" id="journeyView">
+    <div class="bg-layer">
+      <div class="bg-img" id="bgOutside"></div>
+      <div class="bg-img" id="bgInside"></div>
+      <div class="bg-shade"></div>
+    </div>
+    <div class="grain"></div>
+
+    <div class="journey-topbar">
+      <div class="brand">
+        <div class="brand-dev">मालवा एक्सप्रेस</div>
+        <div class="brand-en">Bus Driver's Cassette</div>
       </div>
+      <div class="journey-status">
+        <div class="clock" id="clock">--:--</div>
+        <div class="aboard"><span class="dot"></span><span id="aboardCount">41</span>&nbsp;aboard</div>
+      </div>
+    </div>
 
-      <!-- Track Details & Progress (Middle) -->
-      <div class="player-main-info">
-        <div class="player-title" id="npTitle">Mujhse Mohabbat Ka Izhaar Karta</div>
-        <div class="player-artist" id="npArtist">Satrang Music Official</div>
-        <div class="player-progress-area">
-          <div class="progress-bar-bg" id="progressBar">
-            <div class="progress-bar-fill" id="progressFill"></div>
+    <div class="journey-center">
+      <div class="glass-player-pill">
+        <!-- Spinning Disc with Song Artwork (Left) -->
+        <div class="player-disc-wrap" id="discWrap">
+          <div class="player-disc" id="disc">
+            <img src="assets/covers/cover_01.jpg" id="discCover" class="disc-cover-img" alt="Album Cover">
+            <div class="disc-hole"></div>
+            <div class="disc-grooves"></div>
           </div>
-          <div class="player-time" id="npTime">0:00 / 0:00</div>
+        </div>
+
+        <!-- Track Details & Progress (Middle) -->
+        <div class="player-main-info">
+          <div class="player-title" id="npTitle">Mujhse Mohabbat Ka</div>
+          <div class="player-artist" id="npArtist">Kumar Sanu</div>
+          <div class="player-progress-area">
+            <div class="progress-bar-bg" id="progressBar">
+              <div class="progress-bar-fill" id="progressFill"></div>
+            </div>
+            <div class="player-time" id="npTime">0:00 / 0:00</div>
+          </div>
+        </div>
+
+        <!-- Controls (Right) -->
+        <div class="player-controls">
+          <button class="ctrl-btn" id="prevBtn" aria-label="Previous track">
+            <svg viewBox="0 0 24 24">
+              <path d="M6 6h2v12H6zM20 6L9 12l11 6z" />
+            </svg>
+          </button>
+          <button class="play-pause-btn" id="playBtn" aria-label="Play or pause">
+            <svg id="playIcon" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </button>
+          <button class="ctrl-btn" id="nextBtn" aria-label="Next track">
+            <svg viewBox="0 0 24 24">
+              <path d="M16 6h2v12h-2zM4 6l11 6-11 6z" />
+            </svg>
+          </button>
         </div>
       </div>
+    </div>
 
-      <!-- Controls (Right) -->
-      <div class="player-controls">
-        <button class="ctrl-btn" id="prevBtn" aria-label="Previous track">
-          <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zM20 6L9 12l11 6z"/></svg>
-        </button>
-        <button class="play-pause-btn" id="playBtn" aria-label="Play or pause">
-          <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-        </button>
-        <button class="ctrl-btn" id="nextBtn" aria-label="Next track">
-          <svg viewBox="0 0 24 24"><path d="M16 6h2v12h-2zM4 6l11 6-11 6z"/></svg>
-        </button>
+    <div class="conductor-switch">
+      <button id="conductorBtn" aria-label="Play Conductor Announcement" title="कंडक्टर की आवाज (Play Announcement)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M11 5L6 9H2v6h4l5 4V5z" />
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="view-switch">
+      <button id="switchOutside" aria-label="Outside view">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M3 20l4-11h10l4 11" />
+          <path d="M7 20v-4h10v4" />
+          <circle cx="7.5" cy="17.5" r="1" />
+          <circle cx="16.5" cy="17.5" r="1" />
+        </svg>
+      </button>
+      <button class="active" id="switchInside" aria-label="Inside view">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <rect x="3" y="6" width="18" height="13" rx="2" />
+          <path d="M3 12h18M9 6v13M15 6v13" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="ticket-backdrop" id="ticketBackdrop"></div>
+    <div class="ticket-mini">
+      <div class="mobile-ticket-icon">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z" />
+          <path d="M9 6v12M15 6v12" stroke-dasharray="2 2" />
+        </svg>
+      </div>
+      <div class="tm-row"><span class="tm-title">Driver's Mixtape</span><span class="tm-no">FA-4178</span></div>
+      <hr class="tm-div">
+      <div class="tm-fields">
+        <div>
+          <div class="tm-field-label">Route</div>
+          <div class="tm-field-value">Indore → Dewas</div>
+        </div>
+        <div>
+          <div class="tm-field-label">Seat</div>
+          <div class="tm-field-value">14 · Window</div>
+        </div>
+        <div>
+          <div class="tm-field-label">Fare</div>
+          <div class="tm-field-value">Non-stop</div>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="view-switch">
-    <button id="switchOutside" aria-label="Outside view">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 20l4-11h10l4 11"/><path d="M7 20v-4h10v4"/><circle cx="7.5" cy="17.5" r="1"/><circle cx="16.5" cy="17.5" r="1"/></svg>
-    </button>
-    <button class="active" id="switchInside" aria-label="Inside view">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 12h18M9 6v13M15 6v13"/></svg>
-    </button>
-  </div>
-
-  <div class="ticket-mini">
-    <div class="tm-row"><span class="tm-title">Driver's Mixtape</span><span class="tm-no">FA-4178</span></div>
-    <hr class="tm-div">
-    <div class="tm-fields">
-      <div><div class="tm-field-label">Route</div><div class="tm-field-value">Indore → Dewas</div></div>
-      <div><div class="tm-field-label">Seat</div><div class="tm-field-value">14 · Window</div></div>
-      <div><div class="tm-field-label">Fare</div><div class="tm-field-value">Non-stop</div></div>
-    </div>
-  </div>
-</div>
-
-<script>
-  /* ---------------------------------------------------------------
-     PLAYLIST SETUP
-  --------------------------------------------------------------- */
-var TRACKS = [
-  { title: "Chand Se Parda", artist: "Kumar Sanu", src: "Indian Bus Driver's Playlist/01 Chand Se Parda.mp3", cover: "assets/covers/cover_05.jpg" },
-  { title: "Mujhse Mohabbat Ka Izhaar Karta", artist: "Satrang Music Official", src: "Indian Bus Driver's Playlist/04 Mujhse Mohabbat Ka.mp3", cover: "assets/covers/cover_39.jpg" },
-  { title: "Aapke Pyaar Mein Hum", artist: "Alka Yagnik", src: "Indian Bus Driver's Playlist/01 Aapke Pyaar Mein Hum.mp3", cover: "assets/covers/cover_01.jpg" },
-  { title: "Aaye Ho Meri Zindagi Mein - Female Version", artist: "Alka Yagnik", src: "Indian Bus Driver's Playlist/01 Aaye Ho Meri Zindagi Mein - Female Version.mp3", cover: "assets/covers/cover_03.jpg" },
-  { title: "Barsaat Ke Mausam Mein", artist: "Kumar Sanu & Roop Kumar Rathod", src: "Indian Bus Driver's Playlist/01 Barsaat Ke Mausam Mein.mp3", cover: "assets/covers/cover_04.jpg" },
-  { title: "Dil Hai Ke Manta Nahin", artist: "Kumar Sanu & Anuradha Paudwal", src: "Indian Bus Driver's Playlist/01 Dil Hai Ke Manta Nahin.mp3", cover: "assets/covers/cover_06.jpg" },
-  { title: "Dil Ne Yeh Kaha Hain Dil Se", artist: "Udit Narayan, Alka Yagnik & Kumar Sanu", src: "Indian Bus Driver's Playlist/01 Dil Ne Yeh Kaha Hain Dil Se.mp3", cover: "assets/covers/cover_07.jpg" },
-  { title: "Hum Tumko Nigahon Mein", artist: "Adnan Sami & Shreya Ghoshal", src: "Indian Bus Driver's Playlist/01 Hum Tumko Nigahon Mein.mp3", cover: "assets/covers/cover_08.jpg" },
-  { title: "Humko Deewana Kar Gaye", artist: "Sonu Nigam & Tulsi Kumar", src: "Indian Bus Driver's Playlist/01 Humko Deewana Kar Gaye.mp3", cover: "assets/covers/cover_09.jpg" },
-  { title: "Jeeye To Jeeye Kaise (From Saajan)", artist: "Kumar Sanu, SPB & Alka Yagnik", src: "Indian Bus Driver's Playlist/01 Jeeye To Jeeye Kaise (From _Saajan_).mp3", cover: "assets/covers/cover_10.jpg" },
-  { title: "Kyon Ki Itna Pyar", artist: "Udit Narayan & Alka Yagnik", src: "Indian Bus Driver's Playlist/01 Kyon Ki Itna Pyar.mp3", cover: "assets/covers/cover_11.jpg" },
-  { title: "Mujhe Haq Hai", artist: "Udit Narayan & Shreya Ghoshal", src: "Indian Bus Driver's Playlist/01 Mujhe Haq Hai.mp3", cover: "assets/covers/cover_12.jpg" },
-  { title: "Aate Jate Khoobsurat Awara", artist: "Kishore Kumar", src: "Indian Bus Driver's Playlist/01 Aate Jate Khoobsurat Awara.mp3", cover: "assets/covers/cover_02.jpg" },
-  { title: "Neele Neele Ambar Par - Male Version", artist: "Kishore Kumar", src: "Indian Bus Driver's Playlist/01 Neele Neele Ambar Par - Male Version.mp3", cover: "assets/covers/cover_13.jpg" },
-  { title: "Pehli Pehli Baar Mohabbat Ki Hai", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/01 Pehli Pehli Baar Mohabbat Ki Hai.mp3", cover: "assets/covers/cover_14.jpg" },
-  { title: "Sochenge Tumhe Pyar (From Deewana)", artist: "Kumar Sanu", src: "Indian Bus Driver's Playlist/01 Sochenge Tumhe Pyar (From _Deewana_).mp3", cover: "assets/covers/cover_15.jpg" },
-  { title: "Tum Dil Ki Dhadkan Mein (From Dhadkan)", artist: "Abhijeet & Alka Yagnik", src: "Indian Bus Driver's Playlist/01 Tum Dil Ki Dhadkan Mein (From _Dhadkan_).mp3", cover: "assets/covers/cover_16.jpg" },
-  { title: "Woh Ladki Bahut Yaad Aati", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/01 Woh Ladki Bahut Yaad Aati.mp3", cover: "assets/covers/cover_17.jpg" },
-  { title: "Zindagi Ban Gaye Ho Tum", artist: "Udit Narayan & Alka Yagnik", src: "Indian Bus Driver's Playlist/01 Zindagi Ban Gaye Ho Tum.mp3", cover: "assets/covers/cover_18.jpg" },
-  { title: "Ajnabi Mujhko Itna Bata", artist: "Udit Narayan & Asha Bhosle", src: "Indian Bus Driver's Playlist/02 Ajnabi Mujhko Itna Bata.mp3", cover: "assets/covers/cover_19.jpg" },
-  { title: "Chori Chori Dil Tera", artist: "Kumar Sanu & Sujata Goswamy", src: "Indian Bus Driver's Playlist/02 Chori Chori Dil Tera.mp3", cover: "assets/covers/cover_20.jpg" },
-  { title: "Dheere - Dheere - Dheere", artist: "Kumar Sanu & Anuradha Paudwal", src: "Indian Bus Driver's Playlist/02 Dheere - Dheere - Dheere.mp3", cover: "assets/covers/cover_21.jpg" },
-  { title: "Dil Cheer Ke Dekh", artist: "Kumar Sanu", src: "Indian Bus Driver's Playlist/02 Dil Cheer Ke Dekh.mp3", cover: "assets/covers/cover_22.jpg" },
-  { title: "Hum Laakh Chupaye", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/02 Hum Laakh Chupaye.mp3", cover: "assets/covers/cover_23.jpg" },
-  { title: "Jeeta Tha Jiske Liye", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/02 Jeeta Tha Jiske Liye.mp3", cover: "assets/covers/cover_24.jpg" },
-  { title: "Kitna Haseen Chehra (From Dilwale)", artist: "Kumar Sanu", src: "Indian Bus Driver's Playlist/02 Kitna Haseen Chehra (From _Dilwale_).mp3", cover: "assets/covers/cover_25.jpg" },
-  { title: "Main Duniya Bhula Doonga", artist: "Kumar Sanu & Anuradha Paudwal", src: "Indian Bus Driver's Playlist/02 Main Duniya Bhula Doonga.mp3", cover: "assets/covers/cover_26.jpg" },
-  { title: "Sab Kuchh Bhula Diya (Female)", artist: "Sonu Nigam & Alka Yagnik", src: "Indian Bus Driver's Playlist/02 Sab Kuchh Bhula Diya (Female).mp3", cover: "assets/covers/cover_27.jpg" },
-  { title: "Tum Dil Ki Dhadkan Mein", artist: "Abhijeet & Alka Yagnik", src: "Indian Bus Driver's Playlist/02 Tum Dil Ki Dhadkan Mein.mp3", cover: "assets/covers/cover_28.jpg" },
-  { title: "Tumse Milne Ki Tamanna Hai", artist: "SPB", src: "Indian Bus Driver's Playlist/02 Tumse Milne Ki Tamanna Hai.mp3", cover: "assets/covers/cover_29.jpg" },
-  { title: "Dil Kehta Hai", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/03 Dil Kehta Hai.mp3", cover: "assets/covers/cover_30.jpg" },
-  { title: "Hum Yaar Hai Tumhare", artist: "Udit Narayan & Alka Yagnik", src: "Indian Bus Driver's Playlist/03 Hum Yaar Hai Tumhare.mp3", cover: "assets/covers/cover_31.jpg" },
-  { title: "Is Pyar Se Meri Taraf Na Dekho - Duet Version", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/03 Is Pyar Se Meri Taraf Na Dekho - Duet Version.mp3", cover: "assets/covers/cover_32.jpg" },
-  { title: "Jo Bhi Kasmein", artist: "Udit Narayan & Alka Yagnik", src: "Indian Bus Driver's Playlist/03 Jo Bhi Kasmein.mp3", cover: "assets/covers/cover_33.jpg" },
-  { title: "Kitaben Bahut Si (From Baazigar)", artist: "Asha Bhosle & Vinod Rathod", src: "Indian Bus Driver's Playlist/03 Kitaben Bahut Si (From _Baazigar_).mp3", cover: "assets/covers/cover_34.jpg" },
-  { title: "Taaron Ka Chamakta", artist: "Udit Narayan & Bali Brahmbhatt", src: "Indian Bus Driver's Playlist/03 Taaron Ka Chamakta.mp3", cover: "assets/covers/cover_35.jpg" },
-  { title: "Aisi Deewangi (From Deewana)", artist: "Alka Yagnik & Vinod Rathod", src: "Indian Bus Driver's Playlist/04 Aisi Deewangi (From _Deewana_).mp3", cover: "assets/covers/cover_36.jpg" },
-  { title: "Humko Sirf Tumse", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/04 Humko Sirf Tumse.mp3", cover: "assets/covers/cover_37.jpg" },
-  { title: "Kahin Mujhe Pyar Hua Toh Nahin", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/04 Kahin Mujhe Pyar Hua Toh Nahin.mp3", cover: "assets/covers/cover_38.jpg" },
-  { title: "O Dil Tod Ke Hansti Ho Mera", artist: "Udit Narayan", src: "Indian Bus Driver's Playlist/04 O Dil Tod Ke Hansti Ho Mera.mp3", cover: "assets/covers/cover_40.jpg" },
-  { title: "Pardesi Pardesi", artist: "Udit Narayan & Alka Yagnik", src: "Indian Bus Driver's Playlist/04 Pardesi Pardesi.mp3", cover: "assets/covers/cover_41.jpg" },
-  { title: "Tumse Milna", artist: "Udit Narayan & Alka Yagnik", src: "Indian Bus Driver's Playlist/04 Tumse Milna.mp3", cover: "assets/covers/cover_42.jpg" },
-  { title: "Ae Mere Humsafar", artist: "Udit Narayan & Alka Yagnik", src: "Indian Bus Driver's Playlist/05 Ae Mere Humsafar.mp3", cover: "assets/covers/cover_43.jpg" },
-  { title: "Dil Laga Liya Maine", artist: "Alka Yagnik & Udit Narayan", src: "Indian Bus Driver's Playlist/05 Dil Laga Liya Maine.mp3", cover: "assets/covers/cover_44.jpg" },
-  { title: "Main Agar Saamne", artist: "Abhijeet & Alka Yagnik", src: "Indian Bus Driver's Playlist/05 Main Agar Saamne.mp3", cover: "assets/covers/cover_45.jpg" },
-  { title: "Meri Mehbooba", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/05 Meri Mehbooba.mp3", cover: "assets/covers/cover_46.jpg" },
-  { title: "Pehli Pehli Baar Mohabbat Ki Hai (From Sirf Tum)", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/05 Pehli Pehli Baar Mohabbat Ki Hai (From _Sirf Tum_).mp3", cover: "assets/covers/cover_47.jpg" },
-  { title: "Raah Mein Unse Mulaqat", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/05 Raah Mein Unse Mulaqat.mp3", cover: "assets/covers/cover_48.jpg" },
-  { title: "Sona Kitna Sona Hai", artist: "Udit Narayan & Poornima", src: "Indian Bus Driver's Playlist/05 Sona Kitna Sona Hai.mp3", cover: "assets/covers/cover_49.jpg" },
-  { title: "Chhupana Bhi Nahin Aata", artist: "Vinod Rathod", src: "Indian Bus Driver's Playlist/06 Chhupana Bhi Nahin Aata.mp3", cover: "assets/covers/cover_50.jpg" },
-  { title: "Ding Dong", artist: "Alka Yagnik & Vinod Rathod", src: "Indian Bus Driver's Playlist/06 Ding Dong.mp3", cover: "assets/covers/cover_51.jpg" },
-  { title: "Saaton Janam Main Tere", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/06 Saaton Janam Main Tere.mp3", cover: "assets/covers/cover_52.jpg" },
-  { title: "Tumsa Koi Pyaara", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/06 Tumsa Koi Pyaara.mp3", cover: "assets/covers/cover_53.jpg" },
-  { title: "Is Tarah Aashiqui Ka - Kumar Sanu Version", artist: "Kumar Sanu", src: "Indian Bus Driver's Playlist/07 Is Tarah Aashiqui Ka - Kumar Sanu Version.mp3", cover: "assets/covers/cover_54.jpg" },
-  { title: "Laal Dupatta", artist: "Udit Narayan & Alka Yagnik", src: "Indian Bus Driver's Playlist/07 Laal Dupatta.mp3", cover: "assets/covers/cover_55.jpg" },
-  { title: "Mera Dil Bhi Kitna Pagal Hai", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/07 Mera Dil Bhi Kitna Pagal Hai.mp3", cover: "assets/covers/cover_56.jpg" },
-  { title: "O Mere Dil Ke Chain", artist: "Kishore Kumar", src: "Indian Bus Driver's Playlist/07 O Mere Dil Ke Chain.mp3", cover: "assets/covers/cover_57.jpg" },
-  { title: "Pucho Zara Pucho", artist: "Alka Yagnik & Kumar Sanu", src: "Indian Bus Driver's Playlist/07 Pucho Zara Pucho.mp3", cover: "assets/covers/cover_58.jpg" },
-  { title: "Pyaar Se Pyar Hum", artist: "Kumar Sanu", src: "Indian Bus Driver's Playlist/07 Pyaar Se Pyar Hum.mp3", cover: "assets/covers/cover_59.jpg" },
-  { title: "Sau Rab Di", artist: "Udit Narayan & Alka Yagnik", src: "Indian Bus Driver's Playlist/07 Sau Rab Di.mp3", cover: "assets/covers/cover_60.jpg" },
-  { title: "Jeeye to Jeeye Kaise", artist: "Kumar Sanu, SPB & Alka Yagnik", src: "Indian Bus Driver's Playlist/08 Jeeye to Jeeye Kaise.mp3", cover: "assets/covers/cover_61.jpg" },
-  { title: "Ladki Badi Anjani Hai", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/08 Ladki Badi Anjani Hai.mp3", cover: "assets/covers/cover_62.jpg" },
-  { title: "Love Tujhe Love Main Karta", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/08 Love Tujhe Love Main Karta.mp3", cover: "assets/covers/cover_63.jpg" },
-  { title: "Milne Ki Tum Koshish Karna", artist: "Kumar Sanu & Asha Bhosle", src: "Indian Bus Driver's Playlist/08 Milne Ki Tum Koshish Karna.mp3", cover: "assets/covers/cover_64.jpg" },
-  { title: "Tu Meri Zindagi Hai", artist: "Kumar Sanu & Anuradha Paudwal", src: "Indian Bus Driver's Playlist/08 Tu Meri Zindagi Hai.mp3", cover: "assets/covers/cover_65.jpg" },
-  { title: "Tumhein Dekhen Meri Aankhen", artist: "Alka Yagnik & Kumar Sanu", src: "Indian Bus Driver's Playlist/08 Tumhein Dekhen Meri Aankhen.mp3", cover: "assets/covers/cover_66.jpg" },
-  { title: "Tumse Milne Ko Dil", artist: "Alka Yagnik & Kumar Sanu", src: "Indian Bus Driver's Playlist/08 Tumse Milne Ko Dil.mp3", cover: "assets/covers/cover_67.jpg" },
-  { title: "Nahin Yeh Ho Nahin Sakta", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/09 Nahin Yeh Ho Nahin Sakta.mp3", cover: "assets/covers/cover_68.jpg" },
-  { title: "Tere Dar Par Sanam - Male Version", artist: "Kumar Sanu", src: "Indian Bus Driver's Playlist/09 Tere Dar Par Sanam - Male Version.mp3", cover: "assets/covers/cover_69.jpg" },
-  { title: "Ab Tere Dil Mein To", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/10 Ab Tere Dil Mein To.mp3", cover: "assets/covers/cover_70.jpg" },
-  { title: "Kyo Kisi Ko", artist: "Udit Narayan", src: "Indian Bus Driver's Playlist/10 Kyo Kisi Ko.mp3", cover: "assets/covers/cover_71.jpg" },
-  { title: "Dil Ka Aalam (From Aashiqui)", artist: "Kumar Sanu", src: "Indian Bus Driver's Playlist/11 Dil Ka Aalam (From _Aashiqui_).mp3", cover: "assets/covers/cover_72.jpg" },
-  { title: "Dil Kehta Hai (From Akele Hum Akele Tum)", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/11 Dil Kehta Hai (From _Akele Hum Akele Tum_).mp3", cover: "assets/covers/cover_73.jpg" },
-  { title: "Dilbar Mere - From Satte Pe Satta", artist: "Kishore Kumar", src: "Indian Bus Driver's Playlist/11 Dilbar Mere - From _Satte Pe Satta_.mp3", cover: "assets/covers/cover_74.jpg" },
-  { title: "Tumhein Apna Banane Ki Kasam Khai Hai", artist: "Kumar Sanu & Anuradha Paudwal", src: "Indian Bus Driver's Playlist/12 Tumhein Apna Banane Ki Kasam Khai Hai.mp3", cover: "assets/covers/cover_75.jpg" },
+  <script>
+    /* ---------------------------------------------------------------
+       PLAYLIST SETUP
+    --------------------------------------------------------------- */
+    var TRACKS = [
+  {
+    "title": "Mujhse Mohabbat Ka",
+    "artist": "Kumar Sanu",
+    "src": "new songs/Mujhse Mohabbat Ka - Kumar Sanu.mp3",
+    "cover": "assets/covers/cover_01.jpg"
+  },
+  {
+    "title": "Chand Se Parda",
+    "artist": "Kumar Sanu",
+    "src": "new songs/Chand Se Parda.mp3",
+    "cover": "assets/covers/cover_02.jpg"
+  },
+  {
+    "title": "Tumsa Koi Pyaara",
+    "artist": "Kumar Sanu & Alka Yagnik",
+    "src": "new songs/Tumsa Koi Pyaara.mp3",
+    "cover": "assets/covers/cover_03.jpg"
+  },
+  {
+    "title": "Tu Jo Hans Hans Ke",
+    "artist": "Udit Narayan & Kavita Krishnamurthy",
+    "src": "new songs/Tu Jo Hans Hans Ke - From _Raja Bhaiya_.mp3",
+    "cover": "assets/covers/cover_04.jpg"
+  },
+  {
+    "title": "Aate Jate Khoobsurat Awara",
+    "artist": "Kishore Kumar",
+    "src": "new songs/Aate Jate Khoobsurat Awara.mp3",
+    "cover": "assets/covers/cover_05.jpg"
+  },
+  {
+    "title": "Ab Tere Dil Mein To",
+    "artist": "Kumar Sanu & Alka Yagnik",
+    "src": "new songs/Ab Tere Dil Mein To.mp3",
+    "cover": "assets/covers/cover_06.jpg"
+  },
+  {
+    "title": "Ae Mere Humsafar",
+    "artist": "Udit Narayan & Alka Yagnik",
+    "src": "new songs/Ae Mere Humsafar.mp3",
+    "cover": "assets/covers/cover_07.jpg"
+  },
+  {
+    "title": "Aisi Deewangi",
+    "artist": "Alka Yagnik & Vinod Rathod",
+    "src": "new songs/Aisi Deewangi (From _Deewana_).mp3",
+    "cover": "assets/covers/cover_08.jpg"
+  },
+  {
+    "title": "Barsaat Ke Mausam Mein",
+    "artist": "Kumar Sanu & Roop Kumar Rathod",
+    "src": "new songs/Barsaat Ke Mausam Mein.mp3",
+    "cover": "assets/covers/cover_09.jpg"
+  },
+  {
+    "title": "Chori Chori Dil Tera",
+    "artist": "Kumar Sanu & Sujata Goswamy",
+    "src": "new songs/Chori Chori Dil Tera.mp3",
+    "cover": "assets/covers/cover_10.jpg"
+  },
+  {
+    "title": "Dil Cheer Ke Dekh",
+    "artist": "Kumar Sanu",
+    "src": "new songs/Dil Cheer Ke Dekh.mp3",
+    "cover": "assets/covers/cover_11.jpg"
+  },
+  {
+    "title": "Dil Ka Aalam",
+    "artist": "Kumar Sanu",
+    "src": "new songs/Dil Ka Aalam (From _Aashiqui_).mp3",
+    "cover": "assets/covers/cover_12.jpg"
+  },
+  {
+    "title": "Dil Kehta Hai",
+    "artist": "Kumar Sanu & Alka Yagnik",
+    "src": "new songs/Dil Kehta Hai (From _Akele Hum Akele Tum_).mp3",
+    "cover": "assets/covers/cover_13.jpg"
+  },
+  {
+    "title": "Dilbar Mere",
+    "artist": "Kishore Kumar",
+    "src": "new songs/Dilbar Mere  From Satte Pe Satta .mp3",
+    "cover": "assets/covers/cover_14.jpg"
+  },
+  {
+    "title": "Hum Yaar Hai Tumhare",
+    "artist": "Udit Narayan & Alka Yagnik",
+    "src": "new songs/Hum Yaar Hai Tumhare Udit Narayan, Alka Yagnik.mp3",
+    "cover": "assets/covers/cover_15.jpg"
+  },
+  {
+    "title": "Humko Deewana Kar Gaye",
+    "artist": "Sonu Nigam & Tulsi Kumar",
+    "src": "new songs/Humko Deewana Kar Gaye.mp3",
+    "cover": "assets/covers/cover_16.jpg"
+  },
+  {
+    "title": "Is Pyar Se Meri Taraf Na Dekho",
+    "artist": "Kumar Sanu & Alka Yagnik",
+    "src": "new songs/Is Pyar Se Meri Taraf Na Dekho - Duet Version.mp3",
+    "cover": "assets/covers/cover_17.jpg"
+  },
+  {
+    "title": "Kahin Mujhe Pyar Hua Toh Nahin",
+    "artist": "Kumar Sanu & Alka Yagnik",
+    "src": "new songs/Kahin Mujhe Pyar Hua Toh Nahin.mp3",
+    "cover": "assets/covers/cover_18.jpg"
+  },
+  {
+    "title": "Laal Dupatta",
+    "artist": "Udit Narayan & Alka Yagnik",
+    "src": "new songs/Laal Dupatta Udit Narayan, Alka Yagnik.mp3",
+    "cover": "assets/covers/cover_19.jpg"
+  },
+  {
+    "title": "Meri Mehbooba",
+    "artist": "Kumar Sanu & Alka Yagnik",
+    "src": "new songs/Meri Mehbooba -Kumar Sanu, Alka Yagnik - .mp3",
+    "cover": "assets/covers/cover_20.jpg"
+  },
+  {
+    "title": "Nahin Yeh Ho Nahin Sakta",
+    "artist": "Kumar Sanu & Alka Yagnik",
+    "src": "new songs/Nahin Yeh Ho Nahin Sakta.mp3",
+    "cover": "assets/covers/cover_21.jpg"
+  },
+  {
+    "title": "Neele Neele Ambar Par",
+    "artist": "Kishore Kumar",
+    "src": "new songs/Neele Neele Ambar Par - Male Version - Kalyanji-Anandji, Kishore Kumar .mp3",
+    "cover": "assets/covers/cover_22.jpg"
+  },
+  {
+    "title": "O Dil Tod Ke Hansti Ho Mera",
+    "artist": "Udit Narayan",
+    "src": "new songs/O Dil Tod Ke Hansti Ho Mera Udit Narayan.mp3",
+    "cover": "assets/covers/cover_23.jpg"
+  },
+  {
+    "title": "O Mere Dil Ke Chain",
+    "artist": "Kishore Kumar",
+    "src": "new songs/O Mere Dil Ke Chain -Kishore Kumar, R. D. Burman.mp3",
+    "cover": "assets/covers/cover_24.jpg"
+  },
+  {
+    "title": "Pehli Pehli Baar Mohabbat Ki Hai",
+    "artist": "Kumar Sanu & Alka Yagnik",
+    "src": "new songs/Pehli Pehli Baar Mohabbat Ki Hai (From _Sirf Tum_).mp3",
+    "cover": "assets/covers/cover_25.jpg"
+  },
+  {
+    "title": "Pucho Zara Pucho",
+    "artist": "Alka Yagnik & Kumar Sanu",
+    "src": "new songs/Pucho Zara Pucho.mp3",
+    "cover": "assets/covers/cover_26.jpg"
+  },
+  {
+    "title": "Raah Mein Unse Mulaqat",
+    "artist": "Kumar Sanu & Alka Yagnik",
+    "src": "new songs/Raah Mein Unse Mulaqat Kumar Sanu, Alka Yagnik.mp3",
+    "cover": "assets/covers/cover_27.jpg"
+  },
+  {
+    "title": "Saaton Janam Main Tere",
+    "artist": "Kumar Sanu & Alka Yagnik",
+    "src": "new songs/Saaton Janam Main Tere.mp3",
+    "cover": "assets/covers/cover_28.jpg"
+  },
+  {
+    "title": "Sona Kitna Sona Hai",
+    "artist": "Udit Narayan & Poornima",
+    "src": "new songs/Sona Kitna Sona Hai-Anand Milind, Udit Narayan, Poornima - .mp3",
+    "cover": "assets/covers/cover_29.jpg"
+  },
+  {
+    "title": "Taaron Ka Chamakta",
+    "artist": "Udit Narayan & Bali Brahmbhatt",
+    "src": "new songs/Taaron Ka Chamakta - Udit Narayan, Bali Brahmbhatt, Sameer Anjaan.mp3",
+    "cover": "assets/covers/cover_30.jpg"
+  },
+  {
+    "title": "Tere Dar Par Sanam",
+    "artist": "Kumar Sanu",
+    "src": "new songs/Tere Dar Par Sanam - Male Version -Kumar Sanu.mp3",
+    "cover": "assets/covers/cover_31.jpg"
+  },
+  {
+    "title": "Tumhein Apna Banane Ki Kasam Khai Hai",
+    "artist": "Kumar Sanu & Anuradha Paudwal",
+    "src": "new songs/Tumhein Apna Banane Ki Kasam Khai Hai.mp3",
+    "cover": "assets/covers/cover_32.jpg"
+  },
+  {
+    "title": "Tumhein Dekhen Meri Aankhen",
+    "artist": "Alka Yagnik & Kumar Sanu",
+    "src": "new songs/Tumhein Dekhen Meri Aankhen.mp3",
+    "cover": "assets/covers/cover_33.jpg"
+  },
+  {
+    "title": "Tumse Milne Ko Dil",
+    "artist": "Alka Yagnik & Kumar Sanu",
+    "src": "new songs/Tumse Milne Ko Dil.mp3",
+    "cover": "assets/covers/cover_34.jpg"
+  }
 ];
 
 
-  var audioEl = new Audio();
-  var trackIndex = 0;
-  var isPlaying = false;
-  var fadeInterval = null;
+    var audioEl = new Audio();
+    var trackIndex = 0;
+    var isPlaying = false;
+    var fadeInterval = null;
 
-  var disc = document.getElementById('disc');
-  var discCover = document.getElementById('discCover');
-  var playBtn = document.getElementById('playBtn');
-  var playIcon = document.getElementById('playIcon');
-  var npTitle = document.getElementById('npTitle');
-  var npArtist = document.getElementById('npArtist');
-  var npTime = document.getElementById('npTime');
-  var progressBar = document.getElementById('progressBar');
-  var progressFill = document.getElementById('progressFill');
+    var disc = document.getElementById('disc');
+    var discCover = document.getElementById('discCover');
+    var playBtn = document.getElementById('playBtn');
+    var playIcon = document.getElementById('playIcon');
+    var npTitle = document.getElementById('npTitle');
+    var npArtist = document.getElementById('npArtist');
+    var npTime = document.getElementById('npTime');
+    var progressBar = document.getElementById('progressBar');
+    var progressFill = document.getElementById('progressFill');
 
-  function formatTime(sec){
-    if(isNaN(sec) || sec === Infinity) return "0:00";
-    var m = Math.floor(sec / 60);
-    var s = Math.floor(sec % 60);
-    return m + ":" + (s < 10 ? "0" + s : s);
-  }
-
-  function loadTrack(i, autoplay, withFadeIn){
-    if(fadeInterval) clearInterval(fadeInterval);
-    trackIndex = (i + TRACKS.length) % TRACKS.length;
-    var t = TRACKS[trackIndex];
-    audioEl.src = t.src;
-    npTitle.textContent = t.title;
-    npArtist.textContent = t.artist;
-    if(t.cover){
-      discCover.src = t.cover;
-    } else {
-      discCover.src = "assets/covers/cover_01.jpg";
+    function formatTime(sec) {
+      if (isNaN(sec) || sec === Infinity) return "0:00";
+      var m = Math.floor(sec / 60);
+      var s = Math.floor(sec % 60);
+      return m + ":" + (s < 10 ? "0" + s : s);
     }
-    npTime.textContent = "0:00 / 0:00";
-    progressFill.style.width = "0%";
 
-    if(autoplay){
-      if(withFadeIn){
-        audioEl.volume = 0;
-        audioEl.play().then(function(){
-          setPlaying(true);
-          var vol = 0;
-          fadeInterval = setInterval(function(){
-            vol += 0.05;
-            if(vol >= 1){
-              vol = 1;
-              clearInterval(fadeInterval);
-            }
-            audioEl.volume = vol;
-          }, 100); // 2 seconds fade in
-        }).catch(function(err){
-          console.warn("Autoplay blocked:", err);
-        });
+    function loadTrack(i, autoplay, withFadeIn) {
+      if (fadeInterval) clearInterval(fadeInterval);
+      trackIndex = (i + TRACKS.length) % TRACKS.length;
+      var t = TRACKS[trackIndex];
+      audioEl.src = t.src;
+      npTitle.textContent = t.title;
+      npArtist.textContent = t.artist;
+      if (t.cover) {
+        discCover.src = t.cover;
       } else {
-        audioEl.volume = 1;
-        audioEl.play().then(function(){
-          setPlaying(true);
-        }).catch(function(err){
-          console.warn("Autoplay error:", err);
-        });
+        discCover.src = "assets/covers/cover_01.jpg";
+      }
+      npTime.textContent = "0:00 / 0:00";
+      progressFill.style.width = "0%";
+
+      if (autoplay) {
+        if (withFadeIn) {
+          audioEl.volume = 0;
+          audioEl.play().then(function () {
+            setPlaying(true);
+            var startTime = Date.now();
+            var durationMs = 3500; // Smooth 3.5s fade in transition
+            fadeInterval = setInterval(function () {
+              var elapsed = Date.now() - startTime;
+              var vol = elapsed / durationMs;
+              if (vol >= 1) {
+                vol = 1;
+                clearInterval(fadeInterval);
+                fadeInterval = null;
+              }
+              audioEl.volume = vol;
+            }, 50);
+          }).catch(function (err) {
+            console.warn("Autoplay blocked:", err);
+          });
+        } else {
+          audioEl.volume = 1;
+          audioEl.play().then(function () {
+            setPlaying(true);
+          }).catch(function (err) {
+            console.warn("Autoplay error:", err);
+          });
+        }
       }
     }
-  }
 
-  function setPlaying(playing){
-    isPlaying = playing;
-    if(playing){
-      disc.classList.add('playing');
-      playIcon.innerHTML = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
-    } else {
-      disc.classList.remove('playing');
-      playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+    function setPlaying(playing) {
+      isPlaying = playing;
+      if (playing) {
+        disc.classList.add('playing');
+        playIcon.innerHTML = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
+      } else {
+        disc.classList.remove('playing');
+        playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+      }
     }
-  }
 
-  playBtn.addEventListener('click', function(){
-    if(!audioEl.src){
-      loadTrack(0, true, false);
-    } else if(isPlaying){
-      if(fadeInterval) clearInterval(fadeInterval);
-      audioEl.pause();
-      setPlaying(false);
-    } else {
-      audioEl.volume = 1;
-      audioEl.play().then(function(){
-        setPlaying(true);
-      }).catch(function(err){});
+    playBtn.addEventListener('click', function () {
+      if (!audioEl.src) {
+        loadTrack(0, true, false);
+      } else if (isPlaying) {
+        if (fadeInterval) clearInterval(fadeInterval);
+        audioEl.pause();
+        setPlaying(false);
+      } else {
+        audioEl.volume = 1;
+        audioEl.play().then(function () {
+          setPlaying(true);
+        }).catch(function (err) { });
+      }
+    });
+
+    document.getElementById('discWrap').addEventListener('click', function () {
+      playBtn.click();
+    });
+
+    document.getElementById('prevBtn').addEventListener('click', function () { loadTrack(trackIndex - 1, true, false); });
+    document.getElementById('nextBtn').addEventListener('click', function () { loadTrack(trackIndex + 1, true, false); });
+
+    audioEl.addEventListener('timeupdate', function () {
+      if (audioEl.duration) {
+        var pct = (audioEl.currentTime / audioEl.duration) * 100;
+        progressFill.style.width = pct + "%";
+        npTime.textContent = formatTime(audioEl.currentTime) + " / " + formatTime(audioEl.duration);
+      }
+    });
+
+    progressBar.addEventListener('click', function (e) {
+      if (audioEl.duration) {
+        var rect = progressBar.getBoundingClientRect();
+        var clickX = e.clientX - rect.left;
+        var pct = clickX / rect.width;
+        audioEl.currentTime = pct * audioEl.duration;
+      }
+    });
+
+    audioEl.addEventListener('ended', function () { loadTrack(trackIndex + 1, true, false); });
+
+    /* Auto-sync initial UI with TRACKS[0] */
+    function initPlayer() {
+      if (TRACKS && TRACKS.length > 0) {
+        var t = TRACKS[0];
+        npTitle.textContent = t.title;
+        npArtist.textContent = t.artist;
+        discCover.src = t.cover || "assets/covers/cover_01.jpg";
+      }
     }
-  });
+    initPlayer();
 
-  document.getElementById('discWrap').addEventListener('click', function(){
-    playBtn.click();
-  });
-
-  document.getElementById('prevBtn').addEventListener('click', function(){ loadTrack(trackIndex - 1, true, false); });
-  document.getElementById('nextBtn').addEventListener('click', function(){ loadTrack(trackIndex + 1, true, false); });
-
-  audioEl.addEventListener('timeupdate', function(){
-    if(audioEl.duration){
-      var pct = (audioEl.currentTime / audioEl.duration) * 100;
-      progressFill.style.width = pct + "%";
-      npTime.textContent = formatTime(audioEl.currentTime) + " / " + formatTime(audioEl.duration);
+    /* clock + aboard count */
+    var clockEl = document.getElementById('clock');
+    function tickClock() {
+      var d = new Date(); var h = d.getHours(); var m = d.getMinutes();
+      var ampm = h >= 12 ? 'pm' : 'am'; var h12 = h % 12; if (h12 === 0) h12 = 12;
+      var mm = m < 10 ? '0' + m : '' + m;
+      clockEl.textContent = h12 + ':' + mm + ' ' + ampm;
     }
-  });
+    tickClock(); setInterval(tickClock, 15000);
 
-  progressBar.addEventListener('click', function(e){
-    if(audioEl.duration){
-      var rect = progressBar.getBoundingClientRect();
-      var clickX = e.clientX - rect.left;
-      var pct = clickX / rect.width;
-      audioEl.currentTime = pct * audioEl.duration;
+    var aboardEl = document.getElementById('aboardCount');
+    var aboardCount = 41;
+    setInterval(function () {
+      aboardCount += Math.round((Math.random() - 0.5) * 4);
+      if (aboardCount < 28) aboardCount = 28;
+      if (aboardCount > 58) aboardCount = 58;
+      aboardEl.textContent = aboardCount;
+    }, 7000);
+
+    /* conductor audios & music volume ducking */
+    var CONDUCTOR_AUDIOS = [
+      "conductor audios/agla stop aane wala he.wav",
+      "conductor audios/agla stop dewas bypass.wav",
+      "conductor audios/agla stop geetabhavan.wav",
+      "conductor audios/agla stop sanwer.wav",
+      "conductor audios/andar aajo .wav",
+      "conductor audios/bhawarkua wale taiyar rhena.wav",
+      "conductor audios/chalo chalo bus nikal rhi he.wav",
+      "conductor audios/dewas aane wala he indore piche chuth gya.wav",
+      "conductor audios/gate ke pas aajana.wav",
+      "conductor audios/kaha jana he.wav",
+      "conductor audios/kaha utroge.wav",
+      "conductor audios/lasudhia.wav",
+      "conductor audios/mangliya.wav",
+      "conductor audios/thoda sarak jao_part01.wav",
+      "conductor audios/ticket ticket (mp3cut.net).wav"
+    ];
+    var conductorAudioEl = new Audio();
+    var conductorBtn = document.getElementById('conductorBtn');
+    var isDucked = false;
+    var duckInterval = null;
+
+    function duckMusic() {
+      if (!isPlaying || isDucked) return;
+      isDucked = true;
+      if (duckInterval) clearInterval(duckInterval);
+      var startVol = audioEl.volume;
+      var targetVol = 0.25; // Lower song volume to 25% during announcement
+      var startTime = Date.now();
+      var durationMs = 300;
+      duckInterval = setInterval(function () {
+        var elapsed = Date.now() - startTime;
+        var progress = elapsed / durationMs;
+        if (progress >= 1) {
+          audioEl.volume = targetVol;
+          clearInterval(duckInterval);
+          duckInterval = null;
+        } else {
+          audioEl.volume = startVol + (targetVol - startVol) * progress;
+        }
+      }, 30);
     }
-  });
 
-  audioEl.addEventListener('ended', function(){ loadTrack(trackIndex + 1, true, false); });
+    function restoreMusic() {
+      if (!isDucked) return;
+      isDucked = false;
+      if (duckInterval) clearInterval(duckInterval);
+      if (!isPlaying) {
+        audioEl.volume = 1;
+        return;
+      }
+      var startVol = audioEl.volume;
+      var targetVol = 1.0; // Restore song volume to 100%
+      var startTime = Date.now();
+      var durationMs = 450;
+      duckInterval = setInterval(function () {
+        var elapsed = Date.now() - startTime;
+        var progress = elapsed / durationMs;
+        if (progress >= 1) {
+          audioEl.volume = targetVol;
+          clearInterval(duckInterval);
+          duckInterval = null;
+        } else {
+          audioEl.volume = startVol + (targetVol - startVol) * progress;
+        }
+      }, 30);
+    }
 
-  /* clock + aboard count */
-  var clockEl = document.getElementById('clock');
-  function tickClock(){
-    var d = new Date(); var h = d.getHours(); var m = d.getMinutes();
-    var ampm = h >= 12 ? 'pm' : 'am'; var h12 = h % 12; if(h12 === 0) h12 = 12;
-    var mm = m < 10 ? '0'+m : ''+m;
-    clockEl.textContent = h12 + ':' + mm + ' ' + ampm;
-  }
-  tickClock(); setInterval(tickClock, 15000);
+    if (conductorBtn) {
+      conductorBtn.addEventListener('click', function () {
+        var randIdx = Math.floor(Math.random() * CONDUCTOR_AUDIOS.length);
+        conductorAudioEl.src = CONDUCTOR_AUDIOS[randIdx];
+        conductorAudioEl.currentTime = 0;
+        conductorBtn.classList.add('playing');
 
-  var aboardEl = document.getElementById('aboardCount');
-  var aboardCount = 41;
-  setInterval(function(){
-    aboardCount += Math.round((Math.random()-0.5) * 4);
-    if(aboardCount < 28) aboardCount = 28;
-    if(aboardCount > 58) aboardCount = 58;
-    aboardEl.textContent = aboardCount;
-  }, 7000);
+        duckMusic(); // Duck background song volume slightly
 
-  /* image switch */
-  var bgOutside = document.getElementById('bgOutside');
-  var bgInside = document.getElementById('bgInside');
-  bgOutside.style.backgroundImage = "url('assets/bg-outside.jpg')";
-  bgInside.style.backgroundImage = "url('assets/bg-inside.jpg')";
-  bgInside.classList.add('active');
-  var switchOutside = document.getElementById('switchOutside');
-  var switchInside = document.getElementById('switchInside');
-  switchOutside.addEventListener('click', function(){
-    bgInside.classList.remove('active'); bgOutside.classList.add('active');
-    switchOutside.classList.add('active'); switchInside.classList.remove('active');
-  });
-  switchInside.addEventListener('click', function(){
-    bgOutside.classList.remove('active'); bgInside.classList.add('active');
-    switchInside.classList.add('active'); switchOutside.classList.remove('active');
-  });
+        conductorAudioEl.play().catch(function (err) {
+          console.warn("Conductor audio error:", err);
+          conductorBtn.classList.remove('playing');
+          restoreMusic();
+        });
+      });
+      conductorAudioEl.addEventListener('ended', function () {
+        conductorBtn.classList.remove('playing');
+        restoreMusic(); // Restore music volume when announcement ends
+      });
+      conductorAudioEl.addEventListener('error', function () {
+        conductorBtn.classList.remove('playing');
+        restoreMusic();
+      });
+    }
 
-  /* landing -> transition -> journey */
-  var landingView = document.getElementById('landingView');
-  var journeyView = document.getElementById('journeyView');
-  var overlay = document.getElementById('transitionOverlay');
+    /* ticket expand/center animation */
+    var ticketMini = document.querySelector('.ticket-mini');
+    var ticketBackdrop = document.getElementById('ticketBackdrop');
 
-  document.getElementById('boardBtn').addEventListener('click', function(){
-    // Start track 0 with smooth fade-in!
-    loadTrack(0, true, true);
-    overlay.classList.add('show');
-    setTimeout(function(){ overlay.classList.add('show-text'); }, 650);
-    setTimeout(function(){
-      landingView.style.display = 'none';
-      journeyView.style.display = 'block';
-    }, 2100);
-    setTimeout(function(){
-      overlay.classList.remove('show-text');
-      overlay.classList.remove('show');
-    }, 2500);
-  });
-</script>
+    function toggleTicket() {
+      if (!ticketMini) return;
+      var isCentered = ticketMini.classList.toggle('centered');
+      if (ticketBackdrop) {
+        if (isCentered) {
+          ticketBackdrop.classList.add('show');
+        } else {
+          ticketBackdrop.classList.remove('show');
+        }
+      }
+    }
+
+    if (ticketMini) {
+      ticketMini.addEventListener('click', toggleTicket);
+    }
+    if (ticketBackdrop) {
+      ticketBackdrop.addEventListener('click', toggleTicket);
+    }
+
+    /* image switch */
+    var bgOutside = document.getElementById('bgOutside');
+    var bgInside = document.getElementById('bgInside');
+    bgOutside.style.backgroundImage = "url('assets/bg-outside.jpg')";
+    bgInside.style.backgroundImage = "url('assets/bg-inside.jpg')";
+    bgInside.classList.add('active');
+    var switchOutside = document.getElementById('switchOutside');
+    var switchInside = document.getElementById('switchInside');
+    switchOutside.addEventListener('click', function () {
+      bgInside.classList.remove('active'); bgOutside.classList.add('active');
+      switchOutside.classList.add('active'); switchInside.classList.remove('active');
+    });
+    switchInside.addEventListener('click', function () {
+      bgOutside.classList.remove('active'); bgInside.classList.add('active');
+      switchInside.classList.add('active'); switchOutside.classList.remove('active');
+    });
+
+    /* landing -> transition -> journey */
+    var landingView = document.getElementById('landingView');
+    var journeyView = document.getElementById('journeyView');
+    var overlay = document.getElementById('transitionOverlay');
+
+    document.getElementById('boardBtn').addEventListener('click', function () {
+      // Start track 0 with smooth fade-in!
+      loadTrack(0, true, true);
+      overlay.classList.add('show');
+      setTimeout(function () { overlay.classList.add('show-text'); }, 650);
+      setTimeout(function () {
+        landingView.style.display = 'none';
+        journeyView.style.display = 'block';
+      }, 2100);
+      setTimeout(function () {
+        overlay.classList.remove('show-text');
+        overlay.classList.remove('show');
+      }, 2500);
+    });
+  </script>
 </body>
+
 </html>

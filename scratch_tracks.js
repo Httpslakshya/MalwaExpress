@@ -1,77 +1,206 @@
 var TRACKS = [
-  { title: "Aapke Pyaar Mein Hum", artist: "Alka Yagnik", src: "Indian Bus Driver's Playlist/01 Aapke Pyaar Mein Hum.mp3", cover: "assets/covers/cover_01.jpg" },
-  { title: "Aate Jate Khoobsurat Awara", artist: "Kishore Kumar", src: "Indian Bus Driver's Playlist/01 Aate Jate Khoobsurat Awara.mp3", cover: "assets/covers/cover_02.jpg" },
-  { title: "Aaye Ho Meri Zindagi Mein - Female Version", artist: "Alka Yagnik", src: "Indian Bus Driver's Playlist/01 Aaye Ho Meri Zindagi Mein - Female Version.mp3", cover: "assets/covers/cover_03.jpg" },
-  { title: "Barsaat Ke Mausam Mein", artist: "Kumar Sanu & Roop Kumar Rathod", src: "Indian Bus Driver's Playlist/01 Barsaat Ke Mausam Mein.mp3", cover: "assets/covers/cover_04.jpg" },
-  { title: "Chand Se Parda", artist: "Kumar Sanu", src: "Indian Bus Driver's Playlist/01 Chand Se Parda.mp3", cover: "assets/covers/cover_05.jpg" },
-  { title: "Dil Hai Ke Manta Nahin", artist: "Kumar Sanu & Anuradha Paudwal", src: "Indian Bus Driver's Playlist/01 Dil Hai Ke Manta Nahin.mp3", cover: "assets/covers/cover_06.jpg" },
-  { title: "Dil Ne Yeh Kaha Hain Dil Se", artist: "Udit Narayan, Alka Yagnik & Kumar Sanu", src: "Indian Bus Driver's Playlist/01 Dil Ne Yeh Kaha Hain Dil Se.mp3", cover: "assets/covers/cover_07.jpg" },
-  { title: "Hum Tumko Nigahon Mein", artist: "Adnan Sami & Shreya Ghoshal", src: "Indian Bus Driver's Playlist/01 Hum Tumko Nigahon Mein.mp3", cover: "assets/covers/cover_08.jpg" },
-  { title: "Humko Deewana Kar Gaye", artist: "Sonu Nigam & Tulsi Kumar", src: "Indian Bus Driver's Playlist/01 Humko Deewana Kar Gaye.mp3", cover: "assets/covers/cover_09.jpg" },
-  { title: "Jeeye To Jeeye Kaise (From Saajan)", artist: "Kumar Sanu, SPB & Alka Yagnik", src: "Indian Bus Driver's Playlist/01 Jeeye To Jeeye Kaise (From _Saajan_).mp3", cover: "assets/covers/cover_10.jpg" },
-  { title: "Kyon Ki Itna Pyar", artist: "Udit Narayan & Alka Yagnik", src: "Indian Bus Driver's Playlist/01 Kyon Ki Itna Pyar.mp3", cover: "assets/covers/cover_11.jpg" },
-  { title: "Mujhe Haq Hai", artist: "Udit Narayan & Shreya Ghoshal", src: "Indian Bus Driver's Playlist/01 Mujhe Haq Hai.mp3", cover: "assets/covers/cover_12.jpg" },
-  { title: "Neele Neele Ambar Par - Male Version", artist: "Kishore Kumar", src: "Indian Bus Driver's Playlist/01 Neele Neele Ambar Par - Male Version.mp3", cover: "assets/covers/cover_13.jpg" },
-  { title: "Pehli Pehli Baar Mohabbat Ki Hai", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/01 Pehli Pehli Baar Mohabbat Ki Hai.mp3", cover: "assets/covers/cover_14.jpg" },
-  { title: "Sochenge Tumhe Pyar (From Deewana)", artist: "Kumar Sanu", src: "Indian Bus Driver's Playlist/01 Sochenge Tumhe Pyar (From _Deewana_).mp3", cover: "assets/covers/cover_15.jpg" },
-  { title: "Tum Dil Ki Dhadkan Mein (From Dhadkan)", artist: "Abhijeet & Alka Yagnik", src: "Indian Bus Driver's Playlist/01 Tum Dil Ki Dhadkan Mein (From _Dhadkan_).mp3", cover: "assets/covers/cover_16.jpg" },
-  { title: "Woh Ladki Bahut Yaad Aati", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/01 Woh Ladki Bahut Yaad Aati.mp3", cover: "assets/covers/cover_17.jpg" },
-  { title: "Zindagi Ban Gaye Ho Tum", artist: "Udit Narayan & Alka Yagnik", src: "Indian Bus Driver's Playlist/01 Zindagi Ban Gaye Ho Tum.mp3", cover: "assets/covers/cover_18.jpg" },
-  { title: "Ajnabi Mujhko Itna Bata", artist: "Udit Narayan & Asha Bhosle", src: "Indian Bus Driver's Playlist/02 Ajnabi Mujhko Itna Bata.mp3", cover: "assets/covers/cover_19.jpg" },
-  { title: "Chori Chori Dil Tera", artist: "Kumar Sanu & Sujata Goswamy", src: "Indian Bus Driver's Playlist/02 Chori Chori Dil Tera.mp3", cover: "assets/covers/cover_20.jpg" },
-  { title: "Dheere - Dheere - Dheere", artist: "Kumar Sanu & Anuradha Paudwal", src: "Indian Bus Driver's Playlist/02 Dheere - Dheere - Dheere.mp3", cover: "assets/covers/cover_21.jpg" },
-  { title: "Dil Cheer Ke Dekh", artist: "Kumar Sanu", src: "Indian Bus Driver's Playlist/02 Dil Cheer Ke Dekh.mp3", cover: "assets/covers/cover_22.jpg" },
-  { title: "Hum Laakh Chupaye", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/02 Hum Laakh Chupaye.mp3", cover: "assets/covers/cover_23.jpg" },
-  { title: "Jeeta Tha Jiske Liye", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/02 Jeeta Tha Jiske Liye.mp3", cover: "assets/covers/cover_24.jpg" },
-  { title: "Kitna Haseen Chehra (From Dilwale)", artist: "Kumar Sanu", src: "Indian Bus Driver's Playlist/02 Kitna Haseen Chehra (From _Dilwale_).mp3", cover: "assets/covers/cover_25.jpg" },
-  { title: "Main Duniya Bhula Doonga", artist: "Kumar Sanu & Anuradha Paudwal", src: "Indian Bus Driver's Playlist/02 Main Duniya Bhula Doonga.mp3", cover: "assets/covers/cover_26.jpg" },
-  { title: "Sab Kuchh Bhula Diya (Female)", artist: "Sonu Nigam & Alka Yagnik", src: "Indian Bus Driver's Playlist/02 Sab Kuchh Bhula Diya (Female).mp3", cover: "assets/covers/cover_27.jpg" },
-  { title: "Tum Dil Ki Dhadkan Mein", artist: "Abhijeet & Alka Yagnik", src: "Indian Bus Driver's Playlist/02 Tum Dil Ki Dhadkan Mein.mp3", cover: "assets/covers/cover_28.jpg" },
-  { title: "Tumse Milne Ki Tamanna Hai", artist: "SPB", src: "Indian Bus Driver's Playlist/02 Tumse Milne Ki Tamanna Hai.mp3", cover: "assets/covers/cover_29.jpg" },
-  { title: "Dil Kehta Hai", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/03 Dil Kehta Hai.mp3", cover: "assets/covers/cover_30.jpg" },
-  { title: "Hum Yaar Hai Tumhare", artist: "Udit Narayan & Alka Yagnik", src: "Indian Bus Driver's Playlist/03 Hum Yaar Hai Tumhare.mp3", cover: "assets/covers/cover_31.jpg" },
-  { title: "Is Pyar Se Meri Taraf Na Dekho - Duet Version", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/03 Is Pyar Se Meri Taraf Na Dekho - Duet Version.mp3", cover: "assets/covers/cover_32.jpg" },
-  { title: "Jo Bhi Kasmein", artist: "Udit Narayan & Alka Yagnik", src: "Indian Bus Driver's Playlist/03 Jo Bhi Kasmein.mp3", cover: "assets/covers/cover_33.jpg" },
-  { title: "Kitaben Bahut Si (From Baazigar)", artist: "Asha Bhosle & Vinod Rathod", src: "Indian Bus Driver's Playlist/03 Kitaben Bahut Si (From _Baazigar_).mp3", cover: "assets/covers/cover_34.jpg" },
-  { title: "Taaron Ka Chamakta", artist: "Udit Narayan & Bali Brahmbhatt", src: "Indian Bus Driver's Playlist/03 Taaron Ka Chamakta.mp3", cover: "assets/covers/cover_35.jpg" },
-  { title: "Aisi Deewangi (From Deewana)", artist: "Alka Yagnik & Vinod Rathod", src: "Indian Bus Driver's Playlist/04 Aisi Deewangi (From _Deewana_).mp3", cover: "assets/covers/cover_36.jpg" },
-  { title: "Humko Sirf Tumse", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/04 Humko Sirf Tumse.mp3", cover: "assets/covers/cover_37.jpg" },
-  { title: "Kahin Mujhe Pyar Hua Toh Nahin", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/04 Kahin Mujhe Pyar Hua Toh Nahin.mp3", cover: "assets/covers/cover_38.jpg" },
-  { title: "Mujhse Mohabbat Ka", artist: "Satrang Music Official", src: "Indian Bus Driver's Playlist/04 Mujhse Mohabbat Ka.mp3", cover: "assets/covers/cover_39.jpg" },
-  { title: "O Dil Tod Ke Hansti Ho Mera", artist: "Udit Narayan", src: "Indian Bus Driver's Playlist/04 O Dil Tod Ke Hansti Ho Mera.mp3", cover: "assets/covers/cover_40.jpg" },
-  { title: "Pardesi Pardesi", artist: "Udit Narayan & Alka Yagnik", src: "Indian Bus Driver's Playlist/04 Pardesi Pardesi.mp3", cover: "assets/covers/cover_41.jpg" },
-  { title: "Tumse Milna", artist: "Udit Narayan & Alka Yagnik", src: "Indian Bus Driver's Playlist/04 Tumse Milna.mp3", cover: "assets/covers/cover_42.jpg" },
-  { title: "Ae Mere Humsafar", artist: "Udit Narayan & Alka Yagnik", src: "Indian Bus Driver's Playlist/05 Ae Mere Humsafar.mp3", cover: "assets/covers/cover_43.jpg" },
-  { title: "Dil Laga Liya Maine", artist: "Alka Yagnik & Udit Narayan", src: "Indian Bus Driver's Playlist/05 Dil Laga Liya Maine.mp3", cover: "assets/covers/cover_44.jpg" },
-  { title: "Main Agar Saamne", artist: "Abhijeet & Alka Yagnik", src: "Indian Bus Driver's Playlist/05 Main Agar Saamne.mp3", cover: "assets/covers/cover_45.jpg" },
-  { title: "Meri Mehbooba", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/05 Meri Mehbooba.mp3", cover: "assets/covers/cover_46.jpg" },
-  { title: "Pehli Pehli Baar Mohabbat Ki Hai (From Sirf Tum)", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/05 Pehli Pehli Baar Mohabbat Ki Hai (From _Sirf Tum_).mp3", cover: "assets/covers/cover_47.jpg" },
-  { title: "Raah Mein Unse Mulaqat", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/05 Raah Mein Unse Mulaqat.mp3", cover: "assets/covers/cover_48.jpg" },
-  { title: "Sona Kitna Sona Hai", artist: "Udit Narayan & Poornima", src: "Indian Bus Driver's Playlist/05 Sona Kitna Sona Hai.mp3", cover: "assets/covers/cover_49.jpg" },
-  { title: "Chhupana Bhi Nahin Aata", artist: "Vinod Rathod", src: "Indian Bus Driver's Playlist/06 Chhupana Bhi Nahin Aata.mp3", cover: "assets/covers/cover_50.jpg" },
-  { title: "Ding Dong", artist: "Alka Yagnik & Vinod Rathod", src: "Indian Bus Driver's Playlist/06 Ding Dong.mp3", cover: "assets/covers/cover_51.jpg" },
-  { title: "Saaton Janam Main Tere", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/06 Saaton Janam Main Tere.mp3", cover: "assets/covers/cover_52.jpg" },
-  { title: "Tumsa Koi Pyaara", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/06 Tumsa Koi Pyaara.mp3", cover: "assets/covers/cover_53.jpg" },
-  { title: "Is Tarah Aashiqui Ka - Kumar Sanu Version", artist: "Kumar Sanu", src: "Indian Bus Driver's Playlist/07 Is Tarah Aashiqui Ka - Kumar Sanu Version.mp3", cover: "assets/covers/cover_54.jpg" },
-  { title: "Laal Dupatta", artist: "Udit Narayan & Alka Yagnik", src: "Indian Bus Driver's Playlist/07 Laal Dupatta.mp3", cover: "assets/covers/cover_55.jpg" },
-  { title: "Mera Dil Bhi Kitna Pagal Hai", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/07 Mera Dil Bhi Kitna Pagal Hai.mp3", cover: "assets/covers/cover_56.jpg" },
-  { title: "O Mere Dil Ke Chain", artist: "Kishore Kumar", src: "Indian Bus Driver's Playlist/07 O Mere Dil Ke Chain.mp3", cover: "assets/covers/cover_57.jpg" },
-  { title: "Pucho Zara Pucho", artist: "Alka Yagnik & Kumar Sanu", src: "Indian Bus Driver's Playlist/07 Pucho Zara Pucho.mp3", cover: "assets/covers/cover_58.jpg" },
-  { title: "Pyaar Se Pyar Hum", artist: "Kumar Sanu", src: "Indian Bus Driver's Playlist/07 Pyaar Se Pyar Hum.mp3", cover: "assets/covers/cover_59.jpg" },
-  { title: "Sau Rab Di", artist: "Udit Narayan & Alka Yagnik", src: "Indian Bus Driver's Playlist/07 Sau Rab Di.mp3", cover: "assets/covers/cover_60.jpg" },
-  { title: "Jeeye to Jeeye Kaise", artist: "Kumar Sanu, SPB & Alka Yagnik", src: "Indian Bus Driver's Playlist/08 Jeeye to Jeeye Kaise.mp3", cover: "assets/covers/cover_61.jpg" },
-  { title: "Ladki Badi Anjani Hai", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/08 Ladki Badi Anjani Hai.mp3", cover: "assets/covers/cover_62.jpg" },
-  { title: "Love Tujhe Love Main Karta", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/08 Love Tujhe Love Main Karta.mp3", cover: "assets/covers/cover_63.jpg" },
-  { title: "Milne Ki Tum Koshish Karna", artist: "Kumar Sanu & Asha Bhosle", src: "Indian Bus Driver's Playlist/08 Milne Ki Tum Koshish Karna.mp3", cover: "assets/covers/cover_64.jpg" },
-  { title: "Tu Meri Zindagi Hai", artist: "Kumar Sanu & Anuradha Paudwal", src: "Indian Bus Driver's Playlist/08 Tu Meri Zindagi Hai.mp3", cover: "assets/covers/cover_65.jpg" },
-  { title: "Tumhein Dekhen Meri Aankhen", artist: "Alka Yagnik & Kumar Sanu", src: "Indian Bus Driver's Playlist/08 Tumhein Dekhen Meri Aankhen.mp3", cover: "assets/covers/cover_66.jpg" },
-  { title: "Tumse Milne Ko Dil", artist: "Alka Yagnik & Kumar Sanu", src: "Indian Bus Driver's Playlist/08 Tumse Milne Ko Dil.mp3", cover: "assets/covers/cover_67.jpg" },
-  { title: "Nahin Yeh Ho Nahin Sakta", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/09 Nahin Yeh Ho Nahin Sakta.mp3", cover: "assets/covers/cover_68.jpg" },
-  { title: "Tere Dar Par Sanam - Male Version", artist: "Kumar Sanu", src: "Indian Bus Driver's Playlist/09 Tere Dar Par Sanam - Male Version.mp3", cover: "assets/covers/cover_69.jpg" },
-  { title: "Ab Tere Dil Mein To", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/10 Ab Tere Dil Mein To.mp3", cover: "assets/covers/cover_70.jpg" },
-  { title: "Kyo Kisi Ko", artist: "Udit Narayan", src: "Indian Bus Driver's Playlist/10 Kyo Kisi Ko.mp3", cover: "assets/covers/cover_71.jpg" },
-  { title: "Dil Ka Aalam (From Aashiqui)", artist: "Kumar Sanu", src: "Indian Bus Driver's Playlist/11 Dil Ka Aalam (From _Aashiqui_).mp3", cover: "assets/covers/cover_72.jpg" },
-  { title: "Dil Kehta Hai (From Akele Hum Akele Tum)", artist: "Kumar Sanu & Alka Yagnik", src: "Indian Bus Driver's Playlist/11 Dil Kehta Hai (From _Akele Hum Akele Tum_).mp3", cover: "assets/covers/cover_73.jpg" },
-  { title: "Dilbar Mere - From Satte Pe Satta", artist: "Kishore Kumar", src: "Indian Bus Driver's Playlist/11 Dilbar Mere - From _Satte Pe Satta_.mp3", cover: "assets/covers/cover_74.jpg" },
-  { title: "Tumhein Apna Banane Ki Kasam Khai Hai", artist: "Kumar Sanu & Anuradha Paudwal", src: "Indian Bus Driver's Playlist/12 Tumhein Apna Banane Ki Kasam Khai Hai.mp3", cover: "assets/covers/cover_75.jpg" },
+  {
+    "title": "Mujhse Mohabbat Ka",
+    "artist": "Kumar Sanu",
+    "src": "new songs/Mujhse Mohabbat Ka - Kumar Sanu.mp3",
+    "cover": "assets/covers/cover_01.jpg"
+  },
+  {
+    "title": "Chand Se Parda",
+    "artist": "Kumar Sanu",
+    "src": "new songs/Chand Se Parda.mp3",
+    "cover": "assets/covers/cover_02.jpg"
+  },
+  {
+    "title": "Tumsa Koi Pyaara",
+    "artist": "Kumar Sanu & Alka Yagnik",
+    "src": "new songs/Tumsa Koi Pyaara.mp3",
+    "cover": "assets/covers/cover_03.jpg"
+  },
+  {
+    "title": "Tu Jo Hans Hans Ke",
+    "artist": "Udit Narayan & Kavita Krishnamurthy",
+    "src": "new songs/Tu Jo Hans Hans Ke - From _Raja Bhaiya_.mp3",
+    "cover": "assets/covers/cover_04.jpg"
+  },
+  {
+    "title": "Aate Jate Khoobsurat Awara",
+    "artist": "Kishore Kumar",
+    "src": "new songs/Aate Jate Khoobsurat Awara.mp3",
+    "cover": "assets/covers/cover_05.jpg"
+  },
+  {
+    "title": "Ab Tere Dil Mein To",
+    "artist": "Kumar Sanu & Alka Yagnik",
+    "src": "new songs/Ab Tere Dil Mein To.mp3",
+    "cover": "assets/covers/cover_06.jpg"
+  },
+  {
+    "title": "Ae Mere Humsafar",
+    "artist": "Udit Narayan & Alka Yagnik",
+    "src": "new songs/Ae Mere Humsafar.mp3",
+    "cover": "assets/covers/cover_07.jpg"
+  },
+  {
+    "title": "Aisi Deewangi",
+    "artist": "Alka Yagnik & Vinod Rathod",
+    "src": "new songs/Aisi Deewangi (From _Deewana_).mp3",
+    "cover": "assets/covers/cover_08.jpg"
+  },
+  {
+    "title": "Barsaat Ke Mausam Mein",
+    "artist": "Kumar Sanu & Roop Kumar Rathod",
+    "src": "new songs/Barsaat Ke Mausam Mein.mp3",
+    "cover": "assets/covers/cover_09.jpg"
+  },
+  {
+    "title": "Chori Chori Dil Tera",
+    "artist": "Kumar Sanu & Sujata Goswamy",
+    "src": "new songs/Chori Chori Dil Tera.mp3",
+    "cover": "assets/covers/cover_10.jpg"
+  },
+  {
+    "title": "Dil Cheer Ke Dekh",
+    "artist": "Kumar Sanu",
+    "src": "new songs/Dil Cheer Ke Dekh.mp3",
+    "cover": "assets/covers/cover_11.jpg"
+  },
+  {
+    "title": "Dil Ka Aalam",
+    "artist": "Kumar Sanu",
+    "src": "new songs/Dil Ka Aalam (From _Aashiqui_).mp3",
+    "cover": "assets/covers/cover_12.jpg"
+  },
+  {
+    "title": "Dil Kehta Hai",
+    "artist": "Kumar Sanu & Alka Yagnik",
+    "src": "new songs/Dil Kehta Hai (From _Akele Hum Akele Tum_).mp3",
+    "cover": "assets/covers/cover_13.jpg"
+  },
+  {
+    "title": "Dilbar Mere",
+    "artist": "Kishore Kumar",
+    "src": "new songs/Dilbar Mere  From Satte Pe Satta .mp3",
+    "cover": "assets/covers/cover_14.jpg"
+  },
+  {
+    "title": "Hum Yaar Hai Tumhare",
+    "artist": "Udit Narayan & Alka Yagnik",
+    "src": "new songs/Hum Yaar Hai Tumhare Udit Narayan, Alka Yagnik.mp3",
+    "cover": "assets/covers/cover_15.jpg"
+  },
+  {
+    "title": "Humko Deewana Kar Gaye",
+    "artist": "Sonu Nigam & Tulsi Kumar",
+    "src": "new songs/Humko Deewana Kar Gaye.mp3",
+    "cover": "assets/covers/cover_16.jpg"
+  },
+  {
+    "title": "Is Pyar Se Meri Taraf Na Dekho",
+    "artist": "Kumar Sanu & Alka Yagnik",
+    "src": "new songs/Is Pyar Se Meri Taraf Na Dekho - Duet Version.mp3",
+    "cover": "assets/covers/cover_17.jpg"
+  },
+  {
+    "title": "Kahin Mujhe Pyar Hua Toh Nahin",
+    "artist": "Kumar Sanu & Alka Yagnik",
+    "src": "new songs/Kahin Mujhe Pyar Hua Toh Nahin.mp3",
+    "cover": "assets/covers/cover_18.jpg"
+  },
+  {
+    "title": "Laal Dupatta",
+    "artist": "Udit Narayan & Alka Yagnik",
+    "src": "new songs/Laal Dupatta Udit Narayan, Alka Yagnik.mp3",
+    "cover": "assets/covers/cover_19.jpg"
+  },
+  {
+    "title": "Meri Mehbooba",
+    "artist": "Kumar Sanu & Alka Yagnik",
+    "src": "new songs/Meri Mehbooba -Kumar Sanu, Alka Yagnik - .mp3",
+    "cover": "assets/covers/cover_20.jpg"
+  },
+  {
+    "title": "Nahin Yeh Ho Nahin Sakta",
+    "artist": "Kumar Sanu & Alka Yagnik",
+    "src": "new songs/Nahin Yeh Ho Nahin Sakta.mp3",
+    "cover": "assets/covers/cover_21.jpg"
+  },
+  {
+    "title": "Neele Neele Ambar Par",
+    "artist": "Kishore Kumar",
+    "src": "new songs/Neele Neele Ambar Par - Male Version - Kalyanji-Anandji, Kishore Kumar .mp3",
+    "cover": "assets/covers/cover_22.jpg"
+  },
+  {
+    "title": "O Dil Tod Ke Hansti Ho Mera",
+    "artist": "Udit Narayan",
+    "src": "new songs/O Dil Tod Ke Hansti Ho Mera Udit Narayan.mp3",
+    "cover": "assets/covers/cover_23.jpg"
+  },
+  {
+    "title": "O Mere Dil Ke Chain",
+    "artist": "Kishore Kumar",
+    "src": "new songs/O Mere Dil Ke Chain -Kishore Kumar, R. D. Burman.mp3",
+    "cover": "assets/covers/cover_24.jpg"
+  },
+  {
+    "title": "Pehli Pehli Baar Mohabbat Ki Hai",
+    "artist": "Kumar Sanu & Alka Yagnik",
+    "src": "new songs/Pehli Pehli Baar Mohabbat Ki Hai (From _Sirf Tum_).mp3",
+    "cover": "assets/covers/cover_25.jpg"
+  },
+  {
+    "title": "Pucho Zara Pucho",
+    "artist": "Alka Yagnik & Kumar Sanu",
+    "src": "new songs/Pucho Zara Pucho.mp3",
+    "cover": "assets/covers/cover_26.jpg"
+  },
+  {
+    "title": "Raah Mein Unse Mulaqat",
+    "artist": "Kumar Sanu & Alka Yagnik",
+    "src": "new songs/Raah Mein Unse Mulaqat Kumar Sanu, Alka Yagnik.mp3",
+    "cover": "assets/covers/cover_27.jpg"
+  },
+  {
+    "title": "Saaton Janam Main Tere",
+    "artist": "Kumar Sanu & Alka Yagnik",
+    "src": "new songs/Saaton Janam Main Tere.mp3",
+    "cover": "assets/covers/cover_28.jpg"
+  },
+  {
+    "title": "Sona Kitna Sona Hai",
+    "artist": "Udit Narayan & Poornima",
+    "src": "new songs/Sona Kitna Sona Hai-Anand Milind, Udit Narayan, Poornima - .mp3",
+    "cover": "assets/covers/cover_29.jpg"
+  },
+  {
+    "title": "Taaron Ka Chamakta",
+    "artist": "Udit Narayan & Bali Brahmbhatt",
+    "src": "new songs/Taaron Ka Chamakta - Udit Narayan, Bali Brahmbhatt, Sameer Anjaan.mp3",
+    "cover": "assets/covers/cover_30.jpg"
+  },
+  {
+    "title": "Tere Dar Par Sanam",
+    "artist": "Kumar Sanu",
+    "src": "new songs/Tere Dar Par Sanam - Male Version -Kumar Sanu.mp3",
+    "cover": "assets/covers/cover_31.jpg"
+  },
+  {
+    "title": "Tumhein Apna Banane Ki Kasam Khai Hai",
+    "artist": "Kumar Sanu & Anuradha Paudwal",
+    "src": "new songs/Tumhein Apna Banane Ki Kasam Khai Hai.mp3",
+    "cover": "assets/covers/cover_32.jpg"
+  },
+  {
+    "title": "Tumhein Dekhen Meri Aankhen",
+    "artist": "Alka Yagnik & Kumar Sanu",
+    "src": "new songs/Tumhein Dekhen Meri Aankhen.mp3",
+    "cover": "assets/covers/cover_33.jpg"
+  },
+  {
+    "title": "Tumse Milne Ko Dil",
+    "artist": "Alka Yagnik & Kumar Sanu",
+    "src": "new songs/Tumse Milne Ko Dil.mp3",
+    "cover": "assets/covers/cover_34.jpg"
+  }
 ];

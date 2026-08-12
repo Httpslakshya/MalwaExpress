@@ -3,6 +3,15 @@
   "cleanUrls": true,
   "headers": [
     {
+      "source": "/index.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
       "source": "/assets/(.*)",
       "headers": [
         {
@@ -12,16 +21,7 @@
       ]
     },
     {
-      "source": "/new songs/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    },
-    {
-      "source": "/conductor audios/(.*)",
+      "source": "/fx/(.*)",
       "headers": [
         {
           "key": "Cache-Control",

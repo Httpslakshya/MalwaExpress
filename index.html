@@ -1631,17 +1631,25 @@
     }
     tickClock(); setInterval(tickClock, 15000);
 
-    /* Aboard Count: Random number between 1 and 40 (changes on refresh & dynamically) */
+    /* Aboard Count: Starts at random 1-40 and continuously fluctuates (increases & decreases) */
     var aboardEl = document.getElementById('aboardCount');
     var currentAboard = Math.floor(Math.random() * 40) + 1;
     if (aboardEl) aboardEl.textContent = currentAboard;
 
-    setInterval(function () {
-      currentAboard += Math.round((Math.random() - 0.5) * 4);
-      if (currentAboard < 1) currentAboard = 1;
-      if (currentAboard > 40) currentAboard = 40;
+    function updateAboard() {
+      var delta = Math.floor(Math.random() * 3) + 1;
+      if (Math.random() < 0.5) delta = -delta;
+
+      currentAboard += delta;
+      if (currentAboard < 1) currentAboard = Math.floor(Math.random() * 4) + 1;
+      if (currentAboard > 40) currentAboard = 40 - Math.floor(Math.random() * 4);
+
       if (aboardEl) aboardEl.textContent = currentAboard;
-    }, 6000);
+
+      var nextDelay = Math.floor(Math.random() * 2000) + 3000; // 3 to 5 seconds
+      setTimeout(updateAboard, nextDelay);
+    }
+    setTimeout(updateAboard, 3500);
 
     /* conductor audios & music volume ducking */
     var CONDUCTOR_AUDIOS = [

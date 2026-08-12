@@ -11,9 +11,6 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Space+Mono:wght@400;700&display=swap"
     rel="stylesheet">
-  <!-- Firebase Realtime Presence SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <style>
     :root {
       --rust: #B23A2A;
@@ -1634,42 +1631,49 @@
     }
     tickClock(); setInterval(tickClock, 15000);
 
-    /* Real-Time Active Users Presence System */
+    /* Real-Time Active Users Presence System (Zero Render Blocking) */
     var aboardEl = document.getElementById('aboardCount');
-
-    // To enable 100% real-time global active user tracking across all visitors worldwide,
-    // create a free Firebase Realtime Database and paste its URL here (e.g. "https://your-app-default-rtdb.firebaseio.com")
-    var FIREBASE_DB_URL = "";
+    var FIREBASE_DB_URL = ""; // Set your Firebase Realtime DB URL here if needed
 
     function setupLivePresence() {
-      if (FIREBASE_DB_URL && window.firebase && firebase.database) {
-        try {
-          if (!firebase.apps.length) {
-            firebase.initializeApp({ databaseURL: FIREBASE_DB_URL });
-          }
-          var db = firebase.database();
-          var myPresenceRef = db.ref('online_passengers/' + Math.random().toString(36).substring(2, 9));
-          var connectedRef = db.ref('.info/connected');
-
-          connectedRef.on('value', function (snap) {
-            if (snap.val() === true) {
-              myPresenceRef.onDisconnect().remove();
-              myPresenceRef.set({ onlineAt: firebase.database.ServerValue.TIMESTAMP });
-            }
-          });
-
-          db.ref('online_passengers').on('value', function (snap) {
-            var liveCount = snap.numChildren();
-            if (aboardEl) aboardEl.textContent = liveCount > 0 ? liveCount : 1;
-          });
-          return;
-        } catch (err) {
-          console.warn("Firebase live presence warning:", err);
-        }
+      if (!FIREBASE_DB_URL) {
+        if (aboardEl) aboardEl.textContent = 1;
+        return;
       }
 
-      // Default active presence counter
-      if (aboardEl) aboardEl.textContent = 1;
+      function loadScript(src, cb) {
+        var s = document.createElement('script');
+        s.src = src; s.async = true;
+        s.onload = cb;
+        document.head.appendChild(s);
+      }
+
+      loadScript("https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js", function () {
+        loadScript("https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js", function () {
+          try {
+            if (!firebase.apps.length) {
+              firebase.initializeApp({ databaseURL: FIREBASE_DB_URL });
+            }
+            var db = firebase.database();
+            var myPresenceRef = db.ref('online_passengers/' + Math.random().toString(36).substring(2, 9));
+            var connectedRef = db.ref('.info/connected');
+
+            connectedRef.on('value', function (snap) {
+              if (snap.val() === true) {
+                myPresenceRef.onDisconnect().remove();
+                myPresenceRef.set({ onlineAt: firebase.database.ServerValue.TIMESTAMP });
+              }
+            });
+
+            db.ref('online_passengers').on('value', function (snap) {
+              var liveCount = snap.numChildren();
+              if (aboardEl) aboardEl.textContent = liveCount > 0 ? liveCount : 1;
+            });
+          } catch (err) {
+            console.warn("Firebase live presence warning:", err);
+          }
+        });
+      });
     }
     setupLivePresence();
 

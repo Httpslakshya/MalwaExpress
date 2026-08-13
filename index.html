@@ -2328,33 +2328,12 @@
       }
 
       if (autoplay) {
-        if (withFadeIn) {
-          audioEl.volume = 0;
-          audioEl.play().then(function () {
-            setPlaying(true);
-            var startTime = Date.now();
-            var durationMs = 3500; // Smooth 3.5s fade in transition
-            fadeInterval = setInterval(function () {
-              var elapsed = Date.now() - startTime;
-              var vol = elapsed / durationMs;
-              if (vol >= 1) {
-                vol = 1;
-                clearInterval(fadeInterval);
-                fadeInterval = null;
-              }
-              audioEl.volume = vol;
-            }, 50);
-          }).catch(function (err) {
-            console.warn("Autoplay blocked:", err);
-          });
-        } else {
-          audioEl.volume = 1;
-          audioEl.play().then(function () {
-            setPlaying(true);
-          }).catch(function (err) {
-            console.warn("Autoplay error:", err);
-          });
-        }
+        audioEl.volume = 1;
+        audioEl.play().then(function () {
+          setPlaying(true);
+        }).catch(function (err) {
+          console.warn("Autoplay error:", err);
+        });
       }
     }
 

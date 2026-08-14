@@ -805,23 +805,29 @@
       opacity: 0.85;
     }
 
-    /* Share Ride Button */
-    .share-ride-btn {
+    /* Share Ride & Ticket Action Buttons */
+    .tm-actions {
+      display: flex;
+      gap: 6px;
       margin-top: 10px;
       width: 100%;
+    }
+
+    .share-ride-btn {
+      flex: 1.2;
       background: #241608;
       color: #f3e6ce;
       border: none;
       border-radius: 8px;
-      padding: 6px 10px;
-      font-size: 10.5px;
+      padding: 6px 8px;
+      font-size: 10px;
       font-weight: 700;
       font-family: inherit;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 5px;
       transition: background 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
     }
 
@@ -832,6 +838,34 @@
     }
 
     .share-ride-btn:active {
+      transform: scale(0.97);
+    }
+
+    .ticket-sticker-btn {
+      flex: 0.9;
+      background: #3b2816;
+      color: #f3e6ce;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 8px;
+      font-size: 10px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .ticket-sticker-btn:hover {
+      background: var(--marigold);
+      color: #1c150f;
+      transform: translateY(-1px);
+    }
+
+    .ticket-sticker-btn:active {
       transform: scale(0.97);
     }
 
@@ -1261,41 +1295,7 @@
 
     /* ================= BUS BODY STICKERS & GRAFFITI ================= */
     .bus-sticker-slot {
-      position: fixed;
-      left: 22px;
-      bottom: 66px;
-      z-index: 15;
-      opacity: 0;
-      transform: translateY(6px) scale(0.96);
-      transition: opacity 1.8s cubic-bezier(0.16, 1, 0.3, 1), transform 1.8s cubic-bezier(0.16, 1, 0.3, 1);
-      cursor: pointer;
-      user-select: none;
-      pointer-events: auto;
-    }
-    .bus-sticker-slot.show {
-      opacity: 0.95;
-      transform: translateY(0) scale(1);
-    }
-    .bus-sticker-slot:hover {
-      opacity: 1;
-      transform: scale(1.06);
-    }
-    .bus-sticker-slot .edit-hint {
-      position: absolute;
-      top: -22px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(15, 10, 6, 0.9);
-      border: 1px solid rgba(232, 166, 60, 0.4);
-      color: var(--marigold);
-      font-family: 'Space Mono', monospace;
-      font-size: 8px;
-      padding: 2px 6px;
-      border-radius: 999px;
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s ease;
+      display: none !important;
     }
     .bus-sticker-slot:hover .edit-hint {
       opacity: 1;
@@ -1645,10 +1645,29 @@
     }
 
     .se-actions {
-      margin-top: 4px;
+      margin-top: 6px;
+      display: flex;
+      gap: 10px;
+    }
+    .se-clear-btn {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--cream);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .se-clear-btn:hover {
+      background: rgba(255, 82, 82, 0.2);
+      border-color: #ff5252;
+      color: #ffffff;
     }
     .se-save-btn {
-      width: 100%;
+      flex: 1;
       background: var(--rust);
       color: #ffffff;
       border: none;
@@ -1658,8 +1677,8 @@
       font-size: 13.5px;
       font-weight: 700;
       cursor: pointer;
-      box-shadow: 0 6px 18px rgba(184, 61, 41, 0.4);
-      transition: background 0.2s, transform 0.2s;
+      box-shadow: 0 6px 18px rgba(178, 58, 42, 0.4);
+      transition: background 0.2s ease, transform 0.2s ease;
     }
     .se-save-btn:hover {
       background: #c33d29;
@@ -2438,12 +2457,73 @@
       box-shadow: 0 22px 48px rgba(0, 0, 0, 0.6);
     }
 
+    .ticket-close-btn {
+      display: none;
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      background: rgba(36, 22, 8, 0.08);
+      border: 1px solid rgba(36, 22, 8, 0.15);
+      color: #241608;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 3px 6px;
+      border-radius: 50%;
+      line-height: 1;
+      transition: all 0.2s ease;
+      z-index: 5;
+    }
+    .ticket-mini.centered .ticket-close-btn {
+      display: block;
+    }
+    .ticket-close-btn:hover {
+      background: rgba(36, 22, 8, 0.2);
+      transform: scale(1.15);
+    }
+
+    .tm-passenger-wrap {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      border-radius: 4px;
+      padding: 2px 4px;
+      margin-left: -4px;
+      transition: background 0.15s ease;
+    }
+    .ticket-mini.centered .tm-passenger-wrap:hover {
+      background: rgba(180, 140, 100, 0.25);
+    }
+    .tm-edit-btn {
+      background: rgba(36, 22, 8, 0.08);
+      border: 1px solid rgba(36, 22, 8, 0.2);
+      border-radius: 4px;
+      padding: 2px 4px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      color: #241608;
+      cursor: pointer;
+      opacity: 0.8;
+      transition: all 0.15s ease;
+    }
+    .ticket-mini.centered .tm-edit-btn {
+      display: inline-flex;
+    }
+    .tm-edit-btn:hover {
+      opacity: 1;
+      background: rgba(36, 22, 8, 0.18);
+      transform: scale(1.08);
+    }
+
     .ticket-mini.centered {
       right: 50%;
       bottom: 50%;
       transform: translate(50%, 50%) rotate(0deg) scale(1.45);
       z-index: 60;
       box-shadow: 0 35px 90px rgba(0, 0, 0, 0.85), 0 12px 35px rgba(0, 0, 0, 0.6);
+      cursor: default;
     }
 
     .ticket-mini::before,
@@ -3108,6 +3188,7 @@
         </div>
 
         <div class="se-actions">
+          <button id="seClearBtn" class="se-clear-btn" title="स्टीकर हटाएं">हटाएं · Remove</button>
           <button id="seSaveBtn" class="se-save-btn">स्टीकर लगाएं · Apply Sticker</button>
         </div>
       </div>
@@ -3199,13 +3280,25 @@
 
     <div class="ticket-backdrop" id="ticketBackdrop"></div>
     <div class="ticket-mini" id="myTicket">
+      <button class="ticket-close-btn" id="ticketCloseBtn" aria-label="Close ticket" title="बंद करें · Close">✕</button>
       <div class="mobile-ticket-icon">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z" />
           <path d="M9 6v12M15 6v12" stroke-dasharray="2 2" />
         </svg>
       </div>
-      <div class="tm-row"><span class="tm-title" id="ticketPassengerName">Passenger: Yatri</span><span class="tm-no" id="ticketNo">FA-4178</span></div>
+      <div class="tm-row">
+        <div class="tm-passenger-wrap" id="ticketPassengerWrap" title="नाम बदलने के लिए क्लिक करें · Click to edit name">
+          <span class="tm-title" id="ticketPassengerName">Passenger: Yatri</span>
+          <button class="tm-edit-btn" id="editPassengerNameBtn" title="नाम बदलें · Edit Name">
+            <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+          </button>
+        </div>
+        <span class="tm-no" id="ticketNo">FA-4178</span>
+      </div>
       <div class="tm-co-badge" id="coTravelBadge" style="display: none;">Travelling with Yatri ❤️</div>
       <hr class="tm-div">
       <div class="tm-fields">
@@ -3243,13 +3336,22 @@
         </div>
       </div>
 
-      <button id="shareRideBtn" class="share-ride-btn" title="Share this ride with a friend">
-        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
-          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-        </svg>
-        Share this ride
-      </button>
+      <!-- Action Buttons Row on Ticket -->
+      <div class="tm-actions">
+        <button id="shareRideBtn" class="share-ride-btn" title="Share this ride with a friend">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+          </svg>
+          Share
+        </button>
+        <button id="ticketStickerBtn" class="ticket-sticker-btn" title="बस स्टीकर कस्टमाइज़ करें · Customize Bus Sticker">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+          स्टीकर · Sticker
+        </button>
+      </div>
     </div>
 
     <!-- Name Prompt Modal -->
@@ -4210,6 +4312,7 @@
     /* ticket expand/center animation */
     var ticketMini = document.querySelector('.ticket-mini');
     var ticketBackdrop = document.getElementById('ticketBackdrop');
+    var ticketCloseBtn = document.getElementById('ticketCloseBtn');
 
     function toggleTicket() {
       if (!ticketMini) return;
@@ -4225,8 +4328,26 @@
     }
 
     if (ticketMini) {
-      ticketMini.addEventListener('click', toggleTicket);
+      ticketMini.addEventListener('click', function (e) {
+        if (ticketMini.classList.contains('centered')) {
+          if (e.target.closest('button') || e.target.closest('.tm-passenger-wrap') || e.target.closest('.tm-fields')) {
+            return;
+          }
+        }
+        toggleTicket();
+      });
     }
+
+    if (ticketCloseBtn) {
+      ticketCloseBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        playTapeClick();
+        if (ticketMini && ticketMini.classList.contains('centered')) {
+          toggleTicket();
+        }
+      });
+    }
+
     if (ticketBackdrop) {
       ticketBackdrop.addEventListener('click', toggleTicket);
     }
@@ -4940,10 +5061,15 @@
     var stickerSlot = document.getElementById('busStickerSlot');
     var stickerModal = document.getElementById('stickerEditModal');
     var seCloseBtn = document.getElementById('seCloseBtn');
+    var seClearBtn = document.getElementById('seClearBtn');
     var seTextInput = document.getElementById('seTextInput');
     var seInputLabel = document.getElementById('seInputLabel');
     var sePreviewStage = document.getElementById('sePreviewStage');
     var seSaveBtn = document.getElementById('seSaveBtn');
+    var ticketStickerBtn = document.getElementById('ticketStickerBtn');
+    var editPassengerNameBtn = document.getElementById('editPassengerNameBtn');
+    var ticketPassengerWrap = document.getElementById('ticketPassengerWrap');
+
     var selectedDesignId = userCustomSticker ? userCustomSticker.design : 1;
     var customTextVal = userCustomSticker ? userCustomSticker.text : 'सफ़र मुबारक';
 
@@ -4952,20 +5078,25 @@
       if (designId === 1) {
         var displayText = safeText || 'सफ़र मुबारक';
         displayText = displayText.replace(/\n/g, '<br>');
-        return '<div class="sticker-1"><span class="edit-hint">✏️ Edit</span><div class="txt">' + displayText + '</div><div class="sub">MALWA EXPRESS</div></div>';
+        return '<div class="sticker-1"><div class="txt">' + displayText + '</div><div class="sub">MALWA EXPRESS</div></div>';
       } else if (designId === 2) {
         var displayText2 = safeText || 'माँ की दुआ साथ है';
-        return '<div class="sticker-2"><span class="edit-hint">✏️ Edit</span><div class="txt">Horn Please</div><div class="txt2">' + displayText2 + '</div></div>';
+        return '<div class="sticker-2"><div class="txt">Horn Please</div><div class="txt2">' + displayText2 + '</div></div>';
       } else {
         var displayText3 = safeText || 'दिल से';
-        return '<div class="sticker-3"><span class="edit-hint">✏️ Edit</span><div class="heart">❤</div><div class="txt">' + displayText3 + '</div><div class="brand">MALWA EXPRESS</div></div>';
+        return '<div class="sticker-3"><div class="heart">❤</div><div class="txt">' + displayText3 + '</div><div class="brand">MALWA EXPRESS</div></div>';
       }
     }
 
     function updateStickerDisplay() {
       if (!stickerSlot) return;
-      var d = userCustomSticker ? userCustomSticker.design : 1;
-      var t = userCustomSticker ? userCustomSticker.text : 'सफ़र मुबारक';
+      if (!userCustomSticker) {
+        stickerSlot.innerHTML = '';
+        stickerSlot.classList.remove('show');
+        return;
+      }
+      var d = userCustomSticker.design || 1;
+      var t = userCustomSticker.text || 'सफ़र मुबारक';
       stickerSlot.innerHTML = renderStickerMarkup(d, t);
       stickerSlot.classList.add('show');
     }
@@ -5014,11 +5145,64 @@
       if (stickerModal) stickerModal.classList.remove('show');
     }
 
-    if (stickerSlot) stickerSlot.addEventListener('click', openStickerModal);
+    if (ticketStickerBtn) {
+      ticketStickerBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        openStickerModal();
+      });
+    }
+
+    function handleEditPassengerName(e) {
+      if (e) e.stopPropagation();
+      playTapeClick();
+      promptName('सफर के लिए अपना नाम लिखें', 'Enter your name for the ride ticket:', myName || 'Yatri', function (enteredName) {
+        myName = enteredName;
+        try {
+          localStorage.setItem('malwa_yatri_name', myName);
+        } catch (err) { }
+        updateTicketUI();
+        showToast('टिकट पर नाम अपडेट हो गया: ' + myName + ' 🎟️');
+
+        if (typeof realtimeChannel !== 'undefined' && realtimeChannel) {
+          try {
+            realtimeChannel.track({
+              name: myName,
+              role: myRole,
+              clientId: clientId,
+              online_at: new Date().toISOString()
+            });
+            broadcastEvent('sync-request', { senderId: clientId, peerName: myName });
+          } catch (e) { }
+        }
+      });
+    }
+
+    if (editPassengerNameBtn) editPassengerNameBtn.addEventListener('click', handleEditPassengerName);
+    if (ticketPassengerWrap) {
+      ticketPassengerWrap.addEventListener('click', function (e) {
+        if (ticketMini && ticketMini.classList.contains('centered')) {
+          handleEditPassengerName(e);
+        }
+      });
+    }
+
     if (seCloseBtn) seCloseBtn.addEventListener('click', closeStickerModal);
     if (stickerModal) {
       stickerModal.addEventListener('click', function (e) {
         if (e.target === stickerModal) closeStickerModal();
+      });
+    }
+
+    if (seClearBtn) {
+      seClearBtn.addEventListener('click', function () {
+        playTapeClick();
+        userCustomSticker = null;
+        try {
+          localStorage.removeItem('malwa_user_sticker');
+        } catch (e) { }
+        updateStickerDisplay();
+        closeStickerModal();
+        showToast('स्टीकर हटा दिया गया 🚌');
       });
     }
 
@@ -5083,7 +5267,7 @@
 
         updateStickerDisplay();
         closeStickerModal();
-        showToast('Aapka customized sticker bus par lag gaya! 🚌 ✨');
+        showToast('Aapka customized sticker save ho gaya! 🚌 ✨');
       });
     }
 

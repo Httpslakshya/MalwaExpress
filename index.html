@@ -25,7 +25,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Space+Mono:wght@400;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Kalam:wght@400;700&family=Space+Mono:wght@400;700&display=swap"
     rel="stylesheet">
   <!-- Asset Preloading for Fast Initial Load -->
   <link rel="preload" as="image" href="assets/malwa.png">
@@ -1251,6 +1251,606 @@
       letter-spacing: 0.5px;
     }
 
+    /* ================= BUS BODY STICKERS & GRAFFITI ================= */
+    .bus-sticker-slot {
+      position: fixed;
+      left: 22px;
+      bottom: 66px;
+      z-index: 15;
+      opacity: 0;
+      transform: translateY(6px) scale(0.96);
+      transition: opacity 2.2s cubic-bezier(0.16, 1, 0.3, 1), transform 2.2s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+      user-select: none;
+      pointer-events: auto;
+    }
+    .bus-sticker-slot.show {
+      opacity: 0.95;
+      transform: translateY(0) scale(1);
+    }
+    .bus-sticker-slot:hover {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+
+    /* Sticker 1: Truck-Art Oval Badge */
+    .sticker-1 {
+      position: relative;
+      width: 142px;
+      height: 92px;
+      transform: rotate(-4deg);
+      background: linear-gradient(160deg, #c33d29, #8f2a1c);
+      border-radius: 50%/45%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 22px rgba(0,0,0,0.55);
+    }
+    .sticker-1::before {
+      content: "";
+      position: absolute;
+      inset: 5px;
+      border: 2px dashed rgba(243,237,220,0.7);
+      border-radius: 50%/45%;
+    }
+    .sticker-1 .txt {
+      font-family: 'Kalam', cursive;
+      font-weight: 700;
+      font-size: 16px;
+      color: #f3eddc;
+      text-align: center;
+      line-height: 1.15;
+      text-shadow: 0 1.5px 0 rgba(0,0,0,0.3);
+      z-index: 1;
+    }
+    .sticker-1 .sub {
+      font-family: 'Space Mono', monospace;
+      font-size: 6.5px;
+      letter-spacing: .16em;
+      color: rgba(243,237,220,0.85);
+      margin-top: 3px;
+      z-index: 1;
+    }
+
+    /* Sticker 2: Peeling Slogan Decal */
+    .sticker-2 {
+      position: relative;
+      width: 148px;
+      height: 80px;
+      transform: rotate(3deg);
+      background: #2c5c63;
+      border-radius: 6px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 6px 10px;
+    }
+    .sticker-2::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 22px;
+      height: 22px;
+      background: linear-gradient(135deg, transparent 50%, #0d1f22 50%);
+    }
+    .sticker-2 .txt {
+      font-family: 'Kalam', cursive;
+      font-weight: 700;
+      font-size: 15px;
+      color: #e0a52e;
+      text-align: center;
+      line-height: 1.2;
+    }
+    .sticker-2 .txt2 {
+      font-family: 'Baloo 2', sans-serif;
+      font-weight: 600;
+      font-size: 9.5px;
+      color: #f3eddc;
+      margin-top: 2px;
+      letter-spacing: .02em;
+      text-align: center;
+    }
+
+    /* Sticker 3: Stitched Heart Tag */
+    .sticker-3 {
+      position: relative;
+      width: 138px;
+      height: 86px;
+      transform: rotate(-2.5deg);
+      background: #f3eddc;
+      border-radius: 12px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1px;
+      padding: 6px;
+    }
+    .sticker-3::before {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border: 1.5px dashed #c33d29;
+      border-radius: 8px;
+    }
+    .sticker-3 .heart {
+      font-size: 16px;
+      z-index: 1;
+    }
+    .sticker-3 .txt {
+      font-family: 'Kalam', cursive;
+      font-weight: 700;
+      font-size: 14.5px;
+      color: #1c150f;
+      text-align: center;
+      line-height: 1.15;
+      z-index: 1;
+    }
+    .sticker-3 .brand {
+      font-family: 'Space Mono', monospace;
+      font-size: 6.5px;
+      letter-spacing: .14em;
+      color: #948a78;
+      margin-top: 2px;
+      z-index: 1;
+    }
+
+    /* ================= SHARED-LISTENING FLOATING REACTIONS ================= */
+    .react-dock-btn {
+      display: none;
+      position: relative;
+    }
+    .react-dock-btn.show {
+      display: flex;
+    }
+    .react-dock-btn.active {
+      color: var(--marigold);
+      background: rgba(232, 166, 60, 0.25);
+    }
+    .react-dock-btn.pulse {
+      animation: reactBtnPulse 0.4s ease-out;
+    }
+    @keyframes reactBtnPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.25); }
+      100% { transform: scale(1); }
+    }
+
+    .reaction-picker {
+      position: fixed;
+      right: 74px;
+      top: 50%;
+      transform: translateY(-50%) scale(0.92);
+      background: rgba(18, 12, 8, 0.88);
+      border: 1px solid rgba(232, 166, 60, 0.45);
+      border-radius: 999px;
+      padding: 5px 8px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.65);
+      z-index: 85;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reaction-picker.open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(-50%) scale(1);
+    }
+    .react-item-btn {
+      background: transparent;
+      border: none;
+      font-size: 19px;
+      padding: 5px 6px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+    .react-item-btn:hover {
+      transform: scale(1.3);
+      background: rgba(232, 166, 60, 0.25);
+    }
+    .react-item-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* Floating Reaction Bubbles Container */
+    .reaction-bubble-container {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 80;
+      overflow: hidden;
+    }
+
+    .reaction-bubble {
+      position: absolute;
+      bottom: 60px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      animation: floatReactionBubble 2.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+      will-change: transform, opacity;
+    }
+    .reaction-bubble .emoji-glyph {
+      font-size: 32px;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.6));
+    }
+    .reaction-bubble .sender-tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--cream);
+      background: rgba(15, 10, 6, 0.88);
+      border: 1px solid rgba(232, 166, 60, 0.45);
+      padding: 2px 6px;
+      border-radius: 999px;
+      white-space: nowrap;
+      opacity: 0.9;
+    }
+
+    @keyframes floatReactionBubble {
+      0% {
+        opacity: 0;
+        transform: translateY(0) translateX(0) scale(0.6);
+      }
+      15% {
+        opacity: 1;
+        transform: translateY(-50px) translateX(var(--drift-1, 10px)) scale(1.15);
+      }
+      50% {
+        transform: translateY(-180px) translateX(var(--drift-2, -15px)) scale(1.05);
+      }
+      80% {
+        opacity: 0.85;
+        transform: translateY(-320px) translateX(var(--drift-3, 8px)) scale(0.95);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-460px) translateX(var(--drift-4, -5px)) scale(0.8);
+      }
+    }
+
+    /* Resonance Match Special Glow */
+    .reaction-bubble.resonance .emoji-glyph {
+      animation: resonanceGlow 1.2s ease-in-out infinite alternate;
+    }
+    @keyframes resonanceGlow {
+      0% { filter: drop-shadow(0 0 10px rgba(255, 179, 0, 0.8)); transform: scale(1.2); }
+      100% { filter: drop-shadow(0 0 25px rgba(255, 179, 0, 1)) drop-shadow(0 0 40px rgba(232, 166, 60, 0.9)); transform: scale(1.4); }
+    }
+
+    /* ================= JOURNEY TOGETHER CARD MODAL ================= */
+    .jt-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 95;
+      background: rgba(8, 5, 3, 0.85);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+    .jt-modal-backdrop.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .jt-card-dialog {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: 420px;
+      width: 100%;
+      max-height: 94vh;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+    .jt-card-dialog::-webkit-scrollbar { display: none; }
+
+    .jt-style-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      background: rgba(22, 15, 10, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 999px;
+      padding: 4px;
+    }
+    .jt-tab-btn {
+      background: transparent;
+      border: none;
+      color: rgba(243, 230, 206, 0.7);
+      font-family: inherit;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 5px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .jt-tab-btn.active {
+      background: var(--marigold);
+      color: var(--ink);
+      box-shadow: 0 0 12px rgba(232, 166, 60, 0.4);
+    }
+
+    /* Card A: Destination Board */
+    .jt-card-dest-board {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4/5;
+      background: linear-gradient(180deg, #0d0d0d, #050505);
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(255,255,255,0.06);
+      display: flex;
+      flex-direction: column;
+    }
+    .jt-card-dest-board .bezel {
+      flex: 1;
+      border: 8px solid #161514;
+      border-radius: 8px;
+      background:
+        repeating-linear-gradient(0deg, rgba(0,0,0,0.5) 0 1px, transparent 1px 3px),
+        radial-gradient(ellipse at 50% 0%, #1a1200 0%, #050300 75%);
+      padding: 18px 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: inset 0 0 24px rgba(0,0,0,0.8);
+    }
+    .jt-card-dest-board .led-line {
+      font-family: 'Space Mono', monospace;
+      color: var(--amber);
+      text-shadow: 0 0 6px rgba(255,176,32,0.75), 0 0 14px rgba(255,176,32,0.35);
+      letter-spacing: .06em;
+    }
+    .jt-card-dest-board .led-hi {
+      font-family: 'Baloo 2', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 2px;
+    }
+    .jt-card-dest-board .led-sub {
+      font-size: 9.5px;
+      letter-spacing: .22em;
+      opacity: .85;
+    }
+    .jt-card-dest-board .pax-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 12px 0 8px;
+    }
+    .jt-card-dest-board .chip {
+      border: 1px solid rgba(255,176,32,0.5);
+      color: var(--amber);
+      font-family: 'Space Mono', monospace;
+      font-size: 9.5px;
+      padding: 3px 8px;
+      border-radius: 20px;
+    }
+    .jt-card-dest-board .dash-amber {
+      border: none;
+      border-top: 1px dashed rgba(255,176,32,0.35);
+      margin: 10px 0;
+    }
+    .jt-card-dest-board .songs-head {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: .16em;
+      color: rgba(255,176,32,0.7);
+      margin-bottom: 6px;
+    }
+    .jt-card-dest-board .song-row {
+      font-family: 'Space Mono', monospace;
+      font-size: 10.5px;
+      color: rgba(255,215,140,0.92);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 2px 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .jt-card-dest-board .song-row .b {
+      width: 4px;
+      height: 4px;
+      background: var(--amber);
+      border-radius: 50%;
+      box-shadow: 0 0 5px var(--amber);
+      flex-shrink: 0;
+    }
+    .jt-card-dest-board .footer-d {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+    .jt-card-dest-board .brand-d {
+      font-family: 'Baloo 2', sans-serif;
+      font-weight: 700;
+      font-size: 12px;
+      color: var(--amber);
+      text-shadow: 0 0 6px rgba(255,176,32,0.5);
+    }
+    .jt-card-dest-board .url-d {
+      font-family: 'Space Mono', monospace;
+      font-size: 8px;
+      color: rgba(255,176,32,0.6);
+    }
+
+    /* Card B: Travel Stamp Postcard */
+    .jt-card-postcard {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4/5;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(255,255,255,0.08), transparent 40%),
+        linear-gradient(160deg, #c8a273, #a9845a);
+      border-radius: 6px;
+      padding: 18px;
+      color: #1c150f;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.7);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .jt-card-postcard .polaroid {
+      width: 90px;
+      background: #f3eddc;
+      padding: 5px 5px 14px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+      transform: rotate(-4deg);
+      margin-bottom: 6px;
+    }
+    .jt-card-postcard .polaroid .photo {
+      height: 60px;
+      border-radius: 2px;
+      background: url('assets/bg-inside.jpg') center/cover no-repeat;
+    }
+    .jt-card-postcard .tape {
+      position: absolute;
+      top: 6px;
+      left: 20px;
+      width: 48px;
+      height: 14px;
+      background: rgba(224,165,46,0.6);
+      transform: rotate(-8deg);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+    .jt-card-postcard .stamp {
+      position: absolute;
+      right: 14px;
+      bottom: 60px;
+      width: 74px;
+      height: 74px;
+      border-radius: 50%;
+      border: 2px solid rgba(195,61,41,0.75);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: rotate(12deg);
+      opacity: .9;
+    }
+    .jt-card-postcard .stamp::before {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border: 1px solid rgba(195,61,41,0.6);
+      border-radius: 50%;
+    }
+    .jt-card-postcard .stamp span {
+      font-family: 'Kalam', cursive;
+      font-weight: 700;
+      font-size: 11px;
+      color: #c33d29;
+      text-align: center;
+      line-height: 1.15;
+    }
+    .jt-card-postcard h3 {
+      font-family: 'Kalam', cursive;
+      font-weight: 700;
+      font-size: 20px;
+      margin: 0 0 2px;
+      color: #1c150f;
+    }
+    .jt-card-postcard .caption {
+      font-size: 11px;
+      color: #4c4136;
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+    .jt-card-postcard .songs-p {
+      font-size: 10.5px;
+      color: #4c4136;
+      line-height: 1.7;
+      margin-bottom: 10px;
+    }
+    .jt-card-postcard .songs-p b {
+      color: #1c150f;
+    }
+    .jt-card-postcard .footer-p {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .jt-card-postcard .brand-p {
+      font-family: 'Baloo 2', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+    }
+    .jt-card-postcard .url-p {
+      font-family: 'Space Mono', monospace;
+      font-size: 8px;
+      color: #4c4136;
+    }
+
+    .jt-actions {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+      margin-top: 14px;
+    }
+    .jt-download-btn {
+      flex: 1;
+      background: var(--rust);
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(178, 58, 42, 0.4);
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+    .jt-download-btn:hover {
+      background: #c33d29;
+      transform: translateY(-1px);
+    }
+    .jt-close-btn {
+      background: rgba(255, 255, 255, 0.12);
+      color: var(--cream);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .jt-close-btn:hover {
+      background: rgba(255, 255, 255, 0.22);
+    }
+
     /* Player Right Controls */
     .player-controls {
       display: flex;
@@ -1911,11 +2511,102 @@
           <path d="M16 14v6M8 14v6M12 16v6"/>
         </svg>
       </button>
+      <button id="reactDockBtn" class="react-dock-btn" aria-label="Reaction Emojis" title="प्रतिक्रिया (Share Reaction Emoji)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+      </button>
       <button id="fullscreenBtn" aria-label="Toggle Fullscreen" title="फुलस्क्रीन (Toggle Fullscreen)">
         <svg id="fullscreenIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M8 3H5a2 2 0 0 0-2 2v3m18-5h-3a2 2 0 0 0-2 2v3M3 16v3a2 2 0 0 2 2h3m13 0h-3a2 2 0 0 1-2-2v-3"/>
         </svg>
       </button>
+    </div>
+
+    <!-- Floating Reaction Picker Shelf (Active in Shared Ride) -->
+    <div id="reactionPicker" class="reaction-picker">
+      <button class="react-item-btn" data-emoji="🥹" title="याद आ गई (Nostalgia)">🥹</button>
+      <button class="react-item-btn" data-emoji="😵" title="चकरा गया (Crazy/Intense)">😵</button>
+      <button class="react-item-btn" data-emoji="😴" title="सुकून (Soothing)">😴</button>
+      <button class="react-item-btn" data-emoji="🚌💨" title="बस का सफर (Bus vibe)">🚌💨</button>
+      <button class="react-item-btn" data-emoji="🎶" title="गुनगुनाना (Humming along)">🎶</button>
+      <button class="react-item-btn" data-emoji="😭" title="इमोशनल (Emotional)">😭</button>
+      <button class="react-item-btn" data-emoji="🙌" title="क्या बात है (Favorite line)">🙌</button>
+    </div>
+
+    <!-- Floating Bubbles Stream Layer -->
+    <div id="reactionBubbleContainer" class="reaction-bubble-container"></div>
+
+    <!-- Bus Body Sticker / Graffiti Slot -->
+    <div id="busStickerSlot" class="bus-sticker-slot" title="बस का स्टीकर · Click to explore"></div>
+
+    <!-- "Journey Together" Unlockable Memory Card Modal -->
+    <div id="journeyTogetherModal" class="jt-modal-backdrop">
+      <div class="jt-card-dialog">
+        <div class="jt-style-tabs">
+          <button id="jtTabBoard" class="jt-tab-btn active">LED बोर्ड</button>
+          <button id="jtTabPostcard" class="jt-tab-btn">पोस्टकार्ड</button>
+        </div>
+
+        <!-- Destination Board View -->
+        <div id="jtCardBoard" class="jt-card-dest-board">
+          <div class="bezel">
+            <div>
+              <div class="led-line led-hi">देवास पहुँच गए</div>
+              <div class="led-line led-sub">JOURNEY TOGETHER · UNLOCKED</div>
+            </div>
+            <div class="pax-chips">
+              <span class="chip" id="jtBoardHostChip">यात्री · Yatri</span>
+              <span class="chip" id="jtBoardPartnerChip">साथी · Saathi</span>
+            </div>
+            <hr class="dash-amber">
+            <div>
+              <div class="songs-head">इस सफ़र में साथ बजे गाने</div>
+              <div id="jtBoardSongList">
+                <div class="song-row"><span class="b"></span>Mujhse Mohabbat Ka</div>
+                <div class="song-row"><span class="b"></span>Chand Se Parda</div>
+              </div>
+            </div>
+            <div class="footer-d">
+              <span class="brand-d">मालवा एक्सप्रेस</span>
+              <span class="url-d" id="jtBoardTimestamp">14 Aug 2026</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Travel Stamp Postcard View -->
+        <div id="jtCardPostcard" class="jt-card-postcard" style="display: none;">
+          <div class="polaroid">
+            <div class="photo"></div>
+          </div>
+          <div class="tape"></div>
+          <div class="stamp"><span>यात्रा<br>पूरी</span></div>
+          <div>
+            <h3>साथ में सफ़र तय हुआ</h3>
+            <div class="caption">Indore से Dewas तक, बारिश और पुराने गानों के साथ।</div>
+            <div class="songs-p" id="jtPostcardSongList">
+              <b>★ Mujhse Mohabbat Ka</b><br>
+              <b>★ Chand Se Parda</b>
+            </div>
+          </div>
+          <div class="footer-p">
+            <span class="brand-p">मालwa एक्सप्रेस ❤️</span>
+            <span class="url-p" id="jtPostcardTimestamp">14 Aug 2026</span>
+          </div>
+        </div>
+
+        <div class="jt-actions">
+          <button id="jtDownloadBtn" class="jt-download-btn">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Download Card (PNG)
+          </button>
+          <button id="jtCloseBtn" class="jt-close-btn">सफर जारी रखें</button>
+        </div>
+      </div>
     </div>
 
     <!-- One-time Keyboard Shortcut Hint -->
@@ -3502,6 +4193,10 @@
           .on('broadcast', { event: 'seek' }, function (payload) {
             if (payload.payload && payload.payload.senderId === clientId) return;
             applyRemoteSeek(payload.payload);
+          })
+          .on('broadcast', { event: 'emoji-reaction' }, function (payload) {
+            if (payload.payload && payload.payload.senderId === clientId) return;
+            handleRemoteReaction(payload.payload);
           });
 
         realtimeChannel.subscribe(function (status) {
@@ -3637,6 +4332,547 @@
         });
       });
     }
+
+    /* ===============================================================
+       BUS STICKER ROTATION ENGINE (15-20 Min Interval, 3 Styles)
+    =============================================================== */
+    var STICKER_POOL = [
+      { type: 1, text: "सफ़र<br>मुबारक", sub: "MALWA EXPRESS" },
+      { type: 2, text: "Horn Please", sub: "माँ की दुआ साथ है" },
+      { type: 3, text: "दिल से", heart: "❤", sub: "MALWA EXPRESS" },
+      { type: 1, text: "बुरी नज़र वाले<br>तेरा मुँह काला", sub: "MALWA EXPRESS" },
+      { type: 2, text: "Use Dipper", sub: "at Night" },
+      { type: 3, text: "सुरक्षित यात्रा", heart: "🚌", sub: "MALWA EXPRESS" },
+      { type: 1, text: "हंस मत पगली<br>प्यार हो जाएगा", sub: "MALWA EXPRESS" },
+      { type: 2, text: "समय से पहले", sub: "भाग्य से ज्यादा कभी नहीं" },
+      { type: 1, text: "दम है तो क्रॉस कर<br>वरना बर्दाश्त कर", sub: "MALWA EXPRESS" },
+      { type: 2, text: "चलती है गाड़ी", sub: "उड़ती है धूल" },
+      { type: 3, text: "जय महाकाल", heart: "🔱", sub: "INDORE ➔ DEWAS" },
+      { type: 1, text: "मालिक की गाड़ी<br>ड्राइवर का पसीना", sub: "MALWA EXPRESS" },
+      { type: 2, text: "राम भरोसे", sub: "चलती है गाड़ी" },
+      { type: 3, text: "यात्री अपने सामान की<br>स्वयं रक्षा करें", heart: "🛡️", sub: "MALWA EXPRESS" },
+      { type: 2, text: "धीरे चलो", sub: "सुरक्षित घर पहुँचो" }
+    ];
+
+    var stickerSlot = document.getElementById('busStickerSlot');
+    var currentStickerIdx = -1;
+    var stickerHistory = [];
+    var stickerTimer = null;
+
+    function renderStickerHTML(st) {
+      if (st.type === 1) {
+        return '<div class="sticker-1"><div class="txt">' + st.text + '</div><div class="sub">' + (st.sub || 'MALWA EXPRESS') + '</div></div>';
+      } else if (st.type === 2) {
+        return '<div class="sticker-2"><div class="txt">' + st.text + '</div><div class="txt2">' + (st.sub || '') + '</div></div>';
+      } else {
+        return '<div class="sticker-3"><div class="heart">' + (st.heart || '❤') + '</div><div class="txt">' + st.text + '</div><div class="brand">' + (st.sub || 'MALWA EXPRESS') + '</div></div>';
+      }
+    }
+
+    function showNextSticker() {
+      if (!stickerSlot || !STICKER_POOL.length) return;
+
+      // Pick random sticker not in last 4 displayed
+      var available = [];
+      for (var i = 0; i < STICKER_POOL.length; i++) {
+        if (stickerHistory.indexOf(i) === -1) available.push(i);
+      }
+      if (!available.length) available = [Math.floor(Math.random() * STICKER_POOL.length)];
+      var nextIdx = available[Math.floor(Math.random() * available.length)];
+
+      stickerHistory.push(nextIdx);
+      if (stickerHistory.length > 4) stickerHistory.shift();
+      currentStickerIdx = nextIdx;
+
+      // Fade out smoothly, swap content, fade back in
+      stickerSlot.classList.remove('show');
+      setTimeout(function () {
+        stickerSlot.innerHTML = renderStickerHTML(STICKER_POOL[nextIdx]);
+        stickerSlot.classList.add('show');
+      }, 1200);
+    }
+
+    // Initialize sticker after entrance transition & cycle every 16 minutes
+    setTimeout(function () {
+      showNextSticker();
+      stickerTimer = setInterval(showNextSticker, 16 * 60 * 1000);
+    }, 3500);
+
+    if (stickerSlot) {
+      stickerSlot.addEventListener('click', function () {
+        playTapeClick();
+        showNextSticker();
+      });
+    }
+
+    /* ===============================================================
+       SHARED-LISTENING FLOATING REACTION EMOJIS & RESONANCE ENGINE
+    =============================================================== */
+    var reactDockBtn = document.getElementById('reactDockBtn');
+    var reactionPicker = document.getElementById('reactionPicker');
+    var bubbleContainer = document.getElementById('reactionBubbleContainer');
+    var lastSentEmoji = null;
+    var lastSentEmojiTime = 0;
+    var lastPartnerEmoji = null;
+    var lastPartnerEmojiTime = 0;
+    var reactionCooldown = false;
+
+    function toggleReactionPicker() {
+      if (!reactionPicker) return;
+      playTapeClick();
+      var isOpen = reactionPicker.classList.toggle('open');
+      if (reactDockBtn) {
+        if (isOpen) reactDockBtn.classList.add('active');
+        else reactDockBtn.classList.remove('active');
+      }
+    }
+
+    if (reactDockBtn) {
+      reactDockBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        toggleReactionPicker();
+      });
+    }
+
+    document.addEventListener('click', function (e) {
+      if (reactionPicker && reactionPicker.classList.contains('open')) {
+        if (!reactionPicker.contains(e.target) && e.target !== reactDockBtn) {
+          reactionPicker.classList.remove('open');
+          if (reactDockBtn) reactDockBtn.classList.remove('active');
+        }
+      }
+    });
+
+    function spawnReactionBubble(emoji, senderName, isResonance, isLocal) {
+      if (!bubbleContainer) return;
+
+      var bubble = document.createElement('div');
+      bubble.className = 'reaction-bubble' + (isResonance ? ' resonance' : '');
+
+      // Position bubble near the dock area with random horizontal offset
+      var dockRect = (reactDockBtn && reactDockBtn.offsetParent) ? reactDockBtn.getBoundingClientRect() : null;
+      var startRight = dockRect ? (window.innerWidth - dockRect.right + (Math.random() * 40 - 20)) : (40 + Math.random() * 40);
+      bubble.style.right = Math.max(16, startRight) + 'px';
+
+      // Random gentle sine drift wobble
+      bubble.style.setProperty('--drift-1', (Math.random() * 30 - 15) + 'px');
+      bubble.style.setProperty('--drift-2', (Math.random() * 40 - 20) + 'px');
+      bubble.style.setProperty('--drift-3', (Math.random() * 30 - 15) + 'px');
+      bubble.style.setProperty('--drift-4', (Math.random() * 20 - 10) + 'px');
+
+      var glyph = document.createElement('div');
+      glyph.className = 'emoji-glyph';
+      glyph.textContent = emoji;
+      bubble.appendChild(glyph);
+
+      if (senderName && !isResonance) {
+        var tag = document.createElement('div');
+        tag.className = 'sender-tag';
+        tag.textContent = senderName;
+        bubble.appendChild(tag);
+      }
+
+      bubbleContainer.appendChild(bubble);
+
+      setTimeout(function () {
+        if (bubble.parentNode) bubble.parentNode.removeChild(bubble);
+      }, 3000);
+    }
+
+    function sendReaction(emoji) {
+      if (reactionCooldown) return;
+      reactionCooldown = true;
+      setTimeout(function () { reactionCooldown = false; }, 1200);
+
+      var now = Date.now();
+      lastSentEmoji = emoji;
+      lastSentEmojiTime = now;
+
+      // Check emotional resonance match with partner (sent same emoji within 8 seconds)
+      var isResonance = (lastPartnerEmoji === emoji && (now - lastPartnerEmojiTime) <= 8000);
+
+      spawnReactionBubble(emoji, myName || 'You', isResonance, true);
+
+      if (reactDockBtn) {
+        reactDockBtn.classList.add('pulse');
+        setTimeout(function () { reactDockBtn.classList.remove('pulse'); }, 400);
+      }
+
+      if (isResonance) {
+        showToast('Dono ki feeling match ho gayi! ✨ 💛');
+      }
+
+      // Broadcast reaction to partner
+      if (typeof realtimeChannel !== 'undefined' && realtimeChannel) {
+        broadcastEvent('emoji-reaction', {
+          emoji: emoji,
+          senderName: myName || 'Passenger',
+          timestamp: now
+        });
+      }
+    }
+
+    function handleRemoteReaction(data) {
+      if (!data || !data.emoji) return;
+      var now = Date.now();
+      lastPartnerEmoji = data.emoji;
+      lastPartnerEmojiTime = now;
+
+      var isResonance = (lastSentEmoji === data.emoji && (now - lastSentEmojiTime) <= 8000);
+
+      spawnReactionBubble(data.emoji, data.senderName || partnerName || 'Saathi', isResonance, false);
+
+      if (isResonance) {
+        showToast('Dono ki feeling match ho gayi! ✨ 💛');
+      }
+    }
+
+    document.querySelectorAll('.react-item-btn').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var emoji = btn.getAttribute('data-emoji');
+        if (emoji) sendReaction(emoji);
+        if (reactionPicker) {
+          reactionPicker.classList.remove('open');
+          if (reactDockBtn) reactDockBtn.classList.remove('active');
+        }
+      });
+    });
+
+    /* ===============================================================
+       "JOURNEY TOGETHER" UNLOCKABLE CARD & HTML5 CANVAS EXPORT
+    =============================================================== */
+    var consecutiveSharedSongs = 0;
+    var songsPlayedTogether = [];
+    var hasUnlockedJourneyCard = false;
+    var activeCardStyle = 'board'; // 'board' or 'postcard'
+
+    var jtModal = document.getElementById('journeyTogetherModal');
+    var jtTabBoard = document.getElementById('jtTabBoard');
+    var jtTabPostcard = document.getElementById('jtTabPostcard');
+    var jtCardBoard = document.getElementById('jtCardBoard');
+    var jtCardPostcard = document.getElementById('jtCardPostcard');
+    var jtDownloadBtn = document.getElementById('jtDownloadBtn');
+    var jtCloseBtn = document.getElementById('jtCloseBtn');
+
+    function openJourneyTogetherModal() {
+      if (!jtModal) return;
+      updateJourneyCardContent();
+      jtModal.classList.add('show');
+      showToast('🎉 "Journey Together" card unlocked!');
+    }
+
+    function closeJourneyTogetherModal() {
+      if (jtModal) jtModal.classList.remove('show');
+    }
+
+    if (jtCloseBtn) jtCloseBtn.addEventListener('click', closeJourneyTogetherModal);
+    if (jtModal) {
+      jtModal.addEventListener('click', function (e) {
+        if (e.target === jtModal) closeJourneyTogetherModal();
+      });
+    }
+
+    if (jtTabBoard && jtTabPostcard) {
+      jtTabBoard.addEventListener('click', function () {
+        activeCardStyle = 'board';
+        jtTabBoard.classList.add('active');
+        jtTabPostcard.classList.remove('active');
+        if (jtCardBoard) jtCardBoard.style.display = 'flex';
+        if (jtCardPostcard) jtCardPostcard.style.display = 'none';
+      });
+      jtTabPostcard.addEventListener('click', function () {
+        activeCardStyle = 'postcard';
+        jtTabPostcard.classList.add('active');
+        jtTabBoard.classList.remove('active');
+        if (jtCardPostcard) jtCardPostcard.style.display = 'flex';
+        if (jtCardBoard) jtCardBoard.style.display = 'none';
+      });
+    }
+
+    function formatCardDate() {
+      var d = new Date();
+      var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      var day = d.getDate();
+      var mon = months[d.getMonth()];
+      var year = d.getFullYear();
+      var h = d.getHours();
+      var m = d.getMinutes();
+      var ampm = h >= 12 ? 'PM' : 'AM';
+      var h12 = h % 12; if (h12 === 0) h12 = 12;
+      var mm = m < 10 ? '0' + m : m;
+      return day + ' ' + mon + ' ' + year + ' · ' + h12 + ':' + mm + ' ' + ampm;
+    }
+
+    function updateJourneyCardContent() {
+      var hostText = 'यात्री · ' + (myName || 'Yatri');
+      var partnerText = 'साथी · ' + (partnerName || 'Saathi');
+      var tsText = formatCardDate();
+
+      var hostChip = document.getElementById('jtBoardHostChip');
+      var partnerChip = document.getElementById('jtBoardPartnerChip');
+      var boardTs = document.getElementById('jtBoardTimestamp');
+      var postcardTs = document.getElementById('jtPostcardTimestamp');
+      var boardSongList = document.getElementById('jtBoardSongList');
+      var postcardSongList = document.getElementById('jtPostcardSongList');
+
+      if (hostChip) hostChip.textContent = hostText;
+      if (partnerChip) partnerChip.textContent = partnerText;
+      if (boardTs) boardTs.textContent = tsText;
+      if (postcardTs) postcardTs.textContent = tsText;
+
+      // Fill songs played together (last 3-4 songs)
+      var displaySongs = songsPlayedTogether.slice(-4);
+      if (!displaySongs.length) {
+        displaySongs = [TRACKS[trackIndex].title, (TRACKS[trackIndex + 1] || TRACKS[0]).title];
+      }
+
+      if (boardSongList) {
+        boardSongList.innerHTML = displaySongs.map(function (s) {
+          return '<div class="song-row"><span class="b"></span>' + s + '</div>';
+        }).join('');
+      }
+
+      if (postcardSongList) {
+        postcardSongList.innerHTML = displaySongs.map(function (s, i) {
+          var pickName = (i % 2 === 0) ? (myName || 'Yatri') : (partnerName || 'Saathi');
+          return '<b>★ ' + s + '</b> — ' + pickName + '\'s pick<br>';
+        }).join('');
+      }
+    }
+
+    // Track consecutive songs played in active shared ride
+    function recordSharedSongProgress() {
+      if (isInSharedRoom) {
+        var currentTitle = TRACKS[trackIndex] ? TRACKS[trackIndex].title : '';
+        if (currentTitle && songsPlayedTogether.indexOf(currentTitle) === -1) {
+          songsPlayedTogether.push(currentTitle);
+        }
+        consecutiveSharedSongs++;
+        if (consecutiveSharedSongs >= 4 && !hasUnlockedJourneyCard) {
+          hasUnlockedJourneyCard = true;
+          setTimeout(openJourneyTogetherModal, 1500);
+        }
+      }
+    }
+
+    // Hook shared song milestone to track transitions
+    audioEl.addEventListener('ended', recordSharedSongProgress);
+
+    /* HTML5 Canvas PNG Card Generator & Share */
+    function generateCardCanvas(styleMode, callback) {
+      var canvas = document.createElement('canvas');
+      canvas.width = 800;
+      canvas.height = 1000;
+      var ctx = canvas.getContext('2d');
+      var hostName = myName || 'Yatri';
+      var guestName = partnerName || 'Saathi';
+      var dateStr = formatCardDate();
+      var songList = songsPlayedTogether.slice(-4);
+      if (!songList.length) songList = [TRACKS[trackIndex].title, (TRACKS[trackIndex + 1] || TRACKS[0]).title];
+
+      if (styleMode === 'board') {
+        // Destination Board LED Canvas render
+        var bgGrad = ctx.createLinearGradient(0, 0, 0, 1000);
+        bgGrad.addColorStop(0, '#0d0d0d');
+        bgGrad.addColorStop(1, '#050505');
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, 800, 1000);
+
+        // Bezel
+        ctx.fillStyle = '#161514';
+        ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+        ctx.lineWidth = 2;
+        ctx.roundRect(30, 30, 740, 940, 16);
+        ctx.fill();
+        ctx.stroke();
+
+        // Inner Screen
+        var screenGrad = ctx.createRadialGradient(400, 200, 50, 400, 500, 600);
+        screenGrad.addColorStop(0, '#1a1200');
+        screenGrad.addColorStop(0.8, '#050300');
+        ctx.fillStyle = screenGrad;
+        ctx.roundRect(50, 50, 700, 900, 12);
+        ctx.fill();
+
+        // Scanlines
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+        for (var y = 50; y < 950; y += 4) {
+          ctx.fillRect(50, y, 700, 2);
+        }
+
+        // LED Title
+        ctx.shadowColor = 'rgba(255, 176, 32, 0.85)';
+        ctx.shadowBlur = 14;
+        ctx.fillStyle = '#ffb020';
+        ctx.font = 'bold 44px "Baloo 2", sans-serif';
+        ctx.fillText('देवास पहुँच गए', 80, 140);
+
+        ctx.shadowBlur = 8;
+        ctx.font = 'bold 16px "Space Mono", monospace';
+        ctx.fillText('JOURNEY TOGETHER · UNLOCKED', 80, 175);
+
+        // Chips
+        ctx.shadowBlur = 4;
+        ctx.font = '16px "Space Mono", monospace';
+        ctx.fillText('यात्री · ' + hostName + '   |   साथी · ' + guestName, 80, 240);
+
+        // Dashed Line
+        ctx.strokeStyle = 'rgba(255, 176, 32, 0.4)';
+        ctx.setLineDash([8, 6]);
+        ctx.beginPath();
+        ctx.moveTo(80, 270);
+        ctx.lineTo(720, 270);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Songs
+        ctx.font = 'bold 18px "Space Mono", monospace';
+        ctx.fillText('इस सफ़र में साथ बजे गाने:', 80, 330);
+
+        ctx.font = '20px "Space Mono", monospace';
+        ctx.fillStyle = 'rgba(255, 215, 140, 0.95)';
+        var songY = 380;
+        songList.forEach(function (s) {
+          ctx.beginPath();
+          ctx.arc(90, songY - 6, 5, 0, Math.PI * 2);
+          ctx.fillStyle = '#ffb020';
+          ctx.fill();
+          ctx.fillStyle = 'rgba(255, 215, 140, 0.95)';
+          ctx.fillText(s, 115, songY);
+          songY += 50;
+        });
+
+        // Footer
+        ctx.shadowBlur = 10;
+        ctx.fillStyle = '#ffb020';
+        ctx.font = 'bold 24px "Baloo 2", sans-serif';
+        ctx.fillText('मालवा एक्सप्रेस', 80, 900);
+
+        ctx.shadowBlur = 0;
+        ctx.font = '14px "Space Mono", monospace';
+        ctx.fillStyle = 'rgba(255, 176, 32, 0.7)';
+        ctx.fillText(dateStr + ' · malwa-express.vercel.app', 80, 930);
+
+      } else {
+        // Postcard Canvas render
+        var kraftGrad = ctx.createLinearGradient(0, 0, 800, 1000);
+        kraftGrad.addColorStop(0, '#c8a273');
+        kraftGrad.addColorStop(1, '#a9845a');
+        ctx.fillStyle = kraftGrad;
+        ctx.fillRect(0, 0, 800, 1000);
+
+        // Polaroid Frame
+        ctx.save();
+        ctx.translate(140, 180);
+        ctx.rotate(-0.06);
+        ctx.fillStyle = '#f3eddc';
+        ctx.shadowColor = 'rgba(0,0,0,0.4)';
+        ctx.shadowBlur = 20;
+        ctx.fillRect(-90, -110, 180, 220);
+        ctx.fillStyle = '#2c5c63';
+        ctx.fillRect(-80, -100, 160, 160);
+        ctx.fillStyle = 'rgba(243,237,220,0.9)';
+        ctx.font = 'bold 12px "Baloo 2", sans-serif';
+        ctx.fillText('Malwa Express', -75, 90);
+        ctx.restore();
+
+        // Stamp
+        ctx.save();
+        ctx.translate(650, 700);
+        ctx.rotate(0.2);
+        ctx.strokeStyle = 'rgba(195, 61, 41, 0.8)';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.arc(0, 0, 70, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(0, 0, 60, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.fillStyle = '#c33d29';
+        ctx.font = 'bold 22px "Kalam", cursive';
+        ctx.textAlign = 'center';
+        ctx.fillText('यात्रा पूरी', 0, -5);
+        ctx.font = 'bold 12px "Space Mono", monospace';
+        ctx.fillText('MALWA EXP', 0, 22);
+        ctx.restore();
+
+        // Typography
+        ctx.fillStyle = '#1c150f';
+        ctx.font = 'bold 44px "Kalam", cursive';
+        ctx.textAlign = 'left';
+        ctx.fillText('साथ में सफ़र तय हुआ', 80, 480);
+
+        ctx.font = '20px "Baloo 2", sans-serif';
+        ctx.fillStyle = '#4c4136';
+        ctx.fillText('Indore से Dewas तक, बारिश और पुराने गानों के साथ।', 80, 525);
+        ctx.fillText('यात्री: ' + hostName + '  ·  साथी: ' + guestName, 80, 560);
+
+        // Songs
+        ctx.font = '22px "Kalam", cursive';
+        ctx.fillStyle = '#1c150f';
+        var pSongY = 630;
+        songList.forEach(function (s, idx) {
+          var picker = (idx % 2 === 0) ? hostName : guestName;
+          ctx.fillText('★ ' + s + ' — ' + picker + '\'s pick', 80, pSongY);
+          pSongY += 45;
+        });
+
+        // Footer
+        ctx.font = 'bold 24px "Baloo 2", sans-serif';
+        ctx.fillStyle = '#1c150f';
+        ctx.fillText('मालवा एक्सप्रेस ❤️', 80, 910);
+        ctx.font = '14px "Space Mono", monospace';
+        ctx.fillStyle = '#4c4136';
+        ctx.fillText(dateStr + ' · malwa-express.vercel.app', 80, 940);
+      }
+
+      if (callback) callback(canvas);
+    }
+
+    if (jtDownloadBtn) {
+      jtDownloadBtn.addEventListener('click', function () {
+        playTapeClick();
+        generateCardCanvas(activeCardStyle, function (canvas) {
+          canvas.toBlob(function (blob) {
+            if (!blob) return;
+            var filename = 'malwa-express-journey-' + Date.now() + '.png';
+
+            // Mobile native Web Share API with image file
+            if (navigator.share && navigator.canShare) {
+              var file = new File([blob], filename, { type: 'image/png' });
+              if (navigator.canShare({ files: [file] })) {
+                navigator.share({
+                  title: 'Malwa Express — Journey Together',
+                  text: 'Humne Malwa Express mein saath safar kiya! 🚌 ❤️',
+                  files: [file]
+                }).catch(function () { });
+                return;
+              }
+            }
+
+            // Desktop / fallback download
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+            showToast('Card download ho gaya! 🚌');
+          }, 'image/png');
+        });
+      });
+    }
+
+    // Toggle react button visibility on shared room state
+    var origInitRealtimeRoom = initRealtimeRoom;
+    initRealtimeRoom = function (roomId, isHostRole) {
+      if (reactDockBtn) reactDockBtn.classList.add('show');
+      return origInitRealtimeRoom.apply(this, arguments);
+    };
 
     /* landing -> transition -> journey */
     var landingView = document.getElementById('landingView');

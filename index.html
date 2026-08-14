@@ -970,6 +970,41 @@
       letter-spacing: 0.2px;
     }
 
+    .nm-error {
+      display: none;
+      color: #ff5252;
+      font-size: 11px;
+      font-weight: 700;
+      margin-top: 8px;
+      padding: 6px 10px;
+      background: rgba(255, 82, 82, 0.12);
+      border: 1px solid rgba(255, 82, 82, 0.3);
+      border-radius: 6px;
+      text-align: center;
+      animation: shakeError 0.3s ease-in-out;
+    }
+
+    @keyframes shakeError {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-4px); }
+      40%, 80% { transform: translateX(4px); }
+    }
+
+    .copass-list-container {
+      max-height: 140px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .copass-list-container::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .copass-list-container::-webkit-scrollbar-thumb {
+      background: rgba(184, 58, 42, 0.4);
+      border-radius: 4px;
+    }
+
     .centered-copass-stub {
       margin-top: 6px;
       padding-top: 2px;
@@ -1944,6 +1979,7 @@
         <div class="nm-title" id="nmTitle">सफर के लिए अपना नाम लिखें</div>
         <div class="nm-sub" id="nmSub">Enter your name for the ride ticket</div>
         <input type="text" id="nameInput" class="nm-input" placeholder="आपका नाम (e.g. Yatri)" maxlength="20" autocomplete="off" />
+        <div id="nmError" class="nm-error"></div>
         <button id="nameSubmitBtn" class="nm-btn">सफर शुरू करें · Continue</button>
       </div>
     </div>
@@ -2346,11 +2382,32 @@
         disc.classList.remove('playing');
         playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
       }
-      if (realtimeChannel && !isRemoteUpdate) {
-        if (playing) broadcastEvent('play', { currentTime: audioEl.currentTime || 0 });
-        else broadcastEvent('pause', { currentTime: audioEl.currentTime || 0 });
-      }
     }
+
+    // Native audio play/pause/seek event listeners to guarantee sync across all triggers (UI, lockscreen, media keys, spacebar, track change)
+    audioEl.addEventListener('play', function () {
+      isPlaying = true;
+      disc.classList.add('playing');
+      playIcon.innerHTML = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
+      if (typeof realtimeChannel !== 'undefined' && realtimeChannel && !isRemoteUpdate) {
+        broadcastEvent('play', { currentTime: audioEl.currentTime || 0, sentAt: Date.now() });
+      }
+    });
+
+    audioEl.addEventListener('pause', function () {
+      isPlaying = false;
+      disc.classList.remove('playing');
+      playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+      if (typeof realtimeChannel !== 'undefined' && realtimeChannel && !isRemoteUpdate) {
+        broadcastEvent('pause', { currentTime: audioEl.currentTime || 0, sentAt: Date.now() });
+      }
+    });
+
+    audioEl.addEventListener('seeked', function () {
+      if (typeof realtimeChannel !== 'undefined' && realtimeChannel && !isRemoteUpdate) {
+        broadcastEvent('seek', { currentTime: audioEl.currentTime || 0, sentAt: Date.now() });
+      }
+    });
 
     playBtn.addEventListener('click', function () {
       if (!audioEl.src) {
@@ -2819,7 +2876,7 @@
 
     var switchOutside = document.getElementById('switchOutside');
     var switchInside = document.getElementById('switchInside');
-    var rainBtn = document.getElementById('rainBtn');
+    var rainBtn = document.getElementById('switchRain');
     var fullscreenBtn = document.getElementById('fullscreenBtn');
     var fullscreenIcon = document.getElementById('fullscreenIcon');
     var viewIndicator = document.getElementById('viewIndicator');
@@ -3121,6 +3178,17 @@
     var myRole = 'host'; // 'host' or 'guest'
     var myName = 'Yatri';
     var partnerName = '';
+    var connectedPeers = {}; // { [clientId]: { clientId, name, role, onlineAt } }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
 
     function showToast(msg) {
       var toast = document.getElementById('malwaToast');
@@ -3132,12 +3200,94 @@
       }, 3200);
     }
 
-    function promptName(titleText, subText, defaultVal, callback) {
+    function getGuestList() {
+      var guests = [];
+      for (var key in connectedPeers) {
+        if (connectedPeers.hasOwnProperty(key)) {
+          var p = connectedPeers[key];
+          if (p.role === 'guest' || (p.role !== 'host' && key !== clientId)) {
+            guests.push(p);
+          }
+        }
+      }
+      guests.sort(function (a, b) {
+        var timeA = a.onlineAt || a.clientId || '';
+        var timeB = b.onlineAt || b.clientId || '';
+        return timeA.localeCompare(timeB);
+      });
+      guests.forEach(function (g, idx) {
+        g.seatNo = 15 + idx;
+      });
+      return guests;
+    }
+
+    function getExistingNames() {
+      var names = [];
+      if (myName && myName !== 'Yatri' && myName !== 'Passenger') names.push(myName);
+      if (partnerName) names.push(partnerName);
+
+      for (var key in connectedPeers) {
+        if (connectedPeers.hasOwnProperty(key)) {
+          var p = connectedPeers[key];
+          if (p.name && names.indexOf(p.name) === -1) {
+            names.push(p.name);
+          }
+        }
+      }
+
+      if (realtimeChannel) {
+        try {
+          var state = realtimeChannel.presenceState();
+          for (var k in state) {
+            if (state.hasOwnProperty(k)) {
+              var arr = state[k];
+              if (arr && arr.length > 0) {
+                var pres = arr[arr.length - 1];
+                if (pres && pres.name && names.indexOf(pres.name) === -1) {
+                  names.push(pres.name);
+                }
+              }
+            }
+          }
+        } catch (e) { }
+      }
+      return names;
+    }
+
+    function checkNameCollision() {
+      if (!myName || myName === 'Yatri' || myName === 'Passenger') return;
+      var myLower = myName.trim().toLowerCase();
+
+      for (var id in connectedPeers) {
+        if (connectedPeers.hasOwnProperty(id)) {
+          var p = connectedPeers[id];
+          if (p.name && p.name.trim().toLowerCase() === myLower) {
+            showToast("Saathi, '" + myName + "' naam pehle se safar mein hai, kripya naya naam chunein");
+            promptName('नया नाम चुनें (Name taken)', 'Name taken by another passenger in this ride:', '', function (newName) {
+              myName = newName;
+              updateTicketUI();
+              if (realtimeChannel) {
+                realtimeChannel.track({
+                  name: myName,
+                  role: myRole,
+                  clientId: clientId,
+                  online_at: new Date().toISOString()
+                });
+              }
+            });
+            break;
+          }
+        }
+      }
+    }
+
+    function promptName(titleText, subText, defaultVal, callback, existingNamesList) {
       var modal = document.getElementById('nameModal');
       var nmTitle = document.getElementById('nmTitle');
       var nmSub = document.getElementById('nmSub');
       var nameInput = document.getElementById('nameInput');
       var submitBtn = document.getElementById('nameSubmitBtn');
+      var errorEl = document.getElementById('nmError');
 
       if (!modal) {
         if (callback) callback(defaultVal);
@@ -3147,15 +3297,50 @@
       if (titleText) nmTitle.textContent = titleText;
       if (subText) nmSub.textContent = subText;
       nameInput.value = defaultVal || '';
-      modal.classList.add('show');
 
+      if (errorEl) {
+        errorEl.style.display = 'none';
+        errorEl.textContent = '';
+      }
+
+      modal.classList.add('show');
       setTimeout(function () { nameInput.focus(); nameInput.select(); }, 150);
+
+      function showError(msg) {
+        if (errorEl) {
+          errorEl.textContent = msg;
+          errorEl.style.display = 'block';
+        } else {
+          showToast(msg);
+        }
+        nameInput.focus();
+      }
+
+      function handleInput() {
+        if (errorEl) errorEl.style.display = 'none';
+      }
 
       function handleSubmit() {
         var val = nameInput.value.trim() || defaultVal || 'Passenger';
+
+        var staticList = existingNamesList || [];
+        var dynamicList = getExistingNames();
+        var namesToCheck = staticList.concat(dynamicList);
+
+        if (namesToCheck && Array.isArray(namesToCheck)) {
+          var lowerVal = val.toLowerCase();
+          var isDuplicate = namesToCheck.some(function (n) {
+            return n && typeof n === 'string' && n.trim().toLowerCase() === lowerVal;
+          });
+          if (isDuplicate) {
+            showError('यह नाम पहले से मौजूद है! कृपया दूसरा नाम चुनें · Name already taken');
+            return;
+          }
+        }
+
+        if (errorEl) errorEl.style.display = 'none';
         modal.classList.remove('show');
-        submitBtn.removeEventListener('click', handleSubmit);
-        nameInput.removeEventListener('keydown', handleKey);
+        cleanup();
         if (callback) callback(val);
       }
 
@@ -3163,8 +3348,15 @@
         if (e.key === 'Enter') handleSubmit();
       }
 
+      function cleanup() {
+        submitBtn.removeEventListener('click', handleSubmit);
+        nameInput.removeEventListener('keydown', handleKey);
+        nameInput.removeEventListener('input', handleInput);
+      }
+
       submitBtn.addEventListener('click', handleSubmit);
       nameInput.addEventListener('keydown', handleKey);
+      nameInput.addEventListener('input', handleInput);
     }
 
     function updateTicketUI() {
@@ -3173,36 +3365,111 @@
       var seatEl = document.getElementById('ticketSeat');
       var fareLabelEl = document.getElementById('ticketFareLabel');
       var fareValueEl = document.getElementById('ticketFareValue');
-      var stubNameEl = document.getElementById('coPassStubName');
       var centeredStub = document.getElementById('centeredCoPassStub');
       var ticketCard = document.getElementById('myTicket');
       var isCentered = ticketCard && ticketCard.classList.contains('centered');
 
+      var guests = getGuestList();
+
       if (myRole === 'guest') {
         if (passengerNameEl) passengerNameEl.textContent = "Passenger: " + myName;
+
+        var myIndex = guests.findIndex(function(g) { return g.clientId === clientId; });
+        var mySeatNo = myIndex >= 0 ? (15 + myIndex) : 15;
+
         if (coBadgeEl) {
           coBadgeEl.style.display = 'block';
           coBadgeEl.textContent = "Travelling with " + (partnerName || 'Host') + " ❤️";
         }
-        if (seatEl) seatEl.textContent = "15 · Co-pass";
+        if (seatEl) seatEl.textContent = mySeatNo + " · Co-pass";
         if (fareLabelEl) fareLabelEl.textContent = "Sync";
         if (fareValueEl) fareValueEl.textContent = "Live 🟢";
-        if (shareBtn) shareBtn.style.display = 'none'; // Hide share button on guest screen
-        if (centeredStub) centeredStub.style.display = 'none';
+        if (shareBtn) shareBtn.style.display = 'none';
+
+        if (centeredStub) {
+          if (isCentered) centeredStub.style.display = 'block';
+          else centeredStub.style.display = 'none';
+
+          var html = '<hr class="tm-div">';
+          html += '<div class="tm-row"><span class="tm-title">Host: ' + escapeHtml(partnerName || 'Yatri') + '</span><span class="tm-no">SEAT-14</span></div>';
+          html += '<div class="tm-fields" style="margin-top: 6px;">';
+          html += '<div><div class="tm-field-label">Role</div><div class="tm-field-value">Host 🚌</div></div>';
+          html += '<div><div class="tm-field-label">Seat</div><div class="tm-field-value">14 · Window</div></div>';
+          html += '<div><div class="tm-field-label">Status</div><div class="tm-field-value">Streaming 🎵</div></div>';
+          html += '</div>';
+
+          var otherGuests = guests.filter(function(g) { return g.clientId !== clientId; });
+          if (otherGuests.length > 0) {
+            html += '<div style="font-size: 10.5px; font-weight: 700; color: var(--marigold); margin-top: 8px; margin-bottom: 4px; letter-spacing: 0.5px; text-transform: uppercase;">';
+            html += 'Fellow Passengers (' + otherGuests.length + ')';
+            html += '</div>';
+            html += '<div class="copass-list-container">';
+            otherGuests.forEach(function(g, idx) {
+              html += '<div class="copass-item-row" style="padding: 4px 0;' + (idx < otherGuests.length - 1 ? ' border-bottom: 1px dashed rgba(243, 230, 206, 0.15);' : '') + '">';
+              html += '<div class="tm-row"><span class="tm-title" style="font-size: 11px;">' + escapeHtml(g.name) + '</span><span class="tm-no" style="font-size: 10px;">SEAT-' + g.seatNo + '</span></div>';
+              html += '</div>';
+            });
+            html += '</div>';
+          }
+          centeredStub.innerHTML = html;
+        }
       } else {
+        // HOST ROLE
         if (passengerNameEl) passengerNameEl.textContent = "Passenger: " + myName;
-        if (coBadgeEl) coBadgeEl.style.display = 'none';
         if (seatEl) seatEl.textContent = "14 · Window";
         if (fareLabelEl) fareLabelEl.textContent = "Fare";
         if (fareValueEl) fareValueEl.textContent = "Non-stop";
         if (shareBtn) shareBtn.style.display = 'flex';
 
-        // Only show co-passenger stub inside centered view when partner is connected!
-        if (partnerName && isCentered) {
-          if (stubNameEl) stubNameEl.textContent = "Co-Passenger: " + partnerName;
-          if (centeredStub) centeredStub.style.display = 'block';
+        if (guests.length > 0) {
+          if (coBadgeEl) {
+            coBadgeEl.style.display = 'block';
+            if (guests.length === 1) {
+              coBadgeEl.textContent = "Travelling with " + escapeHtml(guests[0].name) + " ❤️";
+            } else if (guests.length === 2) {
+              coBadgeEl.textContent = "Travelling with " + escapeHtml(guests[0].name) + " & " + escapeHtml(guests[1].name) + " ❤️";
+            } else {
+              coBadgeEl.textContent = "Travelling with " + escapeHtml(guests[0].name) + " & " + (guests.length - 1) + " others ❤️";
+            }
+          }
+
+          if (centeredStub) {
+            if (isCentered) centeredStub.style.display = 'block';
+            else centeredStub.style.display = 'none';
+
+            var html = '<hr class="tm-div">';
+            if (guests.length === 1) {
+              var g = guests[0];
+              html += '<div class="tm-row"><span class="tm-title">Co-Passenger: ' + escapeHtml(g.name) + '</span><span class="tm-no">SEAT-' + g.seatNo + '</span></div>';
+              html += '<div class="tm-fields" style="margin-top: 6px;">';
+              html += '<div><div class="tm-field-label">Status</div><div class="tm-field-value">Riding together 🚌</div></div>';
+              html += '<div><div class="tm-field-label">Seat</div><div class="tm-field-value">' + g.seatNo + ' · Co-pass</div></div>';
+              html += '<div><div class="tm-field-label">Sync</div><div class="tm-field-value">Live 🟢</div></div>';
+              html += '</div>';
+            } else {
+              html += '<div style="font-size: 11px; font-weight: 700; color: var(--marigold); margin-bottom: 6px; letter-spacing: 0.5px; text-transform: uppercase;">';
+              html += 'Co-Passengers (' + guests.length + ')';
+              html += '</div>';
+              html += '<div class="copass-list-container">';
+              guests.forEach(function(g, idx) {
+                html += '<div class="copass-item-row" style="padding: 6px 0;' + (idx < guests.length - 1 ? ' border-bottom: 1px dashed rgba(243, 230, 206, 0.18);' : '') + '">';
+                html += '<div class="tm-row"><span class="tm-title" style="font-weight: 700;">' + (idx + 1) + '. ' + escapeHtml(g.name) + '</span><span class="tm-no">SEAT-' + g.seatNo + '</span></div>';
+                html += '<div class="tm-fields" style="margin-top: 4px; font-size: 10.5px;">';
+                html += '<div><div class="tm-field-label">Status</div><div class="tm-field-value">Riding 🚌</div></div>';
+                html += '<div><div class="tm-field-label">Seat</div><div class="tm-field-value">' + g.seatNo + ' · Co-pass</div></div>';
+                html += '<div><div class="tm-field-label">Sync</div><div class="tm-field-value">Live 🟢</div></div>';
+                html += '</div></div>';
+              });
+              html += '</div>';
+            }
+            centeredStub.innerHTML = html;
+          }
         } else {
-          if (centeredStub) centeredStub.style.display = 'none';
+          if (coBadgeEl) coBadgeEl.style.display = 'none';
+          if (centeredStub) {
+            centeredStub.style.display = 'none';
+            centeredStub.innerHTML = '';
+          }
         }
       }
     }
@@ -3235,9 +3502,27 @@
       document.head.appendChild(script);
     }
 
+    function getOrCreateRealtimeChannel(roomId) {
+      if (realtimeChannel && currentRoomId === roomId) {
+        return realtimeChannel;
+      }
+      if (realtimeChannel) {
+        try { supabaseClient.removeChannel(realtimeChannel); } catch (e) { }
+      }
+      currentRoomId = roomId;
+      realtimeChannel = supabaseClient.channel('ride:' + roomId, {
+        config: {
+          broadcast: { self: false },
+          presence: { key: clientId }
+        }
+      });
+      return realtimeChannel;
+    }
+
     function broadcastEvent(eventName, payloadData) {
       if (!realtimeChannel) return;
       payloadData.senderId = clientId;
+      payloadData.sentAt = Date.now();
       realtimeChannel.send({
         type: 'broadcast',
         event: eventName,
@@ -3245,95 +3530,164 @@
       });
     }
 
+    function syncAudioPosition(data) {
+      if (!data || typeof data.currentTime !== 'number') return;
+
+      var transit = Math.max(0, (Date.now() - (data.sentAt || Date.now())) / 1000);
+      var targetTime = data.currentTime + (data.isPlaying ? transit : 0);
+      var diff = targetTime - audioEl.currentTime;
+
+      if (Math.abs(diff) > 1.2) {
+        audioEl.currentTime = targetTime;
+        audioEl.playbackRate = 1.0;
+      } else if (diff > 0.08) {
+        audioEl.playbackRate = 1.04;
+      } else if (diff < -0.08) {
+        audioEl.playbackRate = 0.96;
+      } else {
+        audioEl.playbackRate = 1.0;
+      }
+    }
+
     function initRealtimeRoom(roomId, isHostRole) {
       myRole = isHostRole ? 'host' : 'guest';
       loadSupabase(function () {
-        currentRoomId = roomId;
-        realtimeChannel = supabaseClient.channel('ride:' + roomId, {
-          config: {
-            broadcast: { self: false },
-            presence: { key: clientId }
-          }
-        });
+        var ch = getOrCreateRealtimeChannel(roomId);
 
         // Presence sync handler
-        realtimeChannel.on('presence', { event: 'sync' }, function () {
-          var state = realtimeChannel.presenceState();
+        ch.on('presence', { event: 'sync' }, function () {
+          var state = ch.presenceState();
           var userIds = Object.keys(state);
           var peerCount = userIds.length;
           var aboardEl = document.getElementById('aboardCount');
 
-          if (peerCount > 1) {
-            updateTicketUI();
-            if (aboardEl && !aboardEl.dataset.synced) {
-              aboardEl.dataset.synced = "true";
-              var baseVal = parseInt(aboardEl.innerText, 10) || 15;
-              aboardEl.innerText = baseVal + 1;
-              aboardEl.style.color = '#57D06B';
+          var newPeers = {};
+          for (var peerId in state) {
+            if (state.hasOwnProperty(peerId)) {
+              var presArray = state[peerId];
+              if (presArray && presArray.length > 0) {
+                var p = presArray[presArray.length - 1];
+                var effectiveClientId = p.clientId || peerId;
+                if (effectiveClientId && effectiveClientId !== clientId) {
+                  newPeers[effectiveClientId] = {
+                    clientId: effectiveClientId,
+                    name: p.name || (p.role === 'host' ? 'Host' : 'Saathi'),
+                    role: p.role || 'guest',
+                    onlineAt: p.online_at || ''
+                  };
+                  if (p.role === 'host' && p.name) {
+                    partnerName = p.name;
+                  }
+                }
+              }
             }
-          } else {
-            if (myRole === 'host') partnerName = '';
-            updateTicketUI();
-            if (aboardEl && aboardEl.dataset.synced) {
-              delete aboardEl.dataset.synced;
-              var baseVal = parseInt(aboardEl.innerText, 10) || 16;
-              aboardEl.innerText = Math.max(1, baseVal - 1);
+          }
+
+          for (var id in newPeers) {
+            connectedPeers[id] = newPeers[id];
+          }
+          for (var id in connectedPeers) {
+            if (!newPeers[id] && connectedPeers[id].role !== 'host') {
+              delete connectedPeers[id];
+            }
+          }
+
+          checkNameCollision();
+          updateTicketUI();
+
+          if (aboardEl) {
+            if (!aboardEl.dataset.baseCount) {
+              aboardEl.dataset.baseCount = aboardEl.innerText.trim() || '15';
+            }
+            var baseVal = parseInt(aboardEl.dataset.baseCount, 10) || 15;
+            if (peerCount > 1) {
+              aboardEl.innerText = baseVal + (peerCount - 1);
+              aboardEl.style.color = '#57D06B';
+            } else {
+              aboardEl.innerText = baseVal;
               aboardEl.style.color = '';
             }
           }
         });
 
         // Broadcast event listeners
-        realtimeChannel
-          .on('broadcast', { event: 'sync-request' }, function (payload) {
-            if (payload.payload && payload.payload.senderId === clientId) return;
-            var data = payload.payload;
-            if (data && data.peerName) {
-              partnerName = data.peerName;
-              showToast(partnerName + ' aapke saath safar mein jud gaye hain 🚌');
-              updateTicketUI();
-            }
-            broadcastEvent('sync-response', {
-              hostName: myName,
-              trackIndex: trackIndex,
-              currentTime: audioEl.currentTime || 0,
-              isPlaying: isPlaying,
-              targetSenderId: payload.payload.senderId
-            });
-          })
-          .on('broadcast', { event: 'sync-response' }, function (payload) {
-            var data = payload.payload;
-            if (!data || (data.targetSenderId && data.targetSenderId !== clientId)) return;
-            if (data.hostName) {
-              partnerName = data.hostName;
-              updateTicketUI();
-            }
-            applyRemoteSync(data);
-          })
-          .on('broadcast', { event: 'play' }, function (payload) {
-            if (payload.payload && payload.payload.senderId === clientId) return;
-            applyRemotePlay(payload.payload);
-          })
-          .on('broadcast', { event: 'pause' }, function (payload) {
-            if (payload.payload && payload.payload.senderId === clientId) return;
-            applyRemotePause(payload.payload);
-          })
-          .on('broadcast', { event: 'track-change' }, function (payload) {
-            if (payload.payload && payload.payload.senderId === clientId) return;
-            applyRemoteTrackChange(payload.payload);
-          })
-          .on('broadcast', { event: 'seek' }, function (payload) {
-            if (payload.payload && payload.payload.senderId === clientId) return;
-            applyRemoteSeek(payload.payload);
-          });
+        ch.on('broadcast', { event: 'sync-request' }, function (payload) {
+          if (payload.payload && payload.payload.senderId === clientId) return;
+          var data = payload.payload;
+          if (data && data.senderId) {
+            var guestName = data.peerName || 'Saathi';
+            connectedPeers[data.senderId] = {
+              clientId: data.senderId,
+              name: guestName,
+              role: data.role || 'guest',
+              onlineAt: data.onlineAt || new Date().toISOString()
+            };
 
-        realtimeChannel.subscribe(function (status) {
+            showToast(guestName + ' aapke saath safar mein jud gaye hain 🚌');
+            checkNameCollision();
+            updateTicketUI();
+          }
+          broadcastEvent('sync-response', {
+            hostName: myName,
+            connectedPeersList: Object.values(connectedPeers),
+            trackIndex: trackIndex,
+            currentTime: audioEl.currentTime || 0,
+            isPlaying: isPlaying,
+            targetSenderId: payload.payload.senderId
+          });
+        })
+        .on('broadcast', { event: 'sync-response' }, function (payload) {
+          var data = payload.payload;
+          if (!data || (data.targetSenderId && data.targetSenderId !== clientId)) return;
+          if (data.hostName) {
+            partnerName = data.hostName;
+          }
+          if (data.connectedPeersList && Array.isArray(data.connectedPeersList)) {
+            data.connectedPeersList.forEach(function (p) {
+              if (p.clientId && p.clientId !== clientId) {
+                connectedPeers[p.clientId] = p;
+              }
+            });
+          }
+          checkNameCollision();
+          updateTicketUI();
+          applyRemoteSync(data);
+        })
+        .on('broadcast', { event: 'play' }, function (payload) {
+          if (payload.payload && payload.payload.senderId === clientId) return;
+          applyRemotePlay(payload.payload);
+        })
+        .on('broadcast', { event: 'pause' }, function (payload) {
+          if (payload.payload && payload.payload.senderId === clientId) return;
+          applyRemotePause(payload.payload);
+        })
+        .on('broadcast', { event: 'track-change' }, function (payload) {
+          if (payload.payload && payload.payload.senderId === clientId) return;
+          applyRemoteTrackChange(payload.payload);
+        })
+        .on('broadcast', { event: 'seek' }, function (payload) {
+          if (payload.payload && payload.payload.senderId === clientId) return;
+          applyRemoteSeek(payload.payload);
+        })
+        .on('broadcast', { event: 'sync-tick' }, function (payload) {
+          if (payload.payload && payload.payload.senderId === clientId) return;
+          if (!isRemoteUpdate) {
+            syncAudioPosition(payload.payload);
+          }
+        });
+
+        ch.subscribe(function (status) {
           if (status === 'SUBSCRIBED') {
-            realtimeChannel.track({ online_at: new Date().toISOString() });
+            ch.track({
+              name: myName,
+              role: myRole,
+              clientId: clientId,
+              online_at: new Date().toISOString()
+            });
             if (!isHostRole) {
-              broadcastEvent('sync-request', { senderId: clientId, peerName: myName });
+              broadcastEvent('sync-request', { senderId: clientId, peerName: myName, role: 'guest', onlineAt: new Date().toISOString() });
               setTimeout(function () {
-                if (!partnerName) {
+                if (!partnerName && Object.keys(connectedPeers).length === 0) {
                   showToast('Ye ride mil nahi rahi, naya safar shuru karo 🚌');
                 }
               }, 3500);
@@ -3343,30 +3697,38 @@
       });
     }
 
+    // Periodic Host sync tick every 3 seconds for low-latency drift compensation
+    setInterval(function () {
+      if (myRole === 'host' && realtimeChannel && isPlaying && !isRemoteUpdate) {
+        broadcastEvent('sync-tick', {
+          trackIndex: trackIndex,
+          currentTime: audioEl.currentTime || 0,
+          isPlaying: isPlaying,
+          sentAt: Date.now()
+        });
+      }
+    }, 3000);
+
     function applyRemoteSync(data) {
       isRemoteUpdate = true;
       if (typeof data.trackIndex === 'number' && data.trackIndex !== trackIndex) {
         loadTrack(data.trackIndex, data.isPlaying, false);
       }
-      if (typeof data.currentTime === 'number') {
-        audioEl.currentTime = data.currentTime;
-      }
+      syncAudioPosition(data);
       if (data.isPlaying && !isPlaying) {
         audioEl.play().then(function () { setPlaying(true); }).catch(function () { });
       } else if (!data.isPlaying && isPlaying) {
         audioEl.pause();
         setPlaying(false);
       }
-      setTimeout(function () { isRemoteUpdate = false; }, 300);
+      setTimeout(function () { isRemoteUpdate = false; }, 600);
     }
 
     function applyRemotePlay(data) {
       isRemoteUpdate = true;
-      if (typeof data.currentTime === 'number' && Math.abs(audioEl.currentTime - data.currentTime) > 1.5) {
-        audioEl.currentTime = data.currentTime;
-      }
+      syncAudioPosition(data);
       audioEl.play().then(function () { setPlaying(true); }).catch(function () { });
-      setTimeout(function () { isRemoteUpdate = false; }, 300);
+      setTimeout(function () { isRemoteUpdate = false; }, 600);
     }
 
     function applyRemotePause(data) {
@@ -3376,24 +3738,31 @@
       }
       audioEl.pause();
       setPlaying(false);
-      setTimeout(function () { isRemoteUpdate = false; }, 300);
+      audioEl.playbackRate = 1.0;
+      setTimeout(function () { isRemoteUpdate = false; }, 600);
     }
 
     function applyRemoteTrackChange(data) {
       isRemoteUpdate = true;
       if (typeof data.trackIndex === 'number') {
-        loadTrack(data.trackIndex, true, false);
-        if (typeof data.currentTime === 'number') audioEl.currentTime = data.currentTime;
+        var transit = Math.max(0, (Date.now() - (data.sentAt || Date.now())) / 1000);
+        var targetPos = (data.currentTime || 0) + (data.isPlaying !== false ? transit : 0);
+        loadTrack(data.trackIndex, data.isPlaying !== false, false);
+        if (targetPos > 0 && audioEl.duration && targetPos < audioEl.duration) {
+          audioEl.currentTime = targetPos;
+        }
       }
-      setTimeout(function () { isRemoteUpdate = false; }, 300);
+      audioEl.playbackRate = 1.0;
+      setTimeout(function () { isRemoteUpdate = false; }, 600);
     }
 
     function applyRemoteSeek(data) {
       isRemoteUpdate = true;
       if (typeof data.currentTime === 'number') {
-        audioEl.currentTime = data.currentTime;
+        var transit = Math.max(0, (Date.now() - (data.sentAt || Date.now())) / 1000);
+        audioEl.currentTime = data.currentTime + transit;
       }
-      setTimeout(function () { isRemoteUpdate = false; }, 300);
+      setTimeout(function () { isRemoteUpdate = false; }, 600);
     }
 
     // Share Ride button handler with Name Modal Prompt
@@ -3416,10 +3785,17 @@
             prompt('Copy this ride link:', shareUrl);
           });
 
-          if (!currentRoomId) {
+          if (!currentRoomId || !realtimeChannel) {
             initRealtimeRoom(roomId, true);
+          } else if (realtimeChannel) {
+            realtimeChannel.track({
+              name: myName,
+              role: myRole,
+              clientId: clientId,
+              online_at: new Date().toISOString()
+            });
           }
-        });
+        }, getExistingNames());
       });
     }
 
@@ -3443,12 +3819,24 @@
         myRole = 'guest';
         partnerName = hostParam;
 
+            }
+          });
+
+          realtimeChannel.subscribe(function (status) {
+            if (status === 'SUBSCRIBED') {
+              // Pre-subscribed
+            }
+          });
+        });
+
+        var existingNamesForPrompt = [hostParam];
+
         promptName(hostParam + ' के साथ सफर के लिए अपना नाम बताएं', 'Enter your name to join ' + hostParam + '\'s ride:', 'Saathi', function (enteredName) {
           myName = enteredName;
           updateTicketUI();
           showToast('Aap ' + hostParam + ' ke saath safar mein jud gaye hain 🚌');
           initRealtimeRoom(rideIdParam, false);
-        });
+        }, existingNamesForPrompt);
       }
     });
 

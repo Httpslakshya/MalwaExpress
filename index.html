@@ -1032,14 +1032,22 @@
       padding: 0 20px 50px 20px;
     }
 
+    .player-wrapper {
+      position: relative;
+      width: min(780px, calc(100% - 32px));
+      max-width: 780px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
     .glass-player-pill {
       position: relative;
       overflow: hidden;
       display: flex;
       align-items: center;
       gap: 20px;
-      width: min(780px, calc(100% - 32px));
-      max-width: 780px;
+      width: 100%;
       padding: 14px 28px 14px 14px;
 
       /* Dark Liquid Glass translucent background (adapts smoothly to bg scenes without harsh glare) */
@@ -1661,11 +1669,11 @@
     /* ================= DARK LIQUID GLASS TRACKLIST DRAWER ================= */
     .tracklist-drawer {
       position: absolute;
-      bottom: calc(100% + 14px);
-      width: min(780px, calc(100vw - 32px));
-      max-width: 780px;
-      max-height: 420px;
-      background: linear-gradient(145deg, rgba(25, 16, 12, 0.78) 0%, rgba(12, 8, 6, 0.88) 100%);
+      bottom: calc(100% + 12px);
+      left: 0;
+      width: 100%;
+      max-height: min(390px, 48vh);
+      background: linear-gradient(145deg, rgba(25, 16, 12, 0.82) 0%, rgba(12, 8, 6, 0.92) 100%);
       backdrop-filter: blur(32px) saturate(190%) brightness(0.95);
       -webkit-backdrop-filter: blur(32px) saturate(190%) brightness(0.95);
       border: 1.5px solid rgba(255, 255, 255, 0.16);
@@ -1680,8 +1688,8 @@
       z-index: 60;
       opacity: 0;
       pointer-events: none;
-      transform: translateY(16px) scale(0.97);
-      transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: translateY(12px) scale(0.98);
+      transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .tracklist-drawer.open {
@@ -1880,8 +1888,8 @@
 
     .reaction-picker {
       position: absolute;
-      bottom: calc(100% + 14px);
-      right: 16px;
+      bottom: calc(100% + 12px);
+      right: 14px;
       background: linear-gradient(135deg, rgba(25, 16, 12, 0.92) 0%, rgba(12, 8, 6, 0.95) 100%);
       border: 1px solid rgba(232, 166, 60, 0.45);
       border-radius: 999px;
@@ -2521,8 +2529,14 @@
         font-size: 9px;
       }
 
-      .glass-player-pill {
+      .player-wrapper {
+        width: 100%;
         max-width: calc(100% - 24px);
+      }
+
+      .glass-player-pill {
+        width: 100%;
+        max-width: 100%;
       }
 
       .ticket-mini.centered {
@@ -2899,83 +2913,85 @@
     </div>
 
     <div class="journey-center" id="journeyCenter">
-      <!-- Dark Liquid Glass Tracklist Drawer (Floats above player) -->
-      <div class="tracklist-drawer" id="tracklistDrawer">
-        <div class="tl-header">
-          <div class="tl-title-wrap">
-            <span class="tl-title">कैसेट की ट्रैकलिस्ट</span>
-            <span class="tl-count">50 Songs</span>
-          </div>
-          <button class="tl-close-btn" id="tlCloseBtn" aria-label="Close tracklist">✕</button>
-        </div>
-        <div class="tl-list" id="tlList"></div>
-      </div>
-
-      <!-- Reaction Emoji Shelf (Floats above player) -->
-      <div id="reactionPicker" class="reaction-picker">
-        <button class="react-item-btn" data-emoji="🥹" title="याद आ गई (Nostalgia)">🥹</button>
-        <button class="react-item-btn" data-emoji="😵" title="चकरा गया (Crazy/Intense)">😵</button>
-        <button class="react-item-btn" data-emoji="😴" title="सुकून (Soothing)">😴</button>
-        <button class="react-item-btn" data-emoji="🚌💨" title="बस का सफर (Bus vibe)">🚌💨</button>
-        <button class="react-item-btn" data-emoji="🎶" title="गुनगुनाना (Humming along)">🎶</button>
-        <button class="react-item-btn" data-emoji="😭" title="इमोशनल (Emotional)">😭</button>
-        <button class="react-item-btn" data-emoji="🙌" title="क्या बात है (Favorite line)">🙌</button>
-      </div>
-
-      <div class="glass-player-pill">
-        <!-- Spinning Disc with Song Artwork (Left) -->
-        <div class="player-disc-wrap" id="discWrap">
-          <div class="player-disc" id="disc">
-            <img src="assets/covers/cover_01.jpg" id="discCover" class="disc-cover-img" alt="Album Cover">
-            <div class="disc-hole"></div>
-            <div class="disc-grooves"></div>
-          </div>
-        </div>
-
-        <!-- Track Details & Progress (Middle) -->
-        <div class="player-main-info">
-          <div class="player-title" id="npTitle">Mujhse Mohabbat Ka</div>
-          <div class="player-artist" id="npArtist">Kumar Sanu</div>
-          <div class="player-progress-area">
-            <div class="progress-bar-bg" id="progressBar">
-              <div class="progress-bar-fill" id="progressFill"></div>
+      <div class="player-wrapper">
+        <!-- Dark Liquid Glass Tracklist Drawer (Floats directly above player) -->
+        <div class="tracklist-drawer" id="tracklistDrawer">
+          <div class="tl-header">
+            <div class="tl-title-wrap">
+              <span class="tl-title">कैसेट की ट्रैकलिस्ट</span>
+              <span class="tl-count">50 Songs</span>
             </div>
-            <div class="player-time" id="npTime">0:00 / 0:00</div>
+            <button class="tl-close-btn" id="tlCloseBtn" aria-label="Close tracklist">✕</button>
           </div>
+          <div class="tl-list" id="tlList"></div>
         </div>
 
-        <!-- Controls (Right) -->
-        <div class="player-controls">
-          <button class="ctrl-btn" id="prevBtn" aria-label="Previous track" title="पिछला गाना (Previous)">
-            <svg viewBox="0 0 24 24">
-              <path d="M6 6h2v12H6zM20 6L9 12l11 6z" />
-            </svg>
-          </button>
-          <button class="play-pause-btn" id="playBtn" aria-label="Play or pause">
-            <svg id="playIcon" viewBox="0 0 24 24">
-              <path d="M8 5v14l11-7z" />
-            </svg>
-          </button>
-          <button class="ctrl-btn" id="nextBtn" aria-label="Next track" title="अगला गाना (Next)">
-            <svg viewBox="0 0 24 24">
-              <path d="M16 6h2v12h-2zM4 6l11 6-11 6z" />
-            </svg>
-          </button>
-          <button class="ctrl-btn" id="tracklistBtn" aria-label="Open Tracklist" title="ट्रैकलिस्ट (Tracklist)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="8" y1="6" x2="21" y2="6"></line>
-              <line x1="8" y1="12" x2="21" y2="12"></line>
-              <line x1="8" y1="18" x2="21" y2="18"></line>
-              <line x1="3" y1="6" x2="3.01" y2="6"></line>
-              <line x1="3" y1="12" x2="3.01" y2="12"></line>
-              <line x1="3" y1="18" x2="3.01" y2="18"></line>
-            </svg>
-          </button>
-          <button class="ctrl-btn react-player-btn" id="playerReactBtn" aria-label="Reaction Emojis" title="प्रतिक्रिया (Share Reaction Emoji)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-            </svg>
-          </button>
+        <!-- Reaction Emoji Shelf (Floats directly above player controls) -->
+        <div id="reactionPicker" class="reaction-picker">
+          <button class="react-item-btn" data-emoji="🥹" title="याद आ गई (Nostalgia)">🥹</button>
+          <button class="react-item-btn" data-emoji="😵" title="चकरा गया (Crazy/Intense)">😵</button>
+          <button class="react-item-btn" data-emoji="😴" title="सुकून (Soothing)">😴</button>
+          <button class="react-item-btn" data-emoji="🚌💨" title="बस का सफर (Bus vibe)">🚌💨</button>
+          <button class="react-item-btn" data-emoji="🎶" title="गुनगुनाना (Humming along)">🎶</button>
+          <button class="react-item-btn" data-emoji="😭" title="इमोशनल (Emotional)">😭</button>
+          <button class="react-item-btn" data-emoji="🙌" title="क्या बात है (Favorite line)">🙌</button>
+        </div>
+
+        <div class="glass-player-pill">
+          <!-- Spinning Disc with Song Artwork (Left) -->
+          <div class="player-disc-wrap" id="discWrap">
+            <div class="player-disc" id="disc">
+              <img src="assets/covers/cover_01.jpg" id="discCover" class="disc-cover-img" alt="Album Cover">
+              <div class="disc-hole"></div>
+              <div class="disc-grooves"></div>
+            </div>
+          </div>
+
+          <!-- Track Details & Progress (Middle) -->
+          <div class="player-main-info">
+            <div class="player-title" id="npTitle">Mujhse Mohabbat Ka</div>
+            <div class="player-artist" id="npArtist">Kumar Sanu</div>
+            <div class="player-progress-area">
+              <div class="progress-bar-bg" id="progressBar">
+                <div class="progress-bar-fill" id="progressFill"></div>
+              </div>
+              <div class="player-time" id="npTime">0:00 / 0:00</div>
+            </div>
+          </div>
+
+          <!-- Controls (Right) -->
+          <div class="player-controls">
+            <button class="ctrl-btn" id="prevBtn" aria-label="Previous track" title="पिछला गाना (Previous)">
+              <svg viewBox="0 0 24 24">
+                <path d="M6 6h2v12H6zM20 6L9 12l11 6z" />
+              </svg>
+            </button>
+            <button class="play-pause-btn" id="playBtn" aria-label="Play or pause">
+              <svg id="playIcon" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </button>
+            <button class="ctrl-btn" id="nextBtn" aria-label="Next track" title="अगला गाना (Next)">
+              <svg viewBox="0 0 24 24">
+                <path d="M16 6h2v12h-2zM4 6l11 6-11 6z" />
+              </svg>
+            </button>
+            <button class="ctrl-btn" id="tracklistBtn" aria-label="Open Tracklist" title="ट्रैकलिस्ट (Tracklist)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="8" y1="6" x2="21" y2="6"></line>
+                <line x1="8" y1="12" x2="21" y2="12"></line>
+                <line x1="8" y1="18" x2="21" y2="18"></line>
+                <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                <line x1="3" y1="18" x2="3.01" y2="18"></line>
+              </svg>
+            </button>
+            <button class="ctrl-btn react-player-btn" id="playerReactBtn" aria-label="Reaction Emojis" title="प्रतिक्रिया (Share Reaction Emoji)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>

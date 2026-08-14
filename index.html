@@ -1867,11 +1867,8 @@
 
     /* ================= SHARED-LISTENING FLOATING REACTIONS ================= */
     .react-player-btn {
-      display: none;
-      position: relative;
-    }
-    .react-player-btn.show {
       display: flex;
+      position: relative;
     }
     .react-player-btn.active {
       color: var(--marigold);
@@ -4700,12 +4697,17 @@
 
     function broadcastEvent(eventName, payloadData) {
       if (!realtimeChannel) return;
+      payloadData = payloadData || {};
       payloadData.senderId = clientId;
-      realtimeChannel.send({
-        type: 'broadcast',
-        event: eventName,
-        payload: payloadData
-      });
+      try {
+        realtimeChannel.send({
+          type: 'broadcast',
+          event: eventName,
+          payload: payloadData
+        });
+      } catch (err) {
+        console.warn('Realtime broadcast error:', err);
+      }
     }
 
     function initRealtimeRoom(roomId, isHostRole) {
@@ -5213,7 +5215,7 @@
       if (!bubbleContainer) return;
 
       var bubble = document.createElement('div');
-      bubble.className = 'reaction-bubble' + (isResonance ? ' resonance' : '');
+      bubble.className = 'reaction-bubble' + (isResonance ? ' resonance' : '') + (isLocal ? ' local-bubble' : ' peer-bubble');
 
       // Position bubble near the player controls with random horizontal variation
       var playerControls = document.querySelector('.player-controls');
@@ -5247,7 +5249,7 @@
     function sendReaction(emoji) {
       if (reactionCooldown) return;
       reactionCooldown = true;
-      setTimeout(function () { reactionCooldown = false; }, 1200);
+      setTimeout(function () { reactionCooldown = false; }, 800);
 
       var now = Date.now();
       lastSentEmoji = emoji;
@@ -5256,7 +5258,8 @@
       // Check emotional resonance match with partner (sent same emoji within 8 seconds)
       var isResonance = (lastPartnerEmoji === emoji && (now - lastPartnerEmojiTime) <= 8000);
 
-      spawnReactionBubble(emoji, myName || 'You', isResonance, true);
+      var myDisplayName = myName || (myRole === 'host' ? 'Yatri' : 'Saathi');
+      spawnReactionBubble(emoji, 'You', isResonance, true);
 
       if (playerReactBtn) {
         playerReactBtn.classList.add('pulse');
@@ -5267,11 +5270,12 @@
         showToast('Dono ki feeling match ho gayi! ✨ 💛');
       }
 
-      // Broadcast reaction to partner
+      // Broadcast reaction across realtime channel to partner
       if (typeof realtimeChannel !== 'undefined' && realtimeChannel) {
         broadcastEvent('emoji-reaction', {
           emoji: emoji,
-          senderName: myName || 'Passenger',
+          senderName: myDisplayName,
+          role: myRole,
           timestamp: now
         });
       }
@@ -5285,7 +5289,13 @@
 
       var isResonance = (lastSentEmoji === data.emoji && (now - lastSentEmojiTime) <= 8000);
 
-      spawnReactionBubble(data.emoji, data.senderName || partnerName || 'Saathi', isResonance, false);
+      var senderDisplayName = data.senderName || partnerName || (myRole === 'host' ? 'Saathi' : 'Yatri');
+      spawnReactionBubble(data.emoji, senderDisplayName, isResonance, false);
+
+      if (playerReactBtn) {
+        playerReactBtn.classList.add('pulse');
+        setTimeout(function () { playerReactBtn.classList.remove('pulse'); }, 400);
+      }
 
       if (isResonance) {
         showToast('Dono ki feeling match ho gayi! ✨ 💛');
@@ -5296,7 +5306,10 @@
       btn.addEventListener('click', function (e) {
         e.stopPropagation();
         var emoji = btn.getAttribute('data-emoji');
-        if (emoji) sendReaction(emoji);
+        if (emoji) {
+          playTapeClick();
+          sendReaction(emoji);
+        }
         if (reactionPicker) {
           reactionPicker.classList.remove('open');
           if (playerReactBtn) playerReactBtn.classList.remove('active');

@@ -2689,9 +2689,6 @@
       </button>
     </div>
 
-    <!-- Floating Bubbles Stream Layer -->
-    <div id="reactionBubbleContainer" class="reaction-bubble-container"></div>
-
     <!-- "Journey Together" Unlockable Memory Card Modal -->
     <div id="journeyTogetherModal" class="jt-modal-backdrop">
       <div class="jt-card-dialog">
@@ -2842,20 +2839,23 @@
         Share this ride
       </button>
     </div>
-
-    <!-- Name Prompt Modal -->
-    <div id="nameModal" class="name-modal-backdrop">
-      <div class="name-modal-card">
-        <div class="nm-title" id="nmTitle">सफर के लिए अपना नाम लिखें</div>
-        <div class="nm-sub" id="nmSub">Enter your name for the ride ticket</div>
-        <input type="text" id="nameInput" class="nm-input" placeholder="आपका नाम (e.g. Yatri)" maxlength="20" autocomplete="off" />
-        <button id="nameSubmitBtn" class="nm-btn">सफर शुरू करें · Continue</button>
-      </div>
-    </div>
-
-    <!-- Toast Notification -->
-    <div id="malwaToast" class="malwa-toast"></div>
   </div>
+
+  <!-- Floating Bubbles Stream Layer (Global Body Level) -->
+  <div id="reactionBubbleContainer" class="reaction-bubble-container"></div>
+
+  <!-- Name Prompt Modal (Global Body Level) -->
+  <div id="nameModal" class="name-modal-backdrop">
+    <div class="name-modal-card">
+      <div class="nm-title" id="nmTitle">सफर के लिए अपना नाम लिखें</div>
+      <div class="nm-sub" id="nmSub">Enter your name for the ride ticket</div>
+      <input type="text" id="nameInput" class="nm-input" placeholder="आपका नाम (e.g. Yatri)" maxlength="20" autocomplete="off" />
+      <button id="nameSubmitBtn" class="nm-btn">सफर शुरू करें · Continue</button>
+    </div>
+  </div>
+
+  <!-- Toast Notification (Global Body Level) -->
+  <div id="malwaToast" class="malwa-toast"></div>
 
   <!-- Creator Credit Badge (Expand on Hover) -->
   <a href="https://www.instagram.com/chasing.lakshyaa/" target="_blank" rel="noopener noreferrer" class="creator-credit" title="Instagram: @chasing.lakshyaa">
@@ -4310,11 +4310,16 @@
       payloadData = payloadData || {};
       payloadData.senderId = clientId;
       try {
-        realtimeChannel.send({
+        var p = realtimeChannel.send({
           type: 'broadcast',
           event: eventName,
           payload: payloadData
         });
+        if (p && typeof p.then === 'function') {
+          p.catch(function (err) {
+            console.warn('Realtime broadcast error:', err);
+          });
+        }
       } catch (err) {
         console.warn('Realtime broadcast error:', err);
       }
@@ -4323,14 +4328,20 @@
     function initRealtimeRoom(roomId, isHostRole) {
       myRole = isHostRole ? 'host' : 'guest';
       isInSharedRoom = true;
+      currentRoomId = roomId;
+      window.currentRoomId = roomId;
+      if (playerReactBtn) playerReactBtn.classList.add('show');
+
       loadSupabase(function () {
         currentRoomId = roomId;
+        window.currentRoomId = roomId;
         realtimeChannel = supabaseClient.channel('ride:' + roomId, {
           config: {
             broadcast: { self: false },
             presence: { key: clientId }
           }
         });
+        window.realtimeChannel = realtimeChannel;
 
         // Presence sync handler — uses real connection count in room
         realtimeChannel.on('presence', { event: 'sync' }, function () {
@@ -4353,9 +4364,9 @@
         // Broadcast event listeners
         realtimeChannel
           .on('broadcast', { event: 'sync-request' }, function (payload) {
-            if (payload.payload && payload.payload.senderId === clientId) return;
-            var data = payload.payload;
-            if (data && data.peerName) {
+            var data = (payload && payload.payload) ? payload.payload : payload;
+            if (!data || data.senderId === clientId) return;
+            if (data.peerName) {
               partnerName = data.peerName;
               showToast(partnerName + ' aapke saath safar mein jud gaye hain 🚌');
               updateTicketUI();
@@ -4365,11 +4376,11 @@
               trackIndex: trackIndex,
               currentTime: audioEl.currentTime || 0,
               isPlaying: isPlaying,
-              targetSenderId: payload.payload.senderId
+              targetSenderId: data.senderId
             });
           })
           .on('broadcast', { event: 'sync-response' }, function (payload) {
-            var data = payload.payload;
+            var data = (payload && payload.payload) ? payload.payload : payload;
             if (!data || (data.targetSenderId && data.targetSenderId !== clientId)) return;
             if (data.hostName) {
               partnerName = data.hostName;
@@ -4378,24 +4389,29 @@
             applyRemoteSync(data);
           })
           .on('broadcast', { event: 'play' }, function (payload) {
-            if (payload.payload && payload.payload.senderId === clientId) return;
-            applyRemotePlay(payload.payload);
+            var data = (payload && payload.payload) ? payload.payload : payload;
+            if (!data || data.senderId === clientId) return;
+            applyRemotePlay(data);
           })
           .on('broadcast', { event: 'pause' }, function (payload) {
-            if (payload.payload && payload.payload.senderId === clientId) return;
-            applyRemotePause(payload.payload);
+            var data = (payload && payload.payload) ? payload.payload : payload;
+            if (!data || data.senderId === clientId) return;
+            applyRemotePause(data);
           })
           .on('broadcast', { event: 'track-change' }, function (payload) {
-            if (payload.payload && payload.payload.senderId === clientId) return;
-            applyRemoteTrackChange(payload.payload);
+            var data = (payload && payload.payload) ? payload.payload : payload;
+            if (!data || data.senderId === clientId) return;
+            applyRemoteTrackChange(data);
           })
           .on('broadcast', { event: 'seek' }, function (payload) {
-            if (payload.payload && payload.payload.senderId === clientId) return;
-            applyRemoteSeek(payload.payload);
+            var data = (payload && payload.payload) ? payload.payload : payload;
+            if (!data || data.senderId === clientId) return;
+            applyRemoteSeek(data);
           })
           .on('broadcast', { event: 'emoji-reaction' }, function (payload) {
-            if (payload.payload && payload.payload.senderId === clientId) return;
-            handleRemoteReaction(payload.payload);
+            var data = (payload && payload.payload) ? payload.payload : payload;
+            if (!data || data.senderId === clientId) return;
+            handleRemoteReaction(data);
           });
 
         realtimeChannel.subscribe(function (status) {
@@ -4505,7 +4521,7 @@
     }
 
     // Auto-join if URL contains ?ride=xyz123&host=Lakshya
-    window.addEventListener('load', function () {
+    function checkUrlRideAutoJoin() {
       var urlParams = new URLSearchParams(window.location.search);
       var rideIdParam = urlParams.get('ride');
       var hostParam = urlParams.get('host') || 'Host';
@@ -4521,7 +4537,13 @@
           initRealtimeRoom(rideIdParam, false);
         });
       }
-    });
+    }
+
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      checkUrlRideAutoJoin();
+    } else {
+      window.addEventListener('DOMContentLoaded', checkUrlRideAutoJoin);
+    }
 
     // Register PWA Service Worker
     if ('serviceWorker' in navigator) {
@@ -4694,6 +4716,7 @@
     });
 
     function spawnReactionBubble(emoji, senderName, isResonance, isLocal) {
+      if (!bubbleContainer) bubbleContainer = document.getElementById('reactionBubbleContainer');
       if (!bubbleContainer) return;
 
       var bubble = document.createElement('div');
@@ -4701,8 +4724,12 @@
 
       // Position bubble near the player controls with random horizontal variation
       var playerControls = document.querySelector('.player-controls');
-      var startX = playerControls ? (playerControls.getBoundingClientRect().left + Math.random() * 80) : (window.innerWidth / 2 + (Math.random() * 120 - 60));
-      bubble.style.left = Math.max(20, Math.min(window.innerWidth - 60, startX)) + 'px';
+      var baseLeft = playerControls ? playerControls.getBoundingClientRect().left : (window.innerWidth * 0.55);
+      var startX = isLocal
+        ? (baseLeft + Math.random() * 60 - 10)
+        : (Math.max(30, Math.min(window.innerWidth - 90, baseLeft + Math.random() * 100 - 50)));
+
+      bubble.style.left = Math.max(20, Math.min(window.innerWidth - 70, startX)) + 'px';
 
       // Continuous wobble parameters
       var driftAmount = 14 + Math.random() * 10;
@@ -4731,7 +4758,7 @@
     function sendReaction(emoji) {
       if (reactionCooldown) return;
       reactionCooldown = true;
-      setTimeout(function () { reactionCooldown = false; }, 800);
+      setTimeout(function () { reactionCooldown = false; }, 600);
 
       var now = Date.now();
       lastSentEmoji = emoji;
@@ -4771,7 +4798,7 @@
 
       var isResonance = (lastSentEmoji === data.emoji && (now - lastSentEmojiTime) <= 8000);
 
-      var senderDisplayName = data.senderName || partnerName || (myRole === 'host' ? 'Saathi' : 'Yatri');
+      var senderDisplayName = data.senderName || partnerName || (myRole === 'host' ? 'साथी · Saathi' : 'यात्री · Yatri');
       spawnReactionBubble(data.emoji, senderDisplayName, isResonance, false);
 
       if (playerReactBtn) {
@@ -4798,13 +4825,6 @@
         }
       });
     });
-
-    // Toggle react button visibility in player controls on shared room state
-    var origInitRealtimeRoom = initRealtimeRoom;
-    initRealtimeRoom = function (roomId, isHostRole) {
-      if (playerReactBtn) playerReactBtn.classList.add('show');
-      return origInitRealtimeRoom.apply(this, arguments);
-    };
 
     /* ===============================================================
        "JOURNEY TOGETHER" UNLOCKABLE CARD & HTML5 CANVAS EXPORT

@@ -3030,7 +3030,7 @@
       </button>
       <button id="fullscreenBtn" aria-label="Toggle Fullscreen" title="फुलस्क्रीन (Toggle Fullscreen)">
         <svg id="fullscreenIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M8 3H5a2 2 0 0 0-2 2v3m18-5h-3a2 2 0 0 0-2 2v3M3 16v3a2 2 0 0 2 2h3m13 0h-3a2 2 0 0 1-2-2v-3"/>
+          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
         </svg>
       </button>
     </div>
@@ -5652,35 +5652,51 @@
       });
     }
 
-    // Toggle react button visibility on shared room state
-    var origInitRealtimeRoom = initRealtimeRoom;
-    initRealtimeRoom = function (roomId, isHostRole) {
-      if (reactDockBtn) reactDockBtn.classList.add('show');
-      return origInitRealtimeRoom.apply(this, arguments);
-    };
-
     /* landing -> transition -> journey */
     var landingView = document.getElementById('landingView');
     var journeyView = document.getElementById('journeyView');
     var overlay = document.getElementById('transitionOverlay');
+    var boardBtn = document.getElementById('boardBtn');
 
-    document.getElementById('boardBtn').addEventListener('click', function () {
-      // Start track 0 with smooth fade-in!
-      loadTrack(0, true, true);
-      overlay.classList.add('show');
-      setTimeout(function () { overlay.classList.add('show-text'); }, 650);
-      setTimeout(function () {
-        landingView.style.display = 'none';
-        journeyView.style.display = 'block';
-        setActiveDockButton(switchInside);
-        showFirstVisitHint();
-        resetIdleTimer();
-      }, 2100);
-      setTimeout(function () {
-        overlay.classList.remove('show-text');
-        overlay.classList.remove('show');
-      }, 2500);
-    });
+    if (boardBtn) {
+      boardBtn.addEventListener('click', function () {
+        try {
+          playTapeClick();
+        } catch (e) { }
+
+        try {
+          loadTrack(0, true, true);
+        } catch (err) {
+          console.warn('Track load error on board:', err);
+        }
+
+        if (overlay) {
+          overlay.classList.add('show');
+          setTimeout(function () { overlay.classList.add('show-text'); }, 650);
+        }
+
+        setTimeout(function () {
+          if (landingView) landingView.style.display = 'none';
+          if (journeyView) journeyView.style.display = 'block';
+          try {
+            if (typeof setActiveDockButton === 'function' && typeof switchInside !== 'undefined') {
+              setActiveDockButton(switchInside);
+            }
+            if (typeof showFirstVisitHint === 'function') showFirstVisitHint();
+            if (typeof resetIdleTimer === 'function') resetIdleTimer();
+          } catch (e) {
+            console.warn('Post-board initialization error:', e);
+          }
+        }, 2100);
+
+        setTimeout(function () {
+          if (overlay) {
+            overlay.classList.remove('show-text');
+            overlay.classList.remove('show');
+          }
+        }, 2500);
+      });
+    }
   </script>
 </body>
 

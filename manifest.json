@@ -1,0 +1,16 @@
+{
+  "name": "Malwa Express — मालवा एक्सप्रेस",
+  "short_name": "MalwaExpress",
+  "description": "Nostalgic 90s MP bus cassette audio player & journey experience",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#160F0A",
+  "theme_color": "#160F0A",
+  "icons": [
+    {
+      "src": "assets/malwa.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png"
+    }
+  ]
+}

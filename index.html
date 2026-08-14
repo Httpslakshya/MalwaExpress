@@ -5,11 +5,27 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Malwa Express — मालवा एक्सप्रेस</title>
-  <meta name="description" content="Malwa Express — board the bus.">
+  <meta name="description" content="Malwa Express — A nostalgic 90s MP bus ride with Bollywood cassette classics from Indore to Dewas.">
+  <meta name="theme-color" content="#160F0A">
+
+  <!-- Open Graph & Social Sharing -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Malwa Express — मालवा एक्सप्रेस">
+  <meta property="og:description" content="A nostalgic 90s MP bus journey with authentic conductor calls and Bollywood cassette classics from Indore to Dewas.">
+  <meta property="og:image" content="assets/malwa.png">
+  <meta property="og:image:alt" content="Malwa Express Bus">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Malwa Express — मालवा एक्सप्रेस">
+  <meta name="twitter:description" content="A nostalgic 90s MP bus journey with authentic conductor calls and Bollywood cassette classics from Indore to Dewas.">
+  <meta name="twitter:image" content="assets/malwa.png">
+
+  <!-- Web App Manifest -->
+  <link rel="manifest" href="manifest.json">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Space+Mono:wght@400;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Kalam:wght@400;700&family=Space+Mono:wght@400;700&display=swap"
     rel="stylesheet">
   <!-- Asset Preloading for Fast Initial Load -->
   <link rel="preload" as="image" href="assets/malwa.png">
@@ -970,41 +986,6 @@
       letter-spacing: 0.2px;
     }
 
-    .nm-error {
-      display: none;
-      color: #ff5252;
-      font-size: 11px;
-      font-weight: 700;
-      margin-top: 8px;
-      padding: 6px 10px;
-      background: rgba(255, 82, 82, 0.12);
-      border: 1px solid rgba(255, 82, 82, 0.3);
-      border-radius: 6px;
-      text-align: center;
-      animation: shakeError 0.3s ease-in-out;
-    }
-
-    @keyframes shakeError {
-      0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-4px); }
-      40%, 80% { transform: translateX(4px); }
-    }
-
-    .copass-list-container {
-      max-height: 140px;
-      overflow-y: auto;
-      padding-right: 4px;
-    }
-
-    .copass-list-container::-webkit-scrollbar {
-      width: 4px;
-    }
-
-    .copass-list-container::-webkit-scrollbar-thumb {
-      background: rgba(184, 58, 42, 0.4);
-      border-radius: 4px;
-    }
-
     .centered-copass-stub {
       margin-top: 6px;
       padding-top: 2px;
@@ -1051,14 +1032,22 @@
       padding: 0 20px 50px 20px;
     }
 
+    .player-wrapper {
+      position: relative;
+      width: min(780px, calc(100% - 32px));
+      max-width: 780px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
     .glass-player-pill {
       position: relative;
       overflow: hidden;
       display: flex;
       align-items: center;
       gap: 20px;
-      width: min(780px, calc(100% - 32px));
-      max-width: 780px;
+      width: 100%;
       padding: 14px 28px 14px 14px;
 
       /* Dark Liquid Glass translucent background (adapts smoothly to bg scenes without harsh glare) */
@@ -1228,12 +1217,1109 @@
       transition: width 0.1s linear;
     }
 
+    /* Buffering & Loading Indeterminate Cues */
+    .player-disc-wrap.buffering .player-disc {
+      animation: spinDisc 12s linear infinite, discBufferingGlow 1.2s ease-in-out infinite alternate !important;
+      animation-play-state: running !important;
+    }
+
+    @keyframes discBufferingGlow {
+      0% {
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.6), 0 0 8px rgba(232, 166, 60, 0.25), inset 0 0 0 1.5px rgba(232, 166, 60, 0.5);
+      }
+      100% {
+        box-shadow: 0 8px 26px rgba(0, 0, 0, 0.85), 0 0 24px rgba(232, 166, 60, 0.85), inset 0 0 0 2px rgba(255, 255, 255, 0.9);
+      }
+    }
+
+    .progress-bar-bg.buffering::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(232, 166, 60, 0.75) 50%, transparent 100%);
+      animation: progressBufferingShimmer 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      border-radius: 4px;
+      pointer-events: none;
+    }
+
+    @keyframes progressBufferingShimmer {
+      0% {
+        transform: translateX(-100%);
+      }
+      100% {
+        transform: translateX(100%);
+      }
+    }
+
     .player-time {
       font-size: 12.5px;
       color: rgba(243, 230, 206, 0.85);
       font-weight: 400;
       margin-top: 5px;
       letter-spacing: 0.5px;
+    }
+
+    /* ================= BUS BODY STICKERS & GRAFFITI ================= */
+    .bus-sticker-slot {
+      position: fixed;
+      left: 22px;
+      bottom: 66px;
+      z-index: 15;
+      opacity: 0;
+      transform: translateY(6px) scale(0.96);
+      transition: opacity 1.8s cubic-bezier(0.16, 1, 0.3, 1), transform 1.8s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+      user-select: none;
+      pointer-events: auto;
+    }
+    .bus-sticker-slot.show {
+      opacity: 0.95;
+      transform: translateY(0) scale(1);
+    }
+    .bus-sticker-slot:hover {
+      opacity: 1;
+      transform: scale(1.06);
+    }
+    .bus-sticker-slot .edit-hint {
+      position: absolute;
+      top: -22px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 10, 6, 0.9);
+      border: 1px solid rgba(232, 166, 60, 0.4);
+      color: var(--marigold);
+      font-family: 'Space Mono', monospace;
+      font-size: 8px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .bus-sticker-slot:hover .edit-hint {
+      opacity: 1;
+    }
+
+    /* Sticker 1: Truck-Art Oval Badge */
+    .sticker-1 {
+      position: relative;
+      width: 144px;
+      height: 94px;
+      transform: rotate(-4deg);
+      background: linear-gradient(160deg, #c33d29, #8f2a1c);
+      border-radius: 50%/45%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 22px rgba(0,0,0,0.55);
+      padding: 6px 14px;
+    }
+    .sticker-1::before {
+      content: "";
+      position: absolute;
+      inset: 5px;
+      border: 2px dashed rgba(243,237,220,0.7);
+      border-radius: 50%/45%;
+    }
+    .sticker-1 .txt {
+      font-family: 'Kalam', cursive;
+      font-weight: 700;
+      font-size: 16px;
+      color: #f3eddc;
+      text-align: center;
+      line-height: 1.15;
+      text-shadow: 0 1.5px 0 rgba(0,0,0,0.3);
+      z-index: 1;
+      max-width: 110px;
+      word-break: break-word;
+    }
+    .sticker-1 .sub {
+      font-family: 'Space Mono', monospace;
+      font-size: 6.5px;
+      letter-spacing: .16em;
+      color: rgba(243,237,220,0.85);
+      margin-top: 3px;
+      z-index: 1;
+    }
+
+    /* Sticker 2: Peeling Slogan Decal */
+    .sticker-2 {
+      position: relative;
+      width: 150px;
+      height: 82px;
+      transform: rotate(3deg);
+      background: #2c5c63;
+      border-radius: 6px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 6px 10px;
+    }
+    .sticker-2::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 22px;
+      height: 22px;
+      background: linear-gradient(135deg, transparent 50%, #0d1f22 50%);
+    }
+    .sticker-2 .txt {
+      font-family: 'Kalam', cursive;
+      font-weight: 700;
+      font-size: 15px;
+      color: #e0a52e;
+      text-align: center;
+      line-height: 1.2;
+    }
+    .sticker-2 .txt2 {
+      font-family: 'Baloo 2', sans-serif;
+      font-weight: 600;
+      font-size: 10.5px;
+      color: #f3eddc;
+      margin-top: 2px;
+      letter-spacing: .02em;
+      text-align: center;
+      max-width: 120px;
+      word-break: break-word;
+      line-height: 1.15;
+    }
+
+    /* Sticker 3: Stitched Heart Tag */
+    .sticker-3 {
+      position: relative;
+      width: 140px;
+      height: 88px;
+      transform: rotate(-2.5deg);
+      background: #f3eddc;
+      border-radius: 12px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1px;
+      padding: 6px 10px;
+    }
+    .sticker-3::before {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border: 1.5px dashed #c33d29;
+      border-radius: 8px;
+    }
+    .sticker-3 .heart {
+      font-size: 16px;
+      z-index: 1;
+    }
+    .sticker-3 .txt {
+      font-family: 'Kalam', cursive;
+      font-weight: 700;
+      font-size: 15px;
+      color: #1c150f;
+      text-align: center;
+      line-height: 1.15;
+      z-index: 1;
+      max-width: 115px;
+      word-break: break-word;
+    }
+    .sticker-3 .brand {
+      font-family: 'Space Mono', monospace;
+      font-size: 6.5px;
+      letter-spacing: .14em;
+      color: #948a78;
+      margin-top: 2px;
+      z-index: 1;
+    }
+
+    /* ================= STICKER CUSTOMIZER MODAL ================= */
+    .sticker-edit-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 96;
+      background: rgba(8, 5, 3, 0.85);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+    }
+    .sticker-edit-backdrop.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .sticker-edit-card {
+      background: linear-gradient(145deg, rgba(28, 18, 13, 0.94) 0%, rgba(15, 10, 7, 0.96) 100%);
+      border: 1.5px solid rgba(232, 166, 60, 0.35);
+      border-radius: 20px;
+      max-width: 480px;
+      width: 100%;
+      padding: 22px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      position: relative;
+    }
+    .se-header {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      position: relative;
+    }
+    .se-title {
+      font-family: 'Baloo 2', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--cream);
+    }
+    .se-sub {
+      font-size: 11.5px;
+      color: rgba(243, 230, 206, 0.7);
+    }
+    .se-close {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: none;
+      border: none;
+      color: var(--cream);
+      font-size: 16px;
+      cursor: pointer;
+      opacity: 0.7;
+      padding: 4px;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .se-close:hover {
+      opacity: 1;
+      transform: scale(1.2);
+    }
+
+    .se-design-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 4px;
+    }
+    .se-design-choice {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1.5px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 10px 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .se-design-choice:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(232, 166, 60, 0.4);
+    }
+    .se-design-choice.active {
+      background: rgba(232, 166, 60, 0.15);
+      border-color: var(--marigold);
+      box-shadow: 0 0 16px rgba(232, 166, 60, 0.35);
+    }
+    .se-design-name {
+      font-family: 'Space Mono', monospace;
+      font-size: 8px;
+      font-weight: 700;
+      color: var(--cream);
+      text-align: center;
+      opacity: 0.85;
+    }
+    .se-mini-sticker {
+      transform: scale(0.62);
+      transform-origin: center center;
+      margin: -14px 0;
+      pointer-events: none;
+    }
+
+    .se-live-preview-wrap {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 120px;
+      position: relative;
+    }
+    .se-preview-label {
+      position: absolute;
+      top: 6px;
+      left: 10px;
+      font-family: 'Space Mono', monospace;
+      font-size: 7.5px;
+      letter-spacing: 1px;
+      color: rgba(243, 230, 206, 0.5);
+    }
+    .se-preview-stage {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: scale(1.05);
+    }
+
+    .se-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .se-input-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--cream);
+    }
+    .se-text-input {
+      background: rgba(0, 0, 0, 0.45);
+      border: 1.5px solid rgba(255, 255, 255, 0.18);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 15px;
+      color: #ffffff;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .se-text-input:focus {
+      border-color: var(--marigold);
+      box-shadow: 0 0 12px rgba(232, 166, 60, 0.35);
+    }
+    .se-text-input.font-kalam {
+      font-family: 'Kalam', cursive;
+      font-weight: 700;
+    }
+    .se-text-input.font-baloo {
+      font-family: 'Baloo 2', sans-serif;
+      font-weight: 600;
+    }
+
+    .se-presets-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .se-presets-title {
+      font-family: 'Space Mono', monospace;
+      font-size: 8.5px;
+      letter-spacing: 0.5px;
+      color: rgba(243, 230, 206, 0.6);
+    }
+    .se-preset-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      max-height: 70px;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+    .se-preset-chips::-webkit-scrollbar { display: none; }
+    .se-chip {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--cream);
+      font-family: 'Kalam', cursive;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .se-chip:hover {
+      background: rgba(232, 166, 60, 0.2);
+      border-color: var(--marigold);
+      color: #ffffff;
+    }
+
+    .se-actions {
+      margin-top: 4px;
+    }
+    .se-save-btn {
+      width: 100%;
+      background: var(--rust);
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      padding: 11px 16px;
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(184, 61, 41, 0.4);
+      transition: background 0.2s, transform 0.2s;
+    }
+    .se-save-btn:hover {
+      background: #c33d29;
+      transform: translateY(-1px);
+    }
+
+    /* ================= DARK LIQUID GLASS TRACKLIST DRAWER ================= */
+    .tracklist-drawer {
+      position: absolute;
+      bottom: calc(100% + 12px);
+      left: 0;
+      width: 100%;
+      max-height: min(390px, 48vh);
+      background: linear-gradient(145deg, rgba(25, 16, 12, 0.82) 0%, rgba(12, 8, 6, 0.92) 100%);
+      backdrop-filter: blur(32px) saturate(190%) brightness(0.95);
+      -webkit-backdrop-filter: blur(32px) saturate(190%) brightness(0.95);
+      border: 1.5px solid rgba(255, 255, 255, 0.16);
+      border-radius: 24px;
+      box-shadow:
+        0 30px 70px rgba(0, 0, 0, 0.85),
+        0 12px 30px rgba(0, 0, 0, 0.5),
+        inset 0 1px 1px rgba(255, 255, 255, 0.18);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 60;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(12px) scale(0.98);
+      transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .tracklist-drawer.open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+
+    .tl-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 22px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .tl-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .tl-title {
+      font-family: 'Baloo 2', sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--cream);
+    }
+
+    .tl-count {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--marigold);
+      background: rgba(232, 166, 60, 0.18);
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    .tl-close-btn {
+      background: transparent;
+      border: none;
+      color: var(--cream);
+      font-size: 16px;
+      opacity: 0.7;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 50%;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+
+    .tl-close-btn:hover {
+      opacity: 1;
+      transform: scale(1.15);
+    }
+
+    .tl-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(232, 166, 60, 0.4) transparent;
+    }
+
+    .tl-list::-webkit-scrollbar {
+      width: 5px;
+    }
+    .tl-list::-webkit-scrollbar-thumb {
+      background: rgba(232, 166, 60, 0.4);
+      border-radius: 4px;
+    }
+
+    .tl-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+
+    .tl-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateX(4px);
+    }
+
+    .tl-item.active {
+      background: linear-gradient(90deg, rgba(232, 166, 60, 0.22) 0%, rgba(184, 61, 41, 0.15) 100%);
+      border: 1px solid rgba(232, 166, 60, 0.35);
+    }
+
+    .tl-num {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--marigold);
+      width: 24px;
+      text-align: center;
+      opacity: 0.85;
+    }
+
+    .tl-item.active .tl-num {
+      font-weight: 700;
+      opacity: 1;
+    }
+
+    .tl-thumb {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    }
+
+    .tl-info {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .tl-song-name {
+      font-family: 'Baloo 2', sans-serif;
+      font-weight: 600;
+      font-size: 14.5px;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tl-item.active .tl-song-name {
+      color: var(--marigold);
+      font-weight: 700;
+    }
+
+    .tl-artist-name {
+      font-size: 11.5px;
+      color: rgba(243, 230, 206, 0.7);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tl-playing-icon {
+      display: none;
+      align-items: center;
+      gap: 2px;
+      height: 12px;
+    }
+    .tl-item.active .tl-playing-icon {
+      display: flex;
+    }
+    .tl-playing-bar {
+      width: 3px;
+      background: var(--marigold);
+      border-radius: 2px;
+      animation: tlEqualizer 0.8s ease-in-out infinite alternate;
+    }
+    .tl-playing-bar:nth-child(1) { height: 6px; animation-delay: 0.1s; }
+    .tl-playing-bar:nth-child(2) { height: 12px; animation-delay: 0.3s; }
+    .tl-playing-bar:nth-child(3) { height: 8px; animation-delay: 0.2s; }
+
+    @keyframes tlEqualizer {
+      0% { height: 3px; }
+      100% { height: 14px; }
+    }
+
+    /* ================= SHARED-LISTENING FLOATING REACTIONS ================= */
+    .react-player-btn {
+      display: flex;
+      position: relative;
+    }
+    .react-player-btn.active {
+      color: var(--marigold);
+      transform: scale(1.15);
+    }
+    .react-player-btn.pulse {
+      animation: reactBtnPulse 0.4s ease-out;
+    }
+    @keyframes reactBtnPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.3); }
+      100% { transform: scale(1); }
+    }
+
+    .reaction-picker {
+      position: absolute;
+      bottom: calc(100% + 12px);
+      right: 14px;
+      background: linear-gradient(135deg, rgba(25, 16, 12, 0.92) 0%, rgba(12, 8, 6, 0.95) 100%);
+      border: 1px solid rgba(232, 166, 60, 0.45);
+      border-radius: 999px;
+      padding: 5px 8px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.7);
+      z-index: 90;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(8px) scale(0.95);
+      transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reaction-picker.open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+    .react-item-btn {
+      background: transparent;
+      border: none;
+      font-size: 19px;
+      padding: 5px 6px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+    .react-item-btn:hover {
+      transform: scale(1.3);
+      background: rgba(232, 166, 60, 0.25);
+    }
+    .react-item-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* Floating Reaction Bubbles Overlay */
+    .reaction-bubble-container {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 80;
+      overflow: hidden;
+    }
+
+    .reaction-bubble {
+      position: fixed;
+      bottom: 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      pointer-events: none;
+      z-index: 85;
+      animation: floatUpSeamless 3.2s linear forwards;
+      will-change: transform, opacity;
+    }
+    .reaction-bubble .emoji-inner {
+      font-size: 32px;
+      filter: drop-shadow(0 4px 14px rgba(0,0,0,0.65));
+      animation: floatWobble 1.6s ease-in-out infinite alternate;
+    }
+    .reaction-bubble .sender-tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--cream);
+      background: rgba(15, 10, 6, 0.88);
+      border: 1px solid rgba(232, 166, 60, 0.45);
+      padding: 2px 6px;
+      border-radius: 999px;
+      white-space: nowrap;
+      opacity: 0.9;
+      animation: floatWobble 1.6s ease-in-out infinite alternate;
+    }
+
+    @keyframes floatUpSeamless {
+      0% {
+        opacity: 0;
+        transform: translate3d(0, 0, 0) scale(0.6);
+      }
+      10% {
+        opacity: 1;
+        transform: translate3d(0, -60px, 0) scale(1.15);
+      }
+      75% {
+        opacity: 0.95;
+        transform: translate3d(0, -380px, 0) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translate3d(0, -520px, 0) scale(0.85);
+      }
+    }
+
+    @keyframes floatWobble {
+      0% {
+        transform: translateX(var(--drift-left, -14px)) rotate(-4deg);
+      }
+      100% {
+        transform: translateX(var(--drift-right, 14px)) rotate(4deg);
+      }
+    }
+
+    /* Resonance Match Special Glow */
+    .reaction-bubble.resonance .emoji-inner {
+      animation: resonanceGlow 1.2s ease-in-out infinite alternate;
+    }
+    @keyframes resonanceGlow {
+      0% { filter: drop-shadow(0 0 10px rgba(255, 179, 0, 0.8)); transform: scale(1.2); }
+      100% { filter: drop-shadow(0 0 25px rgba(255, 179, 0, 1)) drop-shadow(0 0 40px rgba(232, 166, 60, 0.9)); transform: scale(1.4); }
+    }
+
+    /* ================= JOURNEY TOGETHER CARD MODAL ================= */
+    .jt-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 95;
+      background: rgba(8, 5, 3, 0.85);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+    .jt-modal-backdrop.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .jt-card-dialog {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: 420px;
+      width: 100%;
+      max-height: 94vh;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+    .jt-card-dialog::-webkit-scrollbar { display: none; }
+
+    .jt-style-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      background: rgba(22, 15, 10, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 999px;
+      padding: 4px;
+    }
+    .jt-tab-btn {
+      background: transparent;
+      border: none;
+      color: rgba(243, 230, 206, 0.7);
+      font-family: inherit;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 5px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .jt-tab-btn.active {
+      background: var(--marigold);
+      color: var(--ink);
+      box-shadow: 0 0 12px rgba(232, 166, 60, 0.4);
+    }
+
+    /* Card A: Destination Board */
+    .jt-card-dest-board {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4/5;
+      background: linear-gradient(180deg, #0d0d0d, #050505);
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(255,255,255,0.06);
+      display: flex;
+      flex-direction: column;
+    }
+    .jt-card-dest-board .bezel {
+      flex: 1;
+      border: 8px solid #161514;
+      border-radius: 8px;
+      background:
+        repeating-linear-gradient(0deg, rgba(0,0,0,0.5) 0 1px, transparent 1px 3px),
+        radial-gradient(ellipse at 50% 0%, #1a1200 0%, #050300 75%);
+      padding: 18px 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: inset 0 0 24px rgba(0,0,0,0.8);
+    }
+    .jt-card-dest-board .led-line {
+      font-family: 'Space Mono', monospace;
+      color: var(--amber);
+      text-shadow: 0 0 6px rgba(255,176,32,0.75), 0 0 14px rgba(255,176,32,0.35);
+      letter-spacing: .06em;
+    }
+    .jt-card-dest-board .led-hi {
+      font-family: 'Baloo 2', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 2px;
+    }
+    .jt-card-dest-board .led-sub {
+      font-size: 9.5px;
+      letter-spacing: .22em;
+      opacity: .85;
+    }
+    .jt-card-dest-board .pax-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 12px 0 8px;
+    }
+    .jt-card-dest-board .chip {
+      border: 1px solid rgba(255,176,32,0.5);
+      color: var(--amber);
+      font-family: 'Space Mono', monospace;
+      font-size: 9.5px;
+      padding: 3px 8px;
+      border-radius: 20px;
+    }
+    .jt-card-dest-board .dash-amber {
+      border: none;
+      border-top: 1px dashed rgba(255,176,32,0.35);
+      margin: 10px 0;
+    }
+    .jt-card-dest-board .songs-head {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: .16em;
+      color: rgba(255,176,32,0.7);
+      margin-bottom: 6px;
+    }
+    .jt-card-dest-board .song-row {
+      font-family: 'Space Mono', monospace;
+      font-size: 10.5px;
+      color: rgba(255,215,140,0.92);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 2px 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .jt-card-dest-board .song-row .b {
+      width: 4px;
+      height: 4px;
+      background: var(--amber);
+      border-radius: 50%;
+      box-shadow: 0 0 5px var(--amber);
+      flex-shrink: 0;
+    }
+    .jt-card-dest-board .footer-d {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+    .jt-card-dest-board .brand-d {
+      font-family: 'Baloo 2', sans-serif;
+      font-weight: 700;
+      font-size: 12px;
+      color: var(--amber);
+      text-shadow: 0 0 6px rgba(255,176,32,0.5);
+    }
+    .jt-card-dest-board .url-d {
+      font-family: 'Space Mono', monospace;
+      font-size: 8px;
+      color: rgba(255,176,32,0.6);
+    }
+
+    /* Card B: Travel Stamp Postcard */
+    .jt-card-postcard {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4/5;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(255,255,255,0.08), transparent 40%),
+        linear-gradient(160deg, #c8a273, #a9845a);
+      border-radius: 6px;
+      padding: 18px;
+      color: #1c150f;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.7);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .jt-card-postcard .polaroid {
+      width: 90px;
+      background: #f3eddc;
+      padding: 5px 5px 14px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+      transform: rotate(-4deg);
+      margin-bottom: 6px;
+    }
+    .jt-card-postcard .polaroid .photo {
+      height: 60px;
+      border-radius: 2px;
+      background: url('assets/bg-inside.jpg') center/cover no-repeat;
+    }
+    .jt-card-postcard .tape {
+      position: absolute;
+      top: 6px;
+      left: 20px;
+      width: 48px;
+      height: 14px;
+      background: rgba(224,165,46,0.6);
+      transform: rotate(-8deg);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+    .jt-card-postcard .stamp {
+      position: absolute;
+      right: 14px;
+      bottom: 60px;
+      width: 74px;
+      height: 74px;
+      border-radius: 50%;
+      border: 2px solid rgba(195,61,41,0.75);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: rotate(12deg);
+      opacity: .9;
+    }
+    .jt-card-postcard .stamp::before {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border: 1px solid rgba(195,61,41,0.6);
+      border-radius: 50%;
+    }
+    .jt-card-postcard .stamp span {
+      font-family: 'Kalam', cursive;
+      font-weight: 700;
+      font-size: 11px;
+      color: #c33d29;
+      text-align: center;
+      line-height: 1.15;
+    }
+    .jt-card-postcard h3 {
+      font-family: 'Kalam', cursive;
+      font-weight: 700;
+      font-size: 20px;
+      margin: 0 0 2px;
+      color: #1c150f;
+    }
+    .jt-card-postcard .caption {
+      font-size: 11px;
+      color: #4c4136;
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+    .jt-card-postcard .songs-p {
+      font-size: 10.5px;
+      color: #4c4136;
+      line-height: 1.7;
+      margin-bottom: 10px;
+    }
+    .jt-card-postcard .songs-p b {
+      color: #1c150f;
+    }
+    .jt-card-postcard .footer-p {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .jt-card-postcard .brand-p {
+      font-family: 'Baloo 2', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+    }
+    .jt-card-postcard .url-p {
+      font-family: 'Space Mono', monospace;
+      font-size: 8px;
+      color: #4c4136;
+    }
+
+    .jt-actions {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+      margin-top: 14px;
+    }
+    .jt-download-btn {
+      flex: 1;
+      background: var(--rust);
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(178, 58, 42, 0.4);
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+    .jt-download-btn:hover {
+      background: #c33d29;
+      transform: translateY(-1px);
+    }
+    .jt-close-btn {
+      background: rgba(255, 255, 255, 0.12);
+      color: var(--cream);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .jt-close-btn:hover {
+      background: rgba(255, 255, 255, 0.22);
     }
 
     /* Player Right Controls */
@@ -1440,8 +2526,14 @@
         font-size: 9px;
       }
 
-      .glass-player-pill {
+      .player-wrapper {
+        width: 100%;
         max-width: calc(100% - 24px);
+      }
+
+      .glass-player-pill {
+        width: 100%;
+        max-width: 100%;
       }
 
       .ticket-mini.centered {
@@ -1817,46 +2909,86 @@
       </div>
     </div>
 
-    <div class="journey-center">
-      <div class="glass-player-pill">
-        <!-- Spinning Disc with Song Artwork (Left) -->
-        <div class="player-disc-wrap" id="discWrap">
-          <div class="player-disc" id="disc">
-            <img src="assets/covers/cover_01.jpg" id="discCover" class="disc-cover-img" alt="Album Cover">
-            <div class="disc-hole"></div>
-            <div class="disc-grooves"></div>
-          </div>
-        </div>
-
-        <!-- Track Details & Progress (Middle) -->
-        <div class="player-main-info">
-          <div class="player-title" id="npTitle">Mujhse Mohabbat Ka</div>
-          <div class="player-artist" id="npArtist">Kumar Sanu</div>
-          <div class="player-progress-area">
-            <div class="progress-bar-bg" id="progressBar">
-              <div class="progress-bar-fill" id="progressFill"></div>
+    <div class="journey-center" id="journeyCenter">
+      <div class="player-wrapper">
+        <!-- Dark Liquid Glass Tracklist Drawer (Floats directly above player) -->
+        <div class="tracklist-drawer" id="tracklistDrawer">
+          <div class="tl-header">
+            <div class="tl-title-wrap">
+              <span class="tl-title">कैसेट की ट्रैकलिस्ट</span>
+              <span class="tl-count">50 Songs</span>
             </div>
-            <div class="player-time" id="npTime">0:00 / 0:00</div>
+            <button class="tl-close-btn" id="tlCloseBtn" aria-label="Close tracklist">✕</button>
           </div>
+          <div class="tl-list" id="tlList"></div>
         </div>
 
-        <!-- Controls (Right) -->
-        <div class="player-controls">
-          <button class="ctrl-btn" id="prevBtn" aria-label="Previous track">
-            <svg viewBox="0 0 24 24">
-              <path d="M6 6h2v12H6zM20 6L9 12l11 6z" />
-            </svg>
-          </button>
-          <button class="play-pause-btn" id="playBtn" aria-label="Play or pause">
-            <svg id="playIcon" viewBox="0 0 24 24">
-              <path d="M8 5v14l11-7z" />
-            </svg>
-          </button>
-          <button class="ctrl-btn" id="nextBtn" aria-label="Next track">
-            <svg viewBox="0 0 24 24">
-              <path d="M16 6h2v12h-2zM4 6l11 6-11 6z" />
-            </svg>
-          </button>
+        <!-- Reaction Emoji Shelf (Floats directly above player controls) -->
+        <div id="reactionPicker" class="reaction-picker">
+          <button class="react-item-btn" data-emoji="🥹" title="याद आ गई (Nostalgia)">🥹</button>
+          <button class="react-item-btn" data-emoji="😵" title="चकरा गया (Crazy/Intense)">😵</button>
+          <button class="react-item-btn" data-emoji="😴" title="सुकून (Soothing)">😴</button>
+          <button class="react-item-btn" data-emoji="🚌💨" title="बस का सफर (Bus vibe)">🚌💨</button>
+          <button class="react-item-btn" data-emoji="🎶" title="गुनगुनाना (Humming along)">🎶</button>
+          <button class="react-item-btn" data-emoji="😭" title="इमोशनल (Emotional)">😭</button>
+          <button class="react-item-btn" data-emoji="🙌" title="क्या बात है (Favorite line)">🙌</button>
+        </div>
+
+        <div class="glass-player-pill">
+          <!-- Spinning Disc with Song Artwork (Left) -->
+          <div class="player-disc-wrap" id="discWrap">
+            <div class="player-disc" id="disc">
+              <img src="assets/covers/cover_01.jpg" id="discCover" class="disc-cover-img" alt="Album Cover">
+              <div class="disc-hole"></div>
+              <div class="disc-grooves"></div>
+            </div>
+          </div>
+
+          <!-- Track Details & Progress (Middle) -->
+          <div class="player-main-info">
+            <div class="player-title" id="npTitle">Mujhse Mohabbat Ka</div>
+            <div class="player-artist" id="npArtist">Kumar Sanu</div>
+            <div class="player-progress-area">
+              <div class="progress-bar-bg" id="progressBar">
+                <div class="progress-bar-fill" id="progressFill"></div>
+              </div>
+              <div class="player-time" id="npTime">0:00 / 0:00</div>
+            </div>
+          </div>
+
+          <!-- Controls (Right) -->
+          <div class="player-controls">
+            <button class="ctrl-btn" id="prevBtn" aria-label="Previous track" title="पिछला गाना (Previous)">
+              <svg viewBox="0 0 24 24">
+                <path d="M6 6h2v12H6zM20 6L9 12l11 6z" />
+              </svg>
+            </button>
+            <button class="play-pause-btn" id="playBtn" aria-label="Play or pause">
+              <svg id="playIcon" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </button>
+            <button class="ctrl-btn" id="nextBtn" aria-label="Next track" title="अगला गाना (Next)">
+              <svg viewBox="0 0 24 24">
+                <path d="M16 6h2v12h-2zM4 6l11 6-11 6z" />
+              </svg>
+            </button>
+            <button class="ctrl-btn" id="tracklistBtn" aria-label="Open Tracklist" title="ट्रैकलिस्ट (Tracklist)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="8" y1="6" x2="21" y2="6"></line>
+                <line x1="8" y1="12" x2="21" y2="12"></line>
+                <line x1="8" y1="18" x2="21" y2="18"></line>
+                <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                <line x1="3" y1="18" x2="3.01" y2="18"></line>
+              </svg>
+            </button>
+            <button class="ctrl-btn react-player-btn" id="playerReactBtn" aria-label="Reaction Emojis" title="प्रतिक्रिया (Share Reaction Emoji)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -1898,9 +3030,156 @@
       </button>
       <button id="fullscreenBtn" aria-label="Toggle Fullscreen" title="फुलस्क्रीन (Toggle Fullscreen)">
         <svg id="fullscreenIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M8 3H5a2 2 0 0 0-2 2v3m18-5h-3a2 2 0 0 0-2 2v3M3 16v3a2 2 0 0 2 2h3m13 0h-3a2 2 0 0 1-2-2v-3"/>
+          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
         </svg>
       </button>
+    </div>
+
+    <!-- Floating Bubbles Stream Layer -->
+    <div id="reactionBubbleContainer" class="reaction-bubble-container"></div>
+
+    <!-- Bus Body Sticker / Graffiti Slot -->
+    <div id="busStickerSlot" class="bus-sticker-slot" title="कस्टमाइज़ करें · Click to customize sticker">
+      <span class="edit-hint">✏️ Edit</span>
+    </div>
+
+    <!-- Sticker Customizer & Text Editor Modal -->
+    <div id="stickerEditModal" class="sticker-edit-backdrop">
+      <div class="sticker-edit-card">
+        <div class="se-header">
+          <div class="se-title">बस स्टीकर कस्टमाइज़ करें</div>
+          <div class="se-sub">Choose a design and write your custom text</div>
+          <button class="se-close" id="seCloseBtn" aria-label="Close modal">✕</button>
+        </div>
+
+        <!-- 3 Design Selector Choice Cards -->
+        <div class="se-design-grid">
+          <div class="se-design-choice active" id="seChoice1" data-design="1">
+            <div class="se-mini-sticker sticker-1">
+              <div class="txt">सफ़र<br>मुबारक</div>
+              <div class="sub">MALWA EXPRESS</div>
+            </div>
+            <div class="se-design-name">1 · Truck Oval</div>
+          </div>
+          <div class="se-design-choice" id="seChoice2" data-design="2">
+            <div class="se-mini-sticker sticker-2">
+              <div class="txt">Horn Please</div>
+              <div class="txt2">माँ की दुआ साथ है</div>
+            </div>
+            <div class="se-design-name">2 · Peeling Decal</div>
+          </div>
+          <div class="se-design-choice" id="seChoice3" data-design="3">
+            <div class="se-mini-sticker sticker-3">
+              <div class="heart">❤</div>
+              <div class="txt">दिल से</div>
+              <div class="brand">MALWA EXPRESS</div>
+            </div>
+            <div class="se-design-name">3 · Stitched Tag</div>
+          </div>
+        </div>
+
+        <!-- Live Preview Stage -->
+        <div class="se-live-preview-wrap">
+          <div class="se-preview-label">LIVE PREVIEW</div>
+          <div class="se-preview-stage" id="sePreviewStage"></div>
+        </div>
+
+        <!-- Custom Text Input with Design-Specific Font -->
+        <div class="se-input-group">
+          <label for="seTextInput" class="se-input-label" id="seInputLabel">स्टीकर पर लिखें (Custom Text):</label>
+          <input type="text" id="seTextInput" class="se-text-input font-kalam" placeholder="अपना टेक्स्ट लिखें..." maxlength="30" autocomplete="off" />
+        </div>
+
+        <!-- Quick Idea Chips -->
+        <div class="se-presets-wrap">
+          <span class="se-presets-title">सुझाव (Quick ideas):</span>
+          <div class="se-preset-chips" id="sePresetChips">
+            <button class="se-chip" data-text="सफ़र मुबारक">सफ़र मुबारक</button>
+            <button class="se-chip" data-text="बुरी नज़र वाले तेरा मुँह काला">बुरी नज़र वाले</button>
+            <button class="se-chip" data-text="हंस मत पगली प्यार हो जाएगा">हंस मत पगली</button>
+            <button class="se-chip" data-text="जय महाकाल">जय महाकाल</button>
+            <button class="se-chip" data-text="दम है तो क्रॉस कर">दम है तो क्रॉस कर</button>
+            <button class="se-chip" data-text="माँ की दुआ साथ है">माँ की दुआ साथ है</button>
+            <button class="se-chip" data-text="दिल से">दिल से</button>
+            <button class="se-chip" data-text="राम भरोसे">राम भरोसे</button>
+            <button class="se-chip" data-text="सुरक्षित यात्रा">सुरक्षित यात्रा</button>
+            <button class="se-chip" data-text="मालिक की गाड़ी">मालिक की गाड़ी</button>
+          </div>
+        </div>
+
+        <div class="se-actions">
+          <button id="seSaveBtn" class="se-save-btn">स्टीकर लगाएं · Apply Sticker</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- "Journey Together" Unlockable Memory Card Modal -->
+    <div id="journeyTogetherModal" class="jt-modal-backdrop">
+      <div class="jt-card-dialog">
+        <div class="jt-style-tabs">
+          <button id="jtTabBoard" class="jt-tab-btn active">LED बोर्ड</button>
+          <button id="jtTabPostcard" class="jt-tab-btn">पोस्टकार्ड</button>
+        </div>
+
+        <!-- Destination Board View -->
+        <div id="jtCardBoard" class="jt-card-dest-board">
+          <div class="bezel">
+            <div>
+              <div class="led-line led-hi">देवास पहुँच गए</div>
+              <div class="led-line led-sub">JOURNEY TOGETHER · UNLOCKED</div>
+            </div>
+            <div class="pax-chips">
+              <span class="chip" id="jtBoardHostChip">यात्री · Yatri</span>
+              <span class="chip" id="jtBoardPartnerChip">साथी · Saathi</span>
+            </div>
+            <hr class="dash-amber">
+            <div>
+              <div class="songs-head">इस सफ़र में साथ बजे गाने</div>
+              <div id="jtBoardSongList">
+                <div class="song-row"><span class="b"></span>Mujhse Mohabbat Ka</div>
+                <div class="song-row"><span class="b"></span>Chand Se Parda</div>
+              </div>
+            </div>
+            <div class="footer-d">
+              <span class="brand-d">मालवा एक्सप्रेस</span>
+              <span class="url-d" id="jtBoardTimestamp">14 Aug 2026</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Travel Stamp Postcard View -->
+        <div id="jtCardPostcard" class="jt-card-postcard" style="display: none;">
+          <div class="polaroid">
+            <div class="photo"></div>
+          </div>
+          <div class="tape"></div>
+          <div class="stamp"><span>यात्रा<br>पूरी</span></div>
+          <div>
+            <h3>साथ में सफ़र तय हुआ</h3>
+            <div class="caption">Indore से Dewas तक, बारिश और पुराने गानों के साथ।</div>
+            <div class="songs-p" id="jtPostcardSongList">
+              <b>★ Mujhse Mohabbat Ka</b><br>
+              <b>★ Chand Se Parda</b>
+            </div>
+          </div>
+          <div class="footer-p">
+            <span class="brand-p">मालwa एक्सप्रेस ❤️</span>
+            <span class="url-p" id="jtPostcardTimestamp">14 Aug 2026</span>
+          </div>
+        </div>
+
+        <div class="jt-actions">
+          <button id="jtDownloadBtn" class="jt-download-btn">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Download Card (PNG)
+          </button>
+          <button id="jtCloseBtn" class="jt-close-btn">सफर जारी रखें</button>
+        </div>
+      </div>
     </div>
 
     <!-- One-time Keyboard Shortcut Hint -->
@@ -1979,7 +3258,6 @@
         <div class="nm-title" id="nmTitle">सफर के लिए अपना नाम लिखें</div>
         <div class="nm-sub" id="nmSub">Enter your name for the ride ticket</div>
         <input type="text" id="nameInput" class="nm-input" placeholder="आपका नाम (e.g. Yatri)" maxlength="20" autocomplete="off" />
-        <div id="nmError" class="nm-error"></div>
         <button id="nameSubmitBtn" class="nm-btn">सफर शुरू करें · Continue</button>
       </div>
     </div>
@@ -2307,10 +3585,33 @@
 
 
     var audioEl = new Audio();
+    audioEl.preload = 'auto';
     var trackIndex = 0;
     var isPlaying = false;
     var fadeInterval = null;
 
+    /* Background Audio & Cover Prefetching Engine */
+    var prefetchAudioEl = new Audio();
+    prefetchAudioEl.preload = 'auto';
+    var prefetchedTrackIndex = -1;
+    var prefetchedCoverImg = new Image();
+
+    function prefetchTrack(i) {
+      if (!TRACKS || !TRACKS.length) return;
+      var targetIdx = (i + TRACKS.length) % TRACKS.length;
+      if (targetIdx === prefetchedTrackIndex || targetIdx === trackIndex) return;
+      prefetchedTrackIndex = targetIdx;
+      var target = TRACKS[targetIdx];
+      if (target && target.src) {
+        prefetchAudioEl.src = target.src;
+        prefetchAudioEl.load();
+      }
+      if (target && target.cover) {
+        prefetchedCoverImg.src = target.cover;
+      }
+    }
+
+    var discWrap = document.getElementById('discWrap');
     var disc = document.getElementById('disc');
     var discCover = document.getElementById('discCover');
     var playBtn = document.getElementById('playBtn');
@@ -2320,6 +3621,24 @@
     var npTime = document.getElementById('npTime');
     var progressBar = document.getElementById('progressBar');
     var progressFill = document.getElementById('progressFill');
+
+    function setBuffering(isBuffering) {
+      if (isBuffering) {
+        if (discWrap) discWrap.classList.add('buffering');
+        if (progressBar) progressBar.classList.add('buffering');
+      } else {
+        if (discWrap) discWrap.classList.remove('buffering');
+        if (progressBar) progressBar.classList.remove('buffering');
+      }
+    }
+
+    audioEl.addEventListener('waiting', function () { setBuffering(true); });
+    audioEl.addEventListener('seeking', function () { setBuffering(true); });
+    audioEl.addEventListener('seeked', function () { setBuffering(false); });
+    audioEl.addEventListener('canplay', function () { setBuffering(false); });
+    audioEl.addEventListener('playing', function () { setBuffering(false); });
+    audioEl.addEventListener('pause', function () { setBuffering(false); });
+    audioEl.addEventListener('error', function () { setBuffering(false); });
 
     function formatTime(sec) {
       if (isNaN(sec) || sec === Infinity) return "0:00";
@@ -2343,6 +3662,7 @@
       npTime.textContent = "0:00 / 0:00";
       progressFill.style.width = "0%";
       updateRouteProgress(trackIndex);
+      if (typeof updateLightingShift === 'function') updateLightingShift(true);
 
       // Mobile Lockscreen MediaSession API Integration
       if ('mediaSession' in navigator) {
@@ -2363,12 +3683,24 @@
         broadcastEvent('track-change', { trackIndex: trackIndex, currentTime: 0 });
       }
 
+      // Sync active state in tracklist drawer
+      var activeTl = document.querySelector('.tl-item.active');
+      if (activeTl) activeTl.classList.remove('active');
+      var newTl = document.querySelector('.tl-item[data-index="' + trackIndex + '"]');
+      if (newTl) {
+        newTl.classList.add('active');
+        if (typeof tracklistDrawer !== 'undefined' && tracklistDrawer && tracklistDrawer.classList.contains('open')) {
+          newTl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+      }
+
       if (autoplay) {
+        // Optimistic UI update immediately on interaction
+        setPlaying(true);
         audioEl.volume = 1;
-        audioEl.play().then(function () {
-          setPlaying(true);
-        }).catch(function (err) {
-          console.warn("Autoplay error:", err);
+        audioEl.play().catch(function (err) {
+          console.warn("Playback error/interrupted:", err);
+          setPlaying(false);
         });
       }
     }
@@ -2382,32 +3714,11 @@
         disc.classList.remove('playing');
         playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
       }
+      if (realtimeChannel && !isRemoteUpdate) {
+        if (playing) broadcastEvent('play', { currentTime: audioEl.currentTime || 0 });
+        else broadcastEvent('pause', { currentTime: audioEl.currentTime || 0 });
+      }
     }
-
-    // Native audio play/pause/seek event listeners to guarantee sync across all triggers (UI, lockscreen, media keys, spacebar, track change)
-    audioEl.addEventListener('play', function () {
-      isPlaying = true;
-      disc.classList.add('playing');
-      playIcon.innerHTML = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
-      if (typeof realtimeChannel !== 'undefined' && realtimeChannel && !isRemoteUpdate) {
-        broadcastEvent('play', { currentTime: audioEl.currentTime || 0, sentAt: Date.now() });
-      }
-    });
-
-    audioEl.addEventListener('pause', function () {
-      isPlaying = false;
-      disc.classList.remove('playing');
-      playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
-      if (typeof realtimeChannel !== 'undefined' && realtimeChannel && !isRemoteUpdate) {
-        broadcastEvent('pause', { currentTime: audioEl.currentTime || 0, sentAt: Date.now() });
-      }
-    });
-
-    audioEl.addEventListener('seeked', function () {
-      if (typeof realtimeChannel !== 'undefined' && realtimeChannel && !isRemoteUpdate) {
-        broadcastEvent('seek', { currentTime: audioEl.currentTime || 0, sentAt: Date.now() });
-      }
-    });
 
     playBtn.addEventListener('click', function () {
       if (!audioEl.src) {
@@ -2417,10 +3728,12 @@
         audioEl.pause();
         setPlaying(false);
       } else {
+        setPlaying(true); // Optimistic UI update
         audioEl.volume = 1;
-        audioEl.play().then(function () {
-          setPlaying(true);
-        }).catch(function (err) { });
+        audioEl.play().catch(function (err) {
+          console.warn("Play error:", err);
+          setPlaying(false);
+        });
       }
     });
 
@@ -2428,14 +3741,26 @@
       playBtn.click();
     });
 
-    document.getElementById('prevBtn').addEventListener('click', function () { loadTrack(trackIndex - 1, true, false); });
-    document.getElementById('nextBtn').addEventListener('click', function () { loadTrack(trackIndex + 1, true, false); });
+    document.getElementById('prevBtn').addEventListener('click', function () {
+      loadTrack(trackIndex - 1, true, false);
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', function () {
+      loadTrack(trackIndex + 1, true, false);
+      // Fast skip prefetch: prefetch the track after next as well
+      prefetchTrack(trackIndex + 2);
+    });
 
     audioEl.addEventListener('timeupdate', function () {
       if (audioEl.duration) {
         var pct = (audioEl.currentTime / audioEl.duration) * 100;
         progressFill.style.width = pct + "%";
         npTime.textContent = formatTime(audioEl.currentTime) + " / " + formatTime(audioEl.duration);
+
+        // Preload next track when current track is >= 80% finished
+        if (audioEl.currentTime / audioEl.duration >= 0.80) {
+          prefetchTrack(trackIndex + 1);
+        }
       }
     });
 
@@ -2489,12 +3814,39 @@
     }
     tickClock(); setInterval(tickClock, 15000);
 
-    /* Aboard Count: Starts at random 1-40 and continuously fluctuates (increases & decreases) */
+    /* Aboard Count: Starts at random 1-40 and continuously fluctuates unless in a real shared ride */
     var aboardEl = document.getElementById('aboardCount');
     var currentAboard = Math.floor(Math.random() * 40) + 1;
+    var isInSharedRoom = false;
+
+    function setAboardDisplay(count, isLive) {
+      if (!aboardEl) return;
+      var strVal = String(count);
+      if (aboardEl.textContent === strVal && !isLive) return;
+
+      aboardEl.style.transition = 'opacity 0.2s ease';
+      aboardEl.style.opacity = '0.2';
+      setTimeout(function () {
+        aboardEl.textContent = strVal;
+        if (isInSharedRoom) {
+          aboardEl.style.color = '#57D06B';
+        } else {
+          aboardEl.style.color = '';
+        }
+        aboardEl.style.opacity = '1';
+      }, 200);
+    }
+
     if (aboardEl) aboardEl.textContent = currentAboard;
 
     function updateAboard() {
+      if (isInSharedRoom) {
+        // Skip random simulation when in a live shared ride room
+        var nextDelay = Math.floor(Math.random() * 2000) + 3000;
+        setTimeout(updateAboard, nextDelay);
+        return;
+      }
+
       var delta = Math.floor(Math.random() * 3) + 1;
       if (Math.random() < 0.5) delta = -delta;
 
@@ -2502,7 +3854,7 @@
       if (currentAboard < 1) currentAboard = Math.floor(Math.random() * 4) + 1;
       if (currentAboard > 40) currentAboard = 40 - Math.floor(Math.random() * 4);
 
-      if (aboardEl) aboardEl.textContent = currentAboard;
+      setAboardDisplay(currentAboard, false);
 
       var nextDelay = Math.floor(Math.random() * 2000) + 3000; // 3 to 5 seconds
       setTimeout(updateAboard, nextDelay);
@@ -2511,21 +3863,21 @@
 
     /* conductor audios & music volume ducking */
     var CONDUCTOR_AUDIOS = [
-      "conductor audios/agla stop aane wala he.wav",
-      "conductor audios/agla stop dewas bypass.wav",
-      "conductor audios/agla stop geetabhavan.wav",
-      "conductor audios/agla stop sanwer.wav",
-      "conductor audios/andar aajo .wav",
-      "conductor audios/bhawarkua wale taiyar rhena.wav",
-      "conductor audios/chalo chalo bus nikal rhi he.wav",
-      "conductor audios/dewas aane wala he indore piche chuth gya.wav",
-      "conductor audios/gate ke pas aajana.wav",
-      "conductor audios/kaha jana he.wav",
-      "conductor audios/kaha utroge.wav",
-      "conductor audios/lasudhia.wav",
-      "conductor audios/mangliya.wav",
-      "conductor audios/thoda sarak jao_part01.wav",
-      "conductor audios/ticket ticket (mp3cut.net).wav"
+      "conductor audios/agla stop aane wala he.mp3",
+      "conductor audios/agla stop dewas bypass.mp3",
+      "conductor audios/agla stop geetabhavan.mp3",
+      "conductor audios/agla stop sanwer.mp3",
+      "conductor audios/andar aajo .mp3",
+      "conductor audios/bhawarkua wale taiyar rhena.mp3",
+      "conductor audios/chalo chalo bus nikal rhi he.mp3",
+      "conductor audios/dewas aane wala he indore piche chuth gya.mp3",
+      "conductor audios/gate ke pas aajana.mp3",
+      "conductor audios/kaha jana he.mp3",
+      "conductor audios/kaha utroge.mp3",
+      "conductor audios/lasudhia.mp3",
+      "conductor audios/mangliya.mp3",
+      "conductor audios/thoda sarak jao_part01.mp3",
+      "conductor audios/ticket ticket (mp3cut.net).mp3"
     ];
 
     /* ---------------------------------------------------------------
@@ -2658,7 +4010,10 @@
     }
 
     function stopRainCanvas() {
-      if (rainAnimId) cancelAnimationFrame(rainAnimId);
+      if (rainAnimId) {
+        cancelAnimationFrame(rainAnimId);
+        rainAnimId = null;
+      }
       if (rainCanvas) {
         var ctx = rainCanvas.getContext('2d');
         ctx.clearRect(0, 0, rainCanvas.width, rainCanvas.height);
@@ -2703,21 +4058,27 @@
        INTERACTIVE BUS ROUTE MAP & CONDUCTOR AUDIO TRIGGERS (7 STOPS)
     --------------------------------------------------------------- */
     var BUS_STOPS = [
-      { name: "इंदौर", audio: "conductor audios/agla stop aane wala he.wav" },
-      { name: "भावरकुआं", audio: "conductor audios/bhawarkua wale taiyar rhena.wav" },
-      { name: "गीता भवन", audio: "conductor audios/agla stop geetabhavan.wav" },
-      { name: "लसूडिया", audio: "conductor audios/lasudhia.wav" },
-      { name: "मांगलिया", audio: "conductor audios/mangliya.wav" },
-      { name: "देवास Bypass", audio: "conductor audios/agla stop dewas bypass.wav" },
-      { name: "देवास बस स्टैंड", audio: "conductor audios/dewas aane wala he indore piche chuth gya.wav" }
+      { name: "इंदौर", audio: "conductor audios/agla stop aane wala he.mp3" },
+      { name: "भावरकुआं", audio: "conductor audios/bhawarkua wale taiyar rhena.mp3" },
+      { name: "गीता भवन", audio: "conductor audios/agla stop geetabhavan.mp3" },
+      { name: "लसूडिया", audio: "conductor audios/lasudhia.mp3" },
+      { name: "मांगलिया", audio: "conductor audios/mangliya.mp3" },
+      { name: "देवास Bypass", audio: "conductor audios/agla stop dewas bypass.mp3" },
+      { name: "देवास बस स्टैंड", audio: "conductor audios/dewas aane wala he indore piche chuth gya.mp3" }
     ];
 
     var stopNodes = document.querySelectorAll('.stop-node');
     var routeFill = document.getElementById('routeFill');
 
+    /*
+      NOTE: Assumes sequential trackIndex progression. If shuffle mode is added later,
+      these functions will need to key off elapsed-tracks-played-count or overall
+      listening-time-elapsed instead of raw trackIndex, or route/lighting will jump erratically.
+    */
     function updateRouteProgress(tIndex) {
       if (!BUS_STOPS.length || !TRACKS.length) return;
-      var stopIdx = Math.floor((tIndex / (TRACKS.length - 1)) * (BUS_STOPS.length - 1));
+      var stopIdx = Math.round((tIndex / (TRACKS.length - 1)) * (BUS_STOPS.length - 1));
+      if (stopIdx < 0) stopIdx = 0;
       if (stopIdx >= BUS_STOPS.length) stopIdx = BUS_STOPS.length - 1;
 
       var pct = (stopIdx / (BUS_STOPS.length - 1)) * 100;
@@ -2750,11 +4111,14 @@
         conductorAudioEl.currentTime = 0;
         if (conductorBtn) conductorBtn.classList.add('playing');
 
-        duckMusic();
-        conductorAudioEl.play().catch(function (err) {
-          if (conductorBtn) conductorBtn.classList.remove('playing');
-          restoreMusic();
-        });
+        duckMusic(); // Duck background song volume slightly
+        // 130ms lead-time so music volume is already attenuating before speech starts
+        setTimeout(function () {
+          conductorAudioEl.play().catch(function (err) {
+            if (conductorBtn) conductorBtn.classList.remove('playing');
+            restoreMusic();
+          });
+        }, 130);
       });
     });
 
@@ -2824,12 +4188,14 @@
         conductorBtn.classList.add('playing');
 
         duckMusic(); // Duck background song volume slightly
-
-        conductorAudioEl.play().catch(function (err) {
-          console.warn("Conductor audio error:", err);
-          conductorBtn.classList.remove('playing');
-          restoreMusic();
-        });
+        // 130ms lead-time so music volume is already attenuating before speech starts
+        setTimeout(function () {
+          conductorAudioEl.play().catch(function (err) {
+            console.warn("Conductor audio error:", err);
+            if (conductorBtn) conductorBtn.classList.remove('playing');
+            restoreMusic();
+          });
+        }, 130);
       });
       conductorAudioEl.addEventListener('ended', function () {
         conductorBtn.classList.remove('playing');
@@ -2876,7 +4242,7 @@
 
     var switchOutside = document.getElementById('switchOutside');
     var switchInside = document.getElementById('switchInside');
-    var rainBtn = document.getElementById('switchRain');
+    var rainBtn = document.getElementById('rainBtn');
     var fullscreenBtn = document.getElementById('fullscreenBtn');
     var fullscreenIcon = document.getElementById('fullscreenIcon');
     var viewIndicator = document.getElementById('viewIndicator');
@@ -3076,18 +4442,55 @@
       if (document.visibilityState === 'hidden') {
         clearTimeout(idleTimer);
         wakeUI();
+        // Pause canvas raindrop animation loop & silence procedural rain audio when tab is backgrounded
+        if (isRainActive) {
+          if (rainAnimId) {
+            cancelAnimationFrame(rainAnimId);
+            rainAnimId = null;
+          }
+          if (rainGainNode && audioCtx && audioCtx.state !== 'closed') {
+            try {
+              rainGainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+            } catch (e) { }
+          }
+        }
       } else {
         resetIdleTimer();
+        // Resume canvas raindrops & restore procedural rain audio when tab becomes visible again
+        if (isRainActive) {
+          if (!rainAnimId) {
+            startRainCanvas();
+          }
+          if (rainGainNode && audioCtx && audioCtx.state !== 'closed') {
+            try {
+              rainGainNode.gain.setValueAtTime(rainGainNode.gain.value, audioCtx.currentTime);
+              rainGainNode.gain.linearRampToValueAtTime(0.18, audioCtx.currentTime + 0.8);
+            } catch (e) { }
+          }
+        }
       }
     });
 
+    /*
+      NOTE: Assumes sequential trackIndex progression. If shuffle mode is added later,
+      these functions will need to key off elapsed-tracks-played-count or overall
+      listening-time-elapsed instead of raw trackIndex, or route/lighting will jump erratically.
+    */
+    var lastAppliedLightingProgress = -1;
+
     // Progress-Based Lighting Shift (Golden Hour / Dusk Drift)
-    function updateLightingShift() {
+    function updateLightingShift(force) {
       var overlayEl = document.getElementById('lightingOverlay');
       if (!overlayEl || !TRACKS.length) return;
 
       var currentTrackPos = (audioEl.currentTime && audioEl.duration) ? (audioEl.currentTime / audioEl.duration) : 0;
       var totalProgress = (trackIndex + currentTrackPos) / TRACKS.length;
+
+      // Throttle: only calculate and update styles if progress shifted >= 0.5% or force requested
+      if (!force && lastAppliedLightingProgress >= 0 && Math.abs(totalProgress - lastAppliedLightingProgress) < 0.005) {
+        return;
+      }
+      lastAppliedLightingProgress = totalProgress;
 
       if (totalProgress < 0.25) {
         // Stage 1 (0-25%): Default bright afternoon look
@@ -3178,17 +4581,6 @@
     var myRole = 'host'; // 'host' or 'guest'
     var myName = 'Yatri';
     var partnerName = '';
-    var connectedPeers = {}; // { [clientId]: { clientId, name, role, onlineAt } }
-
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
 
     function showToast(msg) {
       var toast = document.getElementById('malwaToast');
@@ -3200,94 +4592,12 @@
       }, 3200);
     }
 
-    function getGuestList() {
-      var guests = [];
-      for (var key in connectedPeers) {
-        if (connectedPeers.hasOwnProperty(key)) {
-          var p = connectedPeers[key];
-          if (p.role === 'guest' || (p.role !== 'host' && key !== clientId)) {
-            guests.push(p);
-          }
-        }
-      }
-      guests.sort(function (a, b) {
-        var timeA = a.onlineAt || a.clientId || '';
-        var timeB = b.onlineAt || b.clientId || '';
-        return timeA.localeCompare(timeB);
-      });
-      guests.forEach(function (g, idx) {
-        g.seatNo = 15 + idx;
-      });
-      return guests;
-    }
-
-    function getExistingNames() {
-      var names = [];
-      if (myName && myName !== 'Yatri' && myName !== 'Passenger') names.push(myName);
-      if (partnerName) names.push(partnerName);
-
-      for (var key in connectedPeers) {
-        if (connectedPeers.hasOwnProperty(key)) {
-          var p = connectedPeers[key];
-          if (p.name && names.indexOf(p.name) === -1) {
-            names.push(p.name);
-          }
-        }
-      }
-
-      if (realtimeChannel) {
-        try {
-          var state = realtimeChannel.presenceState();
-          for (var k in state) {
-            if (state.hasOwnProperty(k)) {
-              var arr = state[k];
-              if (arr && arr.length > 0) {
-                var pres = arr[arr.length - 1];
-                if (pres && pres.name && names.indexOf(pres.name) === -1) {
-                  names.push(pres.name);
-                }
-              }
-            }
-          }
-        } catch (e) { }
-      }
-      return names;
-    }
-
-    function checkNameCollision() {
-      if (!myName || myName === 'Yatri' || myName === 'Passenger') return;
-      var myLower = myName.trim().toLowerCase();
-
-      for (var id in connectedPeers) {
-        if (connectedPeers.hasOwnProperty(id)) {
-          var p = connectedPeers[id];
-          if (p.name && p.name.trim().toLowerCase() === myLower) {
-            showToast("Saathi, '" + myName + "' naam pehle se safar mein hai, kripya naya naam chunein");
-            promptName('नया नाम चुनें (Name taken)', 'Name taken by another passenger in this ride:', '', function (newName) {
-              myName = newName;
-              updateTicketUI();
-              if (realtimeChannel) {
-                realtimeChannel.track({
-                  name: myName,
-                  role: myRole,
-                  clientId: clientId,
-                  online_at: new Date().toISOString()
-                });
-              }
-            });
-            break;
-          }
-        }
-      }
-    }
-
-    function promptName(titleText, subText, defaultVal, callback, existingNamesList) {
+    function promptName(titleText, subText, defaultVal, callback) {
       var modal = document.getElementById('nameModal');
       var nmTitle = document.getElementById('nmTitle');
       var nmSub = document.getElementById('nmSub');
       var nameInput = document.getElementById('nameInput');
       var submitBtn = document.getElementById('nameSubmitBtn');
-      var errorEl = document.getElementById('nmError');
 
       if (!modal) {
         if (callback) callback(defaultVal);
@@ -3297,50 +4607,15 @@
       if (titleText) nmTitle.textContent = titleText;
       if (subText) nmSub.textContent = subText;
       nameInput.value = defaultVal || '';
-
-      if (errorEl) {
-        errorEl.style.display = 'none';
-        errorEl.textContent = '';
-      }
-
       modal.classList.add('show');
+
       setTimeout(function () { nameInput.focus(); nameInput.select(); }, 150);
-
-      function showError(msg) {
-        if (errorEl) {
-          errorEl.textContent = msg;
-          errorEl.style.display = 'block';
-        } else {
-          showToast(msg);
-        }
-        nameInput.focus();
-      }
-
-      function handleInput() {
-        if (errorEl) errorEl.style.display = 'none';
-      }
 
       function handleSubmit() {
         var val = nameInput.value.trim() || defaultVal || 'Passenger';
-
-        var staticList = existingNamesList || [];
-        var dynamicList = getExistingNames();
-        var namesToCheck = staticList.concat(dynamicList);
-
-        if (namesToCheck && Array.isArray(namesToCheck)) {
-          var lowerVal = val.toLowerCase();
-          var isDuplicate = namesToCheck.some(function (n) {
-            return n && typeof n === 'string' && n.trim().toLowerCase() === lowerVal;
-          });
-          if (isDuplicate) {
-            showError('यह नाम पहले से मौजूद है! कृपया दूसरा नाम चुनें · Name already taken');
-            return;
-          }
-        }
-
-        if (errorEl) errorEl.style.display = 'none';
         modal.classList.remove('show');
-        cleanup();
+        submitBtn.removeEventListener('click', handleSubmit);
+        nameInput.removeEventListener('keydown', handleKey);
         if (callback) callback(val);
       }
 
@@ -3348,15 +4623,8 @@
         if (e.key === 'Enter') handleSubmit();
       }
 
-      function cleanup() {
-        submitBtn.removeEventListener('click', handleSubmit);
-        nameInput.removeEventListener('keydown', handleKey);
-        nameInput.removeEventListener('input', handleInput);
-      }
-
       submitBtn.addEventListener('click', handleSubmit);
       nameInput.addEventListener('keydown', handleKey);
-      nameInput.addEventListener('input', handleInput);
     }
 
     function updateTicketUI() {
@@ -3365,111 +4633,36 @@
       var seatEl = document.getElementById('ticketSeat');
       var fareLabelEl = document.getElementById('ticketFareLabel');
       var fareValueEl = document.getElementById('ticketFareValue');
+      var stubNameEl = document.getElementById('coPassStubName');
       var centeredStub = document.getElementById('centeredCoPassStub');
       var ticketCard = document.getElementById('myTicket');
       var isCentered = ticketCard && ticketCard.classList.contains('centered');
 
-      var guests = getGuestList();
-
       if (myRole === 'guest') {
         if (passengerNameEl) passengerNameEl.textContent = "Passenger: " + myName;
-
-        var myIndex = guests.findIndex(function(g) { return g.clientId === clientId; });
-        var mySeatNo = myIndex >= 0 ? (15 + myIndex) : 15;
-
         if (coBadgeEl) {
           coBadgeEl.style.display = 'block';
           coBadgeEl.textContent = "Travelling with " + (partnerName || 'Host') + " ❤️";
         }
-        if (seatEl) seatEl.textContent = mySeatNo + " · Co-pass";
+        if (seatEl) seatEl.textContent = "15 · Co-pass";
         if (fareLabelEl) fareLabelEl.textContent = "Sync";
         if (fareValueEl) fareValueEl.textContent = "Live 🟢";
-        if (shareBtn) shareBtn.style.display = 'none';
-
-        if (centeredStub) {
-          if (isCentered) centeredStub.style.display = 'block';
-          else centeredStub.style.display = 'none';
-
-          var html = '<hr class="tm-div">';
-          html += '<div class="tm-row"><span class="tm-title">Host: ' + escapeHtml(partnerName || 'Yatri') + '</span><span class="tm-no">SEAT-14</span></div>';
-          html += '<div class="tm-fields" style="margin-top: 6px;">';
-          html += '<div><div class="tm-field-label">Role</div><div class="tm-field-value">Host 🚌</div></div>';
-          html += '<div><div class="tm-field-label">Seat</div><div class="tm-field-value">14 · Window</div></div>';
-          html += '<div><div class="tm-field-label">Status</div><div class="tm-field-value">Streaming 🎵</div></div>';
-          html += '</div>';
-
-          var otherGuests = guests.filter(function(g) { return g.clientId !== clientId; });
-          if (otherGuests.length > 0) {
-            html += '<div style="font-size: 10.5px; font-weight: 700; color: var(--marigold); margin-top: 8px; margin-bottom: 4px; letter-spacing: 0.5px; text-transform: uppercase;">';
-            html += 'Fellow Passengers (' + otherGuests.length + ')';
-            html += '</div>';
-            html += '<div class="copass-list-container">';
-            otherGuests.forEach(function(g, idx) {
-              html += '<div class="copass-item-row" style="padding: 4px 0;' + (idx < otherGuests.length - 1 ? ' border-bottom: 1px dashed rgba(243, 230, 206, 0.15);' : '') + '">';
-              html += '<div class="tm-row"><span class="tm-title" style="font-size: 11px;">' + escapeHtml(g.name) + '</span><span class="tm-no" style="font-size: 10px;">SEAT-' + g.seatNo + '</span></div>';
-              html += '</div>';
-            });
-            html += '</div>';
-          }
-          centeredStub.innerHTML = html;
-        }
+        if (shareBtn) shareBtn.style.display = 'none'; // Hide share button on guest screen
+        if (centeredStub) centeredStub.style.display = 'none';
       } else {
-        // HOST ROLE
         if (passengerNameEl) passengerNameEl.textContent = "Passenger: " + myName;
+        if (coBadgeEl) coBadgeEl.style.display = 'none';
         if (seatEl) seatEl.textContent = "14 · Window";
         if (fareLabelEl) fareLabelEl.textContent = "Fare";
         if (fareValueEl) fareValueEl.textContent = "Non-stop";
         if (shareBtn) shareBtn.style.display = 'flex';
 
-        if (guests.length > 0) {
-          if (coBadgeEl) {
-            coBadgeEl.style.display = 'block';
-            if (guests.length === 1) {
-              coBadgeEl.textContent = "Travelling with " + escapeHtml(guests[0].name) + " ❤️";
-            } else if (guests.length === 2) {
-              coBadgeEl.textContent = "Travelling with " + escapeHtml(guests[0].name) + " & " + escapeHtml(guests[1].name) + " ❤️";
-            } else {
-              coBadgeEl.textContent = "Travelling with " + escapeHtml(guests[0].name) + " & " + (guests.length - 1) + " others ❤️";
-            }
-          }
-
-          if (centeredStub) {
-            if (isCentered) centeredStub.style.display = 'block';
-            else centeredStub.style.display = 'none';
-
-            var html = '<hr class="tm-div">';
-            if (guests.length === 1) {
-              var g = guests[0];
-              html += '<div class="tm-row"><span class="tm-title">Co-Passenger: ' + escapeHtml(g.name) + '</span><span class="tm-no">SEAT-' + g.seatNo + '</span></div>';
-              html += '<div class="tm-fields" style="margin-top: 6px;">';
-              html += '<div><div class="tm-field-label">Status</div><div class="tm-field-value">Riding together 🚌</div></div>';
-              html += '<div><div class="tm-field-label">Seat</div><div class="tm-field-value">' + g.seatNo + ' · Co-pass</div></div>';
-              html += '<div><div class="tm-field-label">Sync</div><div class="tm-field-value">Live 🟢</div></div>';
-              html += '</div>';
-            } else {
-              html += '<div style="font-size: 11px; font-weight: 700; color: var(--marigold); margin-bottom: 6px; letter-spacing: 0.5px; text-transform: uppercase;">';
-              html += 'Co-Passengers (' + guests.length + ')';
-              html += '</div>';
-              html += '<div class="copass-list-container">';
-              guests.forEach(function(g, idx) {
-                html += '<div class="copass-item-row" style="padding: 6px 0;' + (idx < guests.length - 1 ? ' border-bottom: 1px dashed rgba(243, 230, 206, 0.18);' : '') + '">';
-                html += '<div class="tm-row"><span class="tm-title" style="font-weight: 700;">' + (idx + 1) + '. ' + escapeHtml(g.name) + '</span><span class="tm-no">SEAT-' + g.seatNo + '</span></div>';
-                html += '<div class="tm-fields" style="margin-top: 4px; font-size: 10.5px;">';
-                html += '<div><div class="tm-field-label">Status</div><div class="tm-field-value">Riding 🚌</div></div>';
-                html += '<div><div class="tm-field-label">Seat</div><div class="tm-field-value">' + g.seatNo + ' · Co-pass</div></div>';
-                html += '<div><div class="tm-field-label">Sync</div><div class="tm-field-value">Live 🟢</div></div>';
-                html += '</div></div>';
-              });
-              html += '</div>';
-            }
-            centeredStub.innerHTML = html;
-          }
+        // Only show co-passenger stub inside centered view when partner is connected!
+        if (partnerName && isCentered) {
+          if (stubNameEl) stubNameEl.textContent = "Co-Passenger: " + partnerName;
+          if (centeredStub) centeredStub.style.display = 'block';
         } else {
-          if (coBadgeEl) coBadgeEl.style.display = 'none';
-          if (centeredStub) {
-            centeredStub.style.display = 'none';
-            centeredStub.innerHTML = '';
-          }
+          if (centeredStub) centeredStub.style.display = 'none';
         }
       }
     }
@@ -3502,192 +4695,106 @@
       document.head.appendChild(script);
     }
 
-    function getOrCreateRealtimeChannel(roomId) {
-      if (realtimeChannel && currentRoomId === roomId) {
-        return realtimeChannel;
-      }
-      if (realtimeChannel) {
-        try { supabaseClient.removeChannel(realtimeChannel); } catch (e) { }
-      }
-      currentRoomId = roomId;
-      realtimeChannel = supabaseClient.channel('ride:' + roomId, {
-        config: {
-          broadcast: { self: false },
-          presence: { key: clientId }
-        }
-      });
-      return realtimeChannel;
-    }
-
     function broadcastEvent(eventName, payloadData) {
       if (!realtimeChannel) return;
+      payloadData = payloadData || {};
       payloadData.senderId = clientId;
-      payloadData.sentAt = Date.now();
-      realtimeChannel.send({
-        type: 'broadcast',
-        event: eventName,
-        payload: payloadData
-      });
-    }
-
-    function syncAudioPosition(data) {
-      if (!data || typeof data.currentTime !== 'number') return;
-
-      var transit = Math.max(0, (Date.now() - (data.sentAt || Date.now())) / 1000);
-      var targetTime = data.currentTime + (data.isPlaying ? transit : 0);
-      var diff = targetTime - audioEl.currentTime;
-
-      if (Math.abs(diff) > 1.2) {
-        audioEl.currentTime = targetTime;
-        audioEl.playbackRate = 1.0;
-      } else if (diff > 0.08) {
-        audioEl.playbackRate = 1.04;
-      } else if (diff < -0.08) {
-        audioEl.playbackRate = 0.96;
-      } else {
-        audioEl.playbackRate = 1.0;
+      try {
+        realtimeChannel.send({
+          type: 'broadcast',
+          event: eventName,
+          payload: payloadData
+        });
+      } catch (err) {
+        console.warn('Realtime broadcast error:', err);
       }
     }
 
     function initRealtimeRoom(roomId, isHostRole) {
       myRole = isHostRole ? 'host' : 'guest';
+      isInSharedRoom = true;
       loadSupabase(function () {
-        var ch = getOrCreateRealtimeChannel(roomId);
+        currentRoomId = roomId;
+        realtimeChannel = supabaseClient.channel('ride:' + roomId, {
+          config: {
+            broadcast: { self: false },
+            presence: { key: clientId }
+          }
+        });
 
-        // Presence sync handler
-        ch.on('presence', { event: 'sync' }, function () {
-          var state = ch.presenceState();
+        // Presence sync handler — uses real connection count in room
+        realtimeChannel.on('presence', { event: 'sync' }, function () {
+          var state = realtimeChannel.presenceState();
           var userIds = Object.keys(state);
           var peerCount = userIds.length;
-          var aboardEl = document.getElementById('aboardCount');
 
-          var newPeers = {};
-          for (var peerId in state) {
-            if (state.hasOwnProperty(peerId)) {
-              var presArray = state[peerId];
-              if (presArray && presArray.length > 0) {
-                var p = presArray[presArray.length - 1];
-                var effectiveClientId = p.clientId || peerId;
-                if (effectiveClientId && effectiveClientId !== clientId) {
-                  newPeers[effectiveClientId] = {
-                    clientId: effectiveClientId,
-                    name: p.name || (p.role === 'host' ? 'Host' : 'Saathi'),
-                    role: p.role || 'guest',
-                    onlineAt: p.online_at || ''
-                  };
-                  if (p.role === 'host' && p.name) {
-                    partnerName = p.name;
-                  }
-                }
-              }
-            }
+          if (peerCount > 1) {
+            updateTicketUI();
+          } else {
+            if (myRole === 'host') partnerName = '';
+            updateTicketUI();
           }
 
-          for (var id in newPeers) {
-            connectedPeers[id] = newPeers[id];
-          }
-          for (var id in connectedPeers) {
-            if (!newPeers[id] && connectedPeers[id].role !== 'host') {
-              delete connectedPeers[id];
-            }
-          }
-
-          checkNameCollision();
-          updateTicketUI();
-
-          if (aboardEl) {
-            if (!aboardEl.dataset.baseCount) {
-              aboardEl.dataset.baseCount = aboardEl.innerText.trim() || '15';
-            }
-            var baseVal = parseInt(aboardEl.dataset.baseCount, 10) || 15;
-            if (peerCount > 1) {
-              aboardEl.innerText = baseVal + (peerCount - 1);
-              aboardEl.style.color = '#57D06B';
-            } else {
-              aboardEl.innerText = baseVal;
-              aboardEl.style.color = '';
-            }
+          if (isInSharedRoom) {
+            setAboardDisplay(Math.max(1, peerCount), true);
           }
         });
 
         // Broadcast event listeners
-        ch.on('broadcast', { event: 'sync-request' }, function (payload) {
-          if (payload.payload && payload.payload.senderId === clientId) return;
-          var data = payload.payload;
-          if (data && data.senderId) {
-            var guestName = data.peerName || 'Saathi';
-            connectedPeers[data.senderId] = {
-              clientId: data.senderId,
-              name: guestName,
-              role: data.role || 'guest',
-              onlineAt: data.onlineAt || new Date().toISOString()
-            };
-
-            showToast(guestName + ' aapke saath safar mein jud gaye hain 🚌');
-            checkNameCollision();
-            updateTicketUI();
-          }
-          broadcastEvent('sync-response', {
-            hostName: myName,
-            connectedPeersList: Object.values(connectedPeers),
-            trackIndex: trackIndex,
-            currentTime: audioEl.currentTime || 0,
-            isPlaying: isPlaying,
-            targetSenderId: payload.payload.senderId
+        realtimeChannel
+          .on('broadcast', { event: 'sync-request' }, function (payload) {
+            if (payload.payload && payload.payload.senderId === clientId) return;
+            var data = payload.payload;
+            if (data && data.peerName) {
+              partnerName = data.peerName;
+              showToast(partnerName + ' aapke saath safar mein jud gaye hain 🚌');
+              updateTicketUI();
+            }
+            broadcastEvent('sync-response', {
+              hostName: myName,
+              trackIndex: trackIndex,
+              currentTime: audioEl.currentTime || 0,
+              isPlaying: isPlaying,
+              targetSenderId: payload.payload.senderId
+            });
+          })
+          .on('broadcast', { event: 'sync-response' }, function (payload) {
+            var data = payload.payload;
+            if (!data || (data.targetSenderId && data.targetSenderId !== clientId)) return;
+            if (data.hostName) {
+              partnerName = data.hostName;
+              updateTicketUI();
+            }
+            applyRemoteSync(data);
+          })
+          .on('broadcast', { event: 'play' }, function (payload) {
+            if (payload.payload && payload.payload.senderId === clientId) return;
+            applyRemotePlay(payload.payload);
+          })
+          .on('broadcast', { event: 'pause' }, function (payload) {
+            if (payload.payload && payload.payload.senderId === clientId) return;
+            applyRemotePause(payload.payload);
+          })
+          .on('broadcast', { event: 'track-change' }, function (payload) {
+            if (payload.payload && payload.payload.senderId === clientId) return;
+            applyRemoteTrackChange(payload.payload);
+          })
+          .on('broadcast', { event: 'seek' }, function (payload) {
+            if (payload.payload && payload.payload.senderId === clientId) return;
+            applyRemoteSeek(payload.payload);
+          })
+          .on('broadcast', { event: 'emoji-reaction' }, function (payload) {
+            if (payload.payload && payload.payload.senderId === clientId) return;
+            handleRemoteReaction(payload.payload);
           });
-        })
-        .on('broadcast', { event: 'sync-response' }, function (payload) {
-          var data = payload.payload;
-          if (!data || (data.targetSenderId && data.targetSenderId !== clientId)) return;
-          if (data.hostName) {
-            partnerName = data.hostName;
-          }
-          if (data.connectedPeersList && Array.isArray(data.connectedPeersList)) {
-            data.connectedPeersList.forEach(function (p) {
-              if (p.clientId && p.clientId !== clientId) {
-                connectedPeers[p.clientId] = p;
-              }
-            });
-          }
-          checkNameCollision();
-          updateTicketUI();
-          applyRemoteSync(data);
-        })
-        .on('broadcast', { event: 'play' }, function (payload) {
-          if (payload.payload && payload.payload.senderId === clientId) return;
-          applyRemotePlay(payload.payload);
-        })
-        .on('broadcast', { event: 'pause' }, function (payload) {
-          if (payload.payload && payload.payload.senderId === clientId) return;
-          applyRemotePause(payload.payload);
-        })
-        .on('broadcast', { event: 'track-change' }, function (payload) {
-          if (payload.payload && payload.payload.senderId === clientId) return;
-          applyRemoteTrackChange(payload.payload);
-        })
-        .on('broadcast', { event: 'seek' }, function (payload) {
-          if (payload.payload && payload.payload.senderId === clientId) return;
-          applyRemoteSeek(payload.payload);
-        })
-        .on('broadcast', { event: 'sync-tick' }, function (payload) {
-          if (payload.payload && payload.payload.senderId === clientId) return;
-          if (!isRemoteUpdate) {
-            syncAudioPosition(payload.payload);
-          }
-        });
 
-        ch.subscribe(function (status) {
+        realtimeChannel.subscribe(function (status) {
           if (status === 'SUBSCRIBED') {
-            ch.track({
-              name: myName,
-              role: myRole,
-              clientId: clientId,
-              online_at: new Date().toISOString()
-            });
+            realtimeChannel.track({ online_at: new Date().toISOString() });
             if (!isHostRole) {
-              broadcastEvent('sync-request', { senderId: clientId, peerName: myName, role: 'guest', onlineAt: new Date().toISOString() });
+              broadcastEvent('sync-request', { senderId: clientId, peerName: myName });
               setTimeout(function () {
-                if (!partnerName && Object.keys(connectedPeers).length === 0) {
+                if (!partnerName) {
                   showToast('Ye ride mil nahi rahi, naya safar shuru karo 🚌');
                 }
               }, 3500);
@@ -3697,38 +4804,30 @@
       });
     }
 
-    // Periodic Host sync tick every 3 seconds for low-latency drift compensation
-    setInterval(function () {
-      if (myRole === 'host' && realtimeChannel && isPlaying && !isRemoteUpdate) {
-        broadcastEvent('sync-tick', {
-          trackIndex: trackIndex,
-          currentTime: audioEl.currentTime || 0,
-          isPlaying: isPlaying,
-          sentAt: Date.now()
-        });
-      }
-    }, 3000);
-
     function applyRemoteSync(data) {
       isRemoteUpdate = true;
       if (typeof data.trackIndex === 'number' && data.trackIndex !== trackIndex) {
         loadTrack(data.trackIndex, data.isPlaying, false);
       }
-      syncAudioPosition(data);
+      if (typeof data.currentTime === 'number') {
+        audioEl.currentTime = data.currentTime;
+      }
       if (data.isPlaying && !isPlaying) {
         audioEl.play().then(function () { setPlaying(true); }).catch(function () { });
       } else if (!data.isPlaying && isPlaying) {
         audioEl.pause();
         setPlaying(false);
       }
-      setTimeout(function () { isRemoteUpdate = false; }, 600);
+      setTimeout(function () { isRemoteUpdate = false; }, 300);
     }
 
     function applyRemotePlay(data) {
       isRemoteUpdate = true;
-      syncAudioPosition(data);
+      if (typeof data.currentTime === 'number' && Math.abs(audioEl.currentTime - data.currentTime) > 1.5) {
+        audioEl.currentTime = data.currentTime;
+      }
       audioEl.play().then(function () { setPlaying(true); }).catch(function () { });
-      setTimeout(function () { isRemoteUpdate = false; }, 600);
+      setTimeout(function () { isRemoteUpdate = false; }, 300);
     }
 
     function applyRemotePause(data) {
@@ -3738,31 +4837,24 @@
       }
       audioEl.pause();
       setPlaying(false);
-      audioEl.playbackRate = 1.0;
-      setTimeout(function () { isRemoteUpdate = false; }, 600);
+      setTimeout(function () { isRemoteUpdate = false; }, 300);
     }
 
     function applyRemoteTrackChange(data) {
       isRemoteUpdate = true;
       if (typeof data.trackIndex === 'number') {
-        var transit = Math.max(0, (Date.now() - (data.sentAt || Date.now())) / 1000);
-        var targetPos = (data.currentTime || 0) + (data.isPlaying !== false ? transit : 0);
-        loadTrack(data.trackIndex, data.isPlaying !== false, false);
-        if (targetPos > 0 && audioEl.duration && targetPos < audioEl.duration) {
-          audioEl.currentTime = targetPos;
-        }
+        loadTrack(data.trackIndex, true, false);
+        if (typeof data.currentTime === 'number') audioEl.currentTime = data.currentTime;
       }
-      audioEl.playbackRate = 1.0;
-      setTimeout(function () { isRemoteUpdate = false; }, 600);
+      setTimeout(function () { isRemoteUpdate = false; }, 300);
     }
 
     function applyRemoteSeek(data) {
       isRemoteUpdate = true;
       if (typeof data.currentTime === 'number') {
-        var transit = Math.max(0, (Date.now() - (data.sentAt || Date.now())) / 1000);
-        audioEl.currentTime = data.currentTime + transit;
+        audioEl.currentTime = data.currentTime;
       }
-      setTimeout(function () { isRemoteUpdate = false; }, 600);
+      setTimeout(function () { isRemoteUpdate = false; }, 300);
     }
 
     // Share Ride button handler with Name Modal Prompt
@@ -3785,17 +4877,10 @@
             prompt('Copy this ride link:', shareUrl);
           });
 
-          if (!currentRoomId || !realtimeChannel) {
+          if (!currentRoomId) {
             initRealtimeRoom(roomId, true);
-          } else if (realtimeChannel) {
-            realtimeChannel.track({
-              name: myName,
-              role: myRole,
-              clientId: clientId,
-              online_at: new Date().toISOString()
-            });
           }
-        }, getExistingNames());
+        });
       });
     }
 
@@ -3819,49 +4904,799 @@
         myRole = 'guest';
         partnerName = hostParam;
 
-            }
-          });
-
-          realtimeChannel.subscribe(function (status) {
-            if (status === 'SUBSCRIBED') {
-              // Pre-subscribed
-            }
-          });
-        });
-
-        var existingNamesForPrompt = [hostParam];
-
         promptName(hostParam + ' के साथ सफर के लिए अपना नाम बताएं', 'Enter your name to join ' + hostParam + '\'s ride:', 'Saathi', function (enteredName) {
           myName = enteredName;
           updateTicketUI();
           showToast('Aap ' + hostParam + ' ke saath safar mein jud gaye hain 🚌');
           initRealtimeRoom(rideIdParam, false);
-        }, existingNamesForPrompt);
+        });
       }
     });
+
+    // Register PWA Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('sw.js').catch(function (err) {
+          console.debug('ServiceWorker registration skipped:', err);
+        });
+      });
+    }
+
+    /* ===============================================================
+       BUS STICKER CUSTOMIZATION & ROTATION ENGINE
+    =============================================================== */
+    var STICKER_DEFAULTS = {
+      1: { type: 1, text: "सफ़र मुबारक", sub: "MALWA EXPRESS" },
+      2: { type: 2, text: "Horn Please", sub: "माँ की दुआ साथ है" },
+      3: { type: 3, text: "दिल से", heart: "❤", sub: "MALWA EXPRESS" }
+    };
+
+    var userCustomSticker = null;
+    try {
+      var savedSticker = localStorage.getItem('malwa_user_sticker');
+      if (savedSticker) userCustomSticker = JSON.parse(savedSticker);
+    } catch (e) { }
+
+    var stickerSlot = document.getElementById('busStickerSlot');
+    var stickerModal = document.getElementById('stickerEditModal');
+    var seCloseBtn = document.getElementById('seCloseBtn');
+    var seTextInput = document.getElementById('seTextInput');
+    var seInputLabel = document.getElementById('seInputLabel');
+    var sePreviewStage = document.getElementById('sePreviewStage');
+    var seSaveBtn = document.getElementById('seSaveBtn');
+    var selectedDesignId = userCustomSticker ? userCustomSticker.design : 1;
+    var customTextVal = userCustomSticker ? userCustomSticker.text : 'सफ़र मुबारक';
+
+    function renderStickerMarkup(designId, textVal) {
+      var safeText = (textVal || '').trim();
+      if (designId === 1) {
+        var displayText = safeText || 'सफ़र मुबारक';
+        displayText = displayText.replace(/\n/g, '<br>');
+        return '<div class="sticker-1"><span class="edit-hint">✏️ Edit</span><div class="txt">' + displayText + '</div><div class="sub">MALWA EXPRESS</div></div>';
+      } else if (designId === 2) {
+        var displayText2 = safeText || 'माँ की दुआ साथ है';
+        return '<div class="sticker-2"><span class="edit-hint">✏️ Edit</span><div class="txt">Horn Please</div><div class="txt2">' + displayText2 + '</div></div>';
+      } else {
+        var displayText3 = safeText || 'दिल से';
+        return '<div class="sticker-3"><span class="edit-hint">✏️ Edit</span><div class="heart">❤</div><div class="txt">' + displayText3 + '</div><div class="brand">MALWA EXPRESS</div></div>';
+      }
+    }
+
+    function updateStickerDisplay() {
+      if (!stickerSlot) return;
+      var d = userCustomSticker ? userCustomSticker.design : 1;
+      var t = userCustomSticker ? userCustomSticker.text : 'सफ़र मुबारक';
+      stickerSlot.innerHTML = renderStickerMarkup(d, t);
+      stickerSlot.classList.add('show');
+    }
+
+    function updateModalPreview() {
+      if (!sePreviewStage) return;
+      var currentVal = seTextInput ? seTextInput.value : customTextVal;
+      sePreviewStage.innerHTML = renderStickerMarkup(selectedDesignId, currentVal);
+    }
+
+    function openStickerModal() {
+      if (!stickerModal) return;
+      playTapeClick();
+      selectedDesignId = userCustomSticker ? userCustomSticker.design : 1;
+      customTextVal = userCustomSticker ? userCustomSticker.text : (selectedDesignId === 2 ? 'माँ की दुआ साथ है' : (selectedDesignId === 3 ? 'दिल से' : 'सफ़र मुबारक'));
+
+      // Update active card styling
+      document.querySelectorAll('.se-design-choice').forEach(function (card) {
+        var did = parseInt(card.getAttribute('data-design'), 10);
+        if (did === selectedDesignId) card.classList.add('active');
+        else card.classList.remove('active');
+      });
+
+      // Update input and font classes
+      if (seTextInput) {
+        seTextInput.value = customTextVal;
+        seTextInput.className = 'se-text-input ' + (selectedDesignId === 2 ? 'font-baloo' : 'font-kalam');
+        if (selectedDesignId === 1) {
+          seInputLabel.textContent = 'सफ़र मुबारक बदलें (Design 1 - Kalam font):';
+          seTextInput.placeholder = 'e.g. सफ़र मुबारक...';
+        } else if (selectedDesignId === 2) {
+          seInputLabel.textContent = 'माँ की दुआ साथ है बदलें (Design 2 - Baloo 2 font):';
+          seTextInput.placeholder = 'e.g. माँ की दुआ साथ है...';
+        } else {
+          seInputLabel.textContent = 'दिल से बदलें (Design 3 - Kalam font):';
+          seTextInput.placeholder = 'e.g. दिल से...';
+        }
+      }
+
+      updateModalPreview();
+      stickerModal.classList.add('show');
+      if (seTextInput) setTimeout(function () { seTextInput.focus(); }, 150);
+    }
+
+    function closeStickerModal() {
+      if (stickerModal) stickerModal.classList.remove('show');
+    }
+
+    if (stickerSlot) stickerSlot.addEventListener('click', openStickerModal);
+    if (seCloseBtn) seCloseBtn.addEventListener('click', closeStickerModal);
+    if (stickerModal) {
+      stickerModal.addEventListener('click', function (e) {
+        if (e.target === stickerModal) closeStickerModal();
+      });
+    }
+
+    document.querySelectorAll('.se-design-choice').forEach(function (choice) {
+      choice.addEventListener('click', function () {
+        playTapeClick();
+        selectedDesignId = parseInt(choice.getAttribute('data-design'), 10);
+        document.querySelectorAll('.se-design-choice').forEach(function (c) { c.classList.remove('active'); });
+        choice.classList.add('active');
+
+        // Adjust default text if current input is empty or default
+        if (selectedDesignId === 1) {
+          seInputLabel.textContent = 'सफ़र मुबारक बदलें (Design 1 - Kalam font):';
+          seTextInput.className = 'se-text-input font-kalam';
+          if (!seTextInput.value || seTextInput.value === 'माँ की दुआ साथ है' || seTextInput.value === 'दिल से') {
+            seTextInput.value = 'सफ़र मुबारक';
+          }
+        } else if (selectedDesignId === 2) {
+          seInputLabel.textContent = 'माँ की दुआ साथ है बदलें (Design 2 - Baloo 2 font):';
+          seTextInput.className = 'se-text-input font-baloo';
+          if (!seTextInput.value || seTextInput.value === 'सफ़र मुबारक' || seTextInput.value === 'दिल से') {
+            seTextInput.value = 'माँ की दुआ साथ है';
+          }
+        } else {
+          seInputLabel.textContent = 'दिल से बदलें (Design 3 - Kalam font):';
+          seTextInput.className = 'se-text-input font-kalam';
+          if (!seTextInput.value || seTextInput.value === 'सफ़र मुबारक' || seTextInput.value === 'माँ की दुआ साथ है') {
+            seTextInput.value = 'दिल से';
+          }
+        }
+
+        updateModalPreview();
+      });
+    });
+
+    if (seTextInput) {
+      seTextInput.addEventListener('input', updateModalPreview);
+    }
+
+    document.querySelectorAll('.se-chip').forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        playTapeClick();
+        var txt = chip.getAttribute('data-text');
+        if (seTextInput) {
+          seTextInput.value = txt;
+          updateModalPreview();
+        }
+      });
+    });
+
+    if (seSaveBtn) {
+      seSaveBtn.addEventListener('click', function () {
+        playTapeClick();
+        var finalTxt = seTextInput ? seTextInput.value.trim() : '';
+        if (!finalTxt) {
+          finalTxt = (selectedDesignId === 2 ? 'माँ की दुआ साथ है' : (selectedDesignId === 3 ? 'दिल से' : 'सफ़र मुबारक'));
+        }
+        userCustomSticker = { design: selectedDesignId, text: finalTxt };
+        try {
+          localStorage.setItem('malwa_user_sticker', JSON.stringify(userCustomSticker));
+        } catch (e) { }
+
+        updateStickerDisplay();
+        closeStickerModal();
+        showToast('Aapka customized sticker bus par lag gaya! 🚌 ✨');
+      });
+    }
+
+    // Initial render
+    setTimeout(updateStickerDisplay, 1500);
+
+    /* ===============================================================
+       DARK LIQUID GLASS TRACKLIST DRAWER LOGIC
+    =============================================================== */
+    var tracklistDrawer = document.getElementById('tracklistDrawer');
+    var tracklistBtn = document.getElementById('tracklistBtn');
+    var tlCloseBtn = document.getElementById('tlCloseBtn');
+    var tlList = document.getElementById('tlList');
+
+    function renderTracklistItems() {
+      if (!tlList || !TRACKS || !TRACKS.length) return;
+      tlList.innerHTML = TRACKS.map(function (t, idx) {
+        var isActive = (idx === trackIndex);
+        var numStr = (idx + 1) < 10 ? '0' + (idx + 1) : (idx + 1);
+        var coverSrc = t.cover || ('assets/covers/cover_' + (idx < 9 ? '0' + (idx + 1) : (idx + 1)) + '.jpg');
+        return '<div class="tl-item ' + (isActive ? 'active' : '') + '" data-index="' + idx + '">' +
+          '<span class="tl-num">' + numStr + '</span>' +
+          '<img src="' + coverSrc + '" class="tl-thumb" alt="' + t.title + '" loading="lazy" />' +
+          '<div class="tl-info">' +
+            '<span class="tl-song-name">' + t.title + '</span>' +
+            '<span class="tl-artist-name">' + t.artist + '</span>' +
+          '</div>' +
+          '<div class="tl-playing-icon">' +
+            '<div class="tl-playing-bar"></div>' +
+            '<div class="tl-playing-bar"></div>' +
+            '<div class="tl-playing-bar"></div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+
+      document.querySelectorAll('.tl-item').forEach(function (el) {
+        el.addEventListener('click', function () {
+          var idx = parseInt(el.getAttribute('data-index'), 10);
+          if (idx !== trackIndex) {
+            playTapeClick();
+            loadTrack(idx, true, false);
+            broadcastEvent('track-change', { trackIndex: idx, currentTime: 0 });
+          }
+          toggleTracklist(false);
+        });
+      });
+    }
+
+    function toggleTracklist(forceState) {
+      if (!tracklistDrawer) return;
+      playTapeClick();
+      var isOpen = (typeof forceState === 'boolean') ? forceState : !tracklistDrawer.classList.contains('open');
+      if (isOpen) {
+        renderTracklistItems();
+        tracklistDrawer.classList.add('open');
+        if (tracklistBtn) tracklistBtn.style.color = 'var(--marigold)';
+        // Scroll to active song
+        setTimeout(function () {
+          var activeEl = tlList.querySelector('.tl-item.active');
+          if (activeEl) activeEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }, 100);
+      } else {
+        tracklistDrawer.classList.remove('open');
+        if (tracklistBtn) tracklistBtn.style.color = '';
+      }
+    }
+
+    if (tracklistBtn) {
+      tracklistBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        toggleTracklist();
+      });
+    }
+    if (tlCloseBtn) {
+      tlCloseBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        toggleTracklist(false);
+      });
+    }
+
+    // Close drawers when clicking outside
+    document.addEventListener('click', function (e) {
+      if (tracklistDrawer && tracklistDrawer.classList.contains('open')) {
+        if (!tracklistDrawer.contains(e.target) && e.target !== tracklistBtn && !tracklistBtn.contains(e.target)) {
+          toggleTracklist(false);
+        }
+      }
+    });
+
+    /* ===============================================================
+       SHARED-LISTENING FLOATING REACTION EMOJIS & RESONANCE ENGINE
+    =============================================================== */
+    var playerReactBtn = document.getElementById('playerReactBtn');
+    var reactionPicker = document.getElementById('reactionPicker');
+    var bubbleContainer = document.getElementById('reactionBubbleContainer');
+    var lastSentEmoji = null;
+    var lastSentEmojiTime = 0;
+    var lastPartnerEmoji = null;
+    var lastPartnerEmojiTime = 0;
+    var reactionCooldown = false;
+
+    function toggleReactionPicker() {
+      if (!reactionPicker) return;
+      playTapeClick();
+      var isOpen = reactionPicker.classList.toggle('open');
+      if (playerReactBtn) {
+        if (isOpen) playerReactBtn.classList.add('active');
+        else playerReactBtn.classList.remove('active');
+      }
+    }
+
+    if (playerReactBtn) {
+      playerReactBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        toggleReactionPicker();
+      });
+    }
+
+    document.addEventListener('click', function (e) {
+      if (reactionPicker && reactionPicker.classList.contains('open')) {
+        if (!reactionPicker.contains(e.target) && e.target !== playerReactBtn && !playerReactBtn.contains(e.target)) {
+          reactionPicker.classList.remove('open');
+          if (playerReactBtn) playerReactBtn.classList.remove('active');
+        }
+      }
+    });
+
+    function spawnReactionBubble(emoji, senderName, isResonance, isLocal) {
+      if (!bubbleContainer) return;
+
+      var bubble = document.createElement('div');
+      bubble.className = 'reaction-bubble' + (isResonance ? ' resonance' : '') + (isLocal ? ' local-bubble' : ' peer-bubble');
+
+      // Position bubble near the player controls with random horizontal variation
+      var playerControls = document.querySelector('.player-controls');
+      var startX = playerControls ? (playerControls.getBoundingClientRect().left + Math.random() * 80) : (window.innerWidth / 2 + (Math.random() * 120 - 60));
+      bubble.style.left = Math.max(20, Math.min(window.innerWidth - 60, startX)) + 'px';
+
+      // Continuous wobble parameters
+      var driftAmount = 14 + Math.random() * 10;
+      bubble.style.setProperty('--drift-left', '-' + driftAmount + 'px');
+      bubble.style.setProperty('--drift-right', '+' + driftAmount + 'px');
+
+      var inner = document.createElement('div');
+      inner.className = 'emoji-inner';
+      inner.textContent = emoji;
+      bubble.appendChild(inner);
+
+      if (senderName && !isResonance) {
+        var tag = document.createElement('div');
+        tag.className = 'sender-tag';
+        tag.textContent = senderName;
+        bubble.appendChild(tag);
+      }
+
+      bubbleContainer.appendChild(bubble);
+
+      setTimeout(function () {
+        if (bubble.parentNode) bubble.parentNode.removeChild(bubble);
+      }, 3400);
+    }
+
+    function sendReaction(emoji) {
+      if (reactionCooldown) return;
+      reactionCooldown = true;
+      setTimeout(function () { reactionCooldown = false; }, 800);
+
+      var now = Date.now();
+      lastSentEmoji = emoji;
+      lastSentEmojiTime = now;
+
+      // Check emotional resonance match with partner (sent same emoji within 8 seconds)
+      var isResonance = (lastPartnerEmoji === emoji && (now - lastPartnerEmojiTime) <= 8000);
+
+      var myDisplayName = myName || (myRole === 'host' ? 'Yatri' : 'Saathi');
+      spawnReactionBubble(emoji, 'You', isResonance, true);
+
+      if (playerReactBtn) {
+        playerReactBtn.classList.add('pulse');
+        setTimeout(function () { playerReactBtn.classList.remove('pulse'); }, 400);
+      }
+
+      if (isResonance) {
+        showToast('Dono ki feeling match ho gayi! ✨ 💛');
+      }
+
+      // Broadcast reaction across realtime channel to partner
+      if (typeof realtimeChannel !== 'undefined' && realtimeChannel) {
+        broadcastEvent('emoji-reaction', {
+          emoji: emoji,
+          senderName: myDisplayName,
+          role: myRole,
+          timestamp: now
+        });
+      }
+    }
+
+    function handleRemoteReaction(data) {
+      if (!data || !data.emoji) return;
+      var now = Date.now();
+      lastPartnerEmoji = data.emoji;
+      lastPartnerEmojiTime = now;
+
+      var isResonance = (lastSentEmoji === data.emoji && (now - lastSentEmojiTime) <= 8000);
+
+      var senderDisplayName = data.senderName || partnerName || (myRole === 'host' ? 'Saathi' : 'Yatri');
+      spawnReactionBubble(data.emoji, senderDisplayName, isResonance, false);
+
+      if (playerReactBtn) {
+        playerReactBtn.classList.add('pulse');
+        setTimeout(function () { playerReactBtn.classList.remove('pulse'); }, 400);
+      }
+
+      if (isResonance) {
+        showToast('Dono ki feeling match ho gayi! ✨ 💛');
+      }
+    }
+
+    document.querySelectorAll('.react-item-btn').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var emoji = btn.getAttribute('data-emoji');
+        if (emoji) {
+          playTapeClick();
+          sendReaction(emoji);
+        }
+        if (reactionPicker) {
+          reactionPicker.classList.remove('open');
+          if (playerReactBtn) playerReactBtn.classList.remove('active');
+        }
+      });
+    });
+
+    // Toggle react button visibility in player controls on shared room state
+    var origInitRealtimeRoom = initRealtimeRoom;
+    initRealtimeRoom = function (roomId, isHostRole) {
+      if (playerReactBtn) playerReactBtn.classList.add('show');
+      return origInitRealtimeRoom.apply(this, arguments);
+    };
+
+    /* ===============================================================
+       "JOURNEY TOGETHER" UNLOCKABLE CARD & HTML5 CANVAS EXPORT
+    =============================================================== */
+    var consecutiveSharedSongs = 0;
+    var songsPlayedTogether = [];
+    var hasUnlockedJourneyCard = false;
+    var activeCardStyle = 'board'; // 'board' or 'postcard'
+
+    var jtModal = document.getElementById('journeyTogetherModal');
+    var jtTabBoard = document.getElementById('jtTabBoard');
+    var jtTabPostcard = document.getElementById('jtTabPostcard');
+    var jtCardBoard = document.getElementById('jtCardBoard');
+    var jtCardPostcard = document.getElementById('jtCardPostcard');
+    var jtDownloadBtn = document.getElementById('jtDownloadBtn');
+    var jtCloseBtn = document.getElementById('jtCloseBtn');
+
+    function openJourneyTogetherModal() {
+      if (!jtModal) return;
+      updateJourneyCardContent();
+      jtModal.classList.add('show');
+      showToast('🎉 "Journey Together" card unlocked!');
+    }
+
+    function closeJourneyTogetherModal() {
+      if (jtModal) jtModal.classList.remove('show');
+    }
+
+    if (jtCloseBtn) jtCloseBtn.addEventListener('click', closeJourneyTogetherModal);
+    if (jtModal) {
+      jtModal.addEventListener('click', function (e) {
+        if (e.target === jtModal) closeJourneyTogetherModal();
+      });
+    }
+
+    if (jtTabBoard && jtTabPostcard) {
+      jtTabBoard.addEventListener('click', function () {
+        activeCardStyle = 'board';
+        jtTabBoard.classList.add('active');
+        jtTabPostcard.classList.remove('active');
+        if (jtCardBoard) jtCardBoard.style.display = 'flex';
+        if (jtCardPostcard) jtCardPostcard.style.display = 'none';
+      });
+      jtTabPostcard.addEventListener('click', function () {
+        activeCardStyle = 'postcard';
+        jtTabPostcard.classList.add('active');
+        jtTabBoard.classList.remove('active');
+        if (jtCardPostcard) jtCardPostcard.style.display = 'flex';
+        if (jtCardBoard) jtCardBoard.style.display = 'none';
+      });
+    }
+
+    function formatCardDate() {
+      var d = new Date();
+      var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      var day = d.getDate();
+      var mon = months[d.getMonth()];
+      var year = d.getFullYear();
+      var h = d.getHours();
+      var m = d.getMinutes();
+      var ampm = h >= 12 ? 'PM' : 'AM';
+      var h12 = h % 12; if (h12 === 0) h12 = 12;
+      var mm = m < 10 ? '0' + m : m;
+      return day + ' ' + mon + ' ' + year + ' · ' + h12 + ':' + mm + ' ' + ampm;
+    }
+
+    function updateJourneyCardContent() {
+      var hostText = 'यात्री · ' + (myName || 'Yatri');
+      var partnerText = 'साथी · ' + (partnerName || 'Saathi');
+      var tsText = formatCardDate();
+
+      var hostChip = document.getElementById('jtBoardHostChip');
+      var partnerChip = document.getElementById('jtBoardPartnerChip');
+      var boardTs = document.getElementById('jtBoardTimestamp');
+      var postcardTs = document.getElementById('jtPostcardTimestamp');
+      var boardSongList = document.getElementById('jtBoardSongList');
+      var postcardSongList = document.getElementById('jtPostcardSongList');
+
+      if (hostChip) hostChip.textContent = hostText;
+      if (partnerChip) partnerChip.textContent = partnerText;
+      if (boardTs) boardTs.textContent = tsText;
+      if (postcardTs) postcardTs.textContent = tsText;
+
+      // Fill songs played together (last 3-4 songs)
+      var displaySongs = songsPlayedTogether.slice(-4);
+      if (!displaySongs.length) {
+        displaySongs = [TRACKS[trackIndex].title, (TRACKS[trackIndex + 1] || TRACKS[0]).title];
+      }
+
+      if (boardSongList) {
+        boardSongList.innerHTML = displaySongs.map(function (s) {
+          return '<div class="song-row"><span class="b"></span>' + s + '</div>';
+        }).join('');
+      }
+
+      if (postcardSongList) {
+        postcardSongList.innerHTML = displaySongs.map(function (s, i) {
+          var pickName = (i % 2 === 0) ? (myName || 'Yatri') : (partnerName || 'Saathi');
+          return '<b>★ ' + s + '</b> — ' + pickName + '\'s pick<br>';
+        }).join('');
+      }
+    }
+
+    // Track consecutive songs played in active shared ride
+    function recordSharedSongProgress() {
+      if (isInSharedRoom) {
+        var currentTitle = TRACKS[trackIndex] ? TRACKS[trackIndex].title : '';
+        if (currentTitle && songsPlayedTogether.indexOf(currentTitle) === -1) {
+          songsPlayedTogether.push(currentTitle);
+        }
+        consecutiveSharedSongs++;
+        if (consecutiveSharedSongs >= 4 && !hasUnlockedJourneyCard) {
+          hasUnlockedJourneyCard = true;
+          setTimeout(openJourneyTogetherModal, 1500);
+        }
+      }
+    }
+
+    // Hook shared song milestone to track transitions
+    audioEl.addEventListener('ended', recordSharedSongProgress);
+
+    /* HTML5 Canvas PNG Card Generator & Share */
+    function generateCardCanvas(styleMode, callback) {
+      var canvas = document.createElement('canvas');
+      canvas.width = 800;
+      canvas.height = 1000;
+      var ctx = canvas.getContext('2d');
+      var hostName = myName || 'Yatri';
+      var guestName = partnerName || 'Saathi';
+      var dateStr = formatCardDate();
+      var songList = songsPlayedTogether.slice(-4);
+      if (!songList.length) songList = [TRACKS[trackIndex].title, (TRACKS[trackIndex + 1] || TRACKS[0]).title];
+
+      if (styleMode === 'board') {
+        // Destination Board LED Canvas render
+        var bgGrad = ctx.createLinearGradient(0, 0, 0, 1000);
+        bgGrad.addColorStop(0, '#0d0d0d');
+        bgGrad.addColorStop(1, '#050505');
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, 800, 1000);
+
+        // Bezel
+        ctx.fillStyle = '#161514';
+        ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+        ctx.lineWidth = 2;
+        ctx.roundRect(30, 30, 740, 940, 16);
+        ctx.fill();
+        ctx.stroke();
+
+        // Inner Screen
+        var screenGrad = ctx.createRadialGradient(400, 200, 50, 400, 500, 600);
+        screenGrad.addColorStop(0, '#1a1200');
+        screenGrad.addColorStop(0.8, '#050300');
+        ctx.fillStyle = screenGrad;
+        ctx.roundRect(50, 50, 700, 900, 12);
+        ctx.fill();
+
+        // Scanlines
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+        for (var y = 50; y < 950; y += 4) {
+          ctx.fillRect(50, y, 700, 2);
+        }
+
+        // LED Title
+        ctx.shadowColor = 'rgba(255, 176, 32, 0.85)';
+        ctx.shadowBlur = 14;
+        ctx.fillStyle = '#ffb020';
+        ctx.font = 'bold 44px "Baloo 2", sans-serif';
+        ctx.fillText('देवास पहुँच गए', 80, 140);
+
+        ctx.shadowBlur = 8;
+        ctx.font = 'bold 16px "Space Mono", monospace';
+        ctx.fillText('JOURNEY TOGETHER · UNLOCKED', 80, 175);
+
+        // Chips
+        ctx.shadowBlur = 4;
+        ctx.font = '16px "Space Mono", monospace';
+        ctx.fillText('यात्री · ' + hostName + '   |   साथी · ' + guestName, 80, 240);
+
+        // Dashed Line
+        ctx.strokeStyle = 'rgba(255, 176, 32, 0.4)';
+        ctx.setLineDash([8, 6]);
+        ctx.beginPath();
+        ctx.moveTo(80, 270);
+        ctx.lineTo(720, 270);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Songs
+        ctx.font = 'bold 18px "Space Mono", monospace';
+        ctx.fillText('इस सफ़र में साथ बजे गाने:', 80, 330);
+
+        ctx.font = '20px "Space Mono", monospace';
+        ctx.fillStyle = 'rgba(255, 215, 140, 0.95)';
+        var songY = 380;
+        songList.forEach(function (s) {
+          ctx.beginPath();
+          ctx.arc(90, songY - 6, 5, 0, Math.PI * 2);
+          ctx.fillStyle = '#ffb020';
+          ctx.fill();
+          ctx.fillStyle = 'rgba(255, 215, 140, 0.95)';
+          ctx.fillText(s, 115, songY);
+          songY += 50;
+        });
+
+        // Footer
+        ctx.shadowBlur = 10;
+        ctx.fillStyle = '#ffb020';
+        ctx.font = 'bold 24px "Baloo 2", sans-serif';
+        ctx.fillText('मालवा एक्सप्रेस', 80, 900);
+
+        ctx.shadowBlur = 0;
+        ctx.font = '14px "Space Mono", monospace';
+        ctx.fillStyle = 'rgba(255, 176, 32, 0.7)';
+        ctx.fillText(dateStr + ' · malwa-express.vercel.app', 80, 930);
+
+      } else {
+        // Postcard Canvas render
+        var kraftGrad = ctx.createLinearGradient(0, 0, 800, 1000);
+        kraftGrad.addColorStop(0, '#c8a273');
+        kraftGrad.addColorStop(1, '#a9845a');
+        ctx.fillStyle = kraftGrad;
+        ctx.fillRect(0, 0, 800, 1000);
+
+        // Polaroid Frame
+        ctx.save();
+        ctx.translate(140, 180);
+        ctx.rotate(-0.06);
+        ctx.fillStyle = '#f3eddc';
+        ctx.shadowColor = 'rgba(0,0,0,0.4)';
+        ctx.shadowBlur = 20;
+        ctx.fillRect(-90, -110, 180, 220);
+        ctx.fillStyle = '#2c5c63';
+        ctx.fillRect(-80, -100, 160, 160);
+        ctx.fillStyle = 'rgba(243,237,220,0.9)';
+        ctx.font = 'bold 12px "Baloo 2", sans-serif';
+        ctx.fillText('Malwa Express', -75, 90);
+        ctx.restore();
+
+        // Stamp
+        ctx.save();
+        ctx.translate(650, 700);
+        ctx.rotate(0.2);
+        ctx.strokeStyle = 'rgba(195, 61, 41, 0.8)';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.arc(0, 0, 70, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(0, 0, 60, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.fillStyle = '#c33d29';
+        ctx.font = 'bold 22px "Kalam", cursive';
+        ctx.textAlign = 'center';
+        ctx.fillText('यात्रा पूरी', 0, -5);
+        ctx.font = 'bold 12px "Space Mono", monospace';
+        ctx.fillText('MALWA EXP', 0, 22);
+        ctx.restore();
+
+        // Typography
+        ctx.fillStyle = '#1c150f';
+        ctx.font = 'bold 44px "Kalam", cursive';
+        ctx.textAlign = 'left';
+        ctx.fillText('साथ में सफ़र तय हुआ', 80, 480);
+
+        ctx.font = '20px "Baloo 2", sans-serif';
+        ctx.fillStyle = '#4c4136';
+        ctx.fillText('Indore से Dewas तक, बारिश और पुराने गानों के साथ।', 80, 525);
+        ctx.fillText('यात्री: ' + hostName + '  ·  साथी: ' + guestName, 80, 560);
+
+        // Songs
+        ctx.font = '22px "Kalam", cursive';
+        ctx.fillStyle = '#1c150f';
+        var pSongY = 630;
+        songList.forEach(function (s, idx) {
+          var picker = (idx % 2 === 0) ? hostName : guestName;
+          ctx.fillText('★ ' + s + ' — ' + picker + '\'s pick', 80, pSongY);
+          pSongY += 45;
+        });
+
+        // Footer
+        ctx.font = 'bold 24px "Baloo 2", sans-serif';
+        ctx.fillStyle = '#1c150f';
+        ctx.fillText('मालवा एक्सप्रेस ❤️', 80, 910);
+        ctx.font = '14px "Space Mono", monospace';
+        ctx.fillStyle = '#4c4136';
+        ctx.fillText(dateStr + ' · malwa-express.vercel.app', 80, 940);
+      }
+
+      if (callback) callback(canvas);
+    }
+
+    if (jtDownloadBtn) {
+      jtDownloadBtn.addEventListener('click', function () {
+        playTapeClick();
+        generateCardCanvas(activeCardStyle, function (canvas) {
+          canvas.toBlob(function (blob) {
+            if (!blob) return;
+            var filename = 'malwa-express-journey-' + Date.now() + '.png';
+
+            // Mobile native Web Share API with image file
+            if (navigator.share && navigator.canShare) {
+              var file = new File([blob], filename, { type: 'image/png' });
+              if (navigator.canShare({ files: [file] })) {
+                navigator.share({
+                  title: 'Malwa Express — Journey Together',
+                  text: 'Humne Malwa Express mein saath safar kiya! 🚌 ❤️',
+                  files: [file]
+                }).catch(function () { });
+                return;
+              }
+            }
+
+            // Desktop / fallback download
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+            showToast('Card download ho gaya! 🚌');
+          }, 'image/png');
+        });
+      });
+    }
 
     /* landing -> transition -> journey */
     var landingView = document.getElementById('landingView');
     var journeyView = document.getElementById('journeyView');
     var overlay = document.getElementById('transitionOverlay');
+    var boardBtn = document.getElementById('boardBtn');
 
-    document.getElementById('boardBtn').addEventListener('click', function () {
-      // Start track 0 with smooth fade-in!
-      loadTrack(0, true, true);
-      overlay.classList.add('show');
-      setTimeout(function () { overlay.classList.add('show-text'); }, 650);
-      setTimeout(function () {
-        landingView.style.display = 'none';
-        journeyView.style.display = 'block';
-        setActiveDockButton(switchInside);
-        showFirstVisitHint();
-        resetIdleTimer();
-      }, 2100);
-      setTimeout(function () {
-        overlay.classList.remove('show-text');
-        overlay.classList.remove('show');
-      }, 2500);
-    });
+    if (boardBtn) {
+      boardBtn.addEventListener('click', function () {
+        try {
+          playTapeClick();
+        } catch (e) { }
+
+        try {
+          loadTrack(0, true, true);
+        } catch (err) {
+          console.warn('Track load error on board:', err);
+        }
+
+        if (overlay) {
+          overlay.classList.add('show');
+          setTimeout(function () { overlay.classList.add('show-text'); }, 650);
+        }
+
+        setTimeout(function () {
+          if (landingView) landingView.style.display = 'none';
+          if (journeyView) journeyView.style.display = 'block';
+          try {
+            if (typeof setActiveDockButton === 'function' && typeof switchInside !== 'undefined') {
+              setActiveDockButton(switchInside);
+            }
+            if (typeof showFirstVisitHint === 'function') showFirstVisitHint();
+            if (typeof resetIdleTimer === 'function') resetIdleTimer();
+          } catch (e) {
+            console.warn('Post-board initialization error:', e);
+          }
+        }, 2100);
+
+        setTimeout(function () {
+          if (overlay) {
+            overlay.classList.remove('show-text');
+            overlay.classList.remove('show');
+          }
+        }, 2500);
+      });
+    }
   </script>
 </body>
 

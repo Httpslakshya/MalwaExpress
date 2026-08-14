@@ -5,7 +5,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Malwa Express — मालवा एक्सप्रेस</title>
-  <meta name="description" content="Malwa Express — board the bus.">
+  <meta name="description" content="Malwa Express — A nostalgic 90s MP bus ride with Bollywood cassette classics from Indore to Dewas.">
+  <meta name="theme-color" content="#160F0A">
+
+  <!-- Open Graph & Social Sharing -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Malwa Express — मालवा एक्सप्रेस">
+  <meta property="og:description" content="A nostalgic 90s MP bus journey with authentic conductor calls and Bollywood cassette classics from Indore to Dewas.">
+  <meta property="og:image" content="assets/malwa.png">
+  <meta property="og:image:alt" content="Malwa Express Bus">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Malwa Express — मालवा एक्सप्रेस">
+  <meta name="twitter:description" content="A nostalgic 90s MP bus journey with authentic conductor calls and Bollywood cassette classics from Indore to Dewas.">
+  <meta name="twitter:image" content="assets/malwa.png">
+
+  <!-- Web App Manifest -->
+  <link rel="manifest" href="manifest.json">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -1193,6 +1209,40 @@
       transition: width 0.1s linear;
     }
 
+    /* Buffering & Loading Indeterminate Cues */
+    .player-disc-wrap.buffering .player-disc {
+      animation: spinDisc 12s linear infinite, discBufferingGlow 1.2s ease-in-out infinite alternate !important;
+      animation-play-state: running !important;
+    }
+
+    @keyframes discBufferingGlow {
+      0% {
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.6), 0 0 8px rgba(232, 166, 60, 0.25), inset 0 0 0 1.5px rgba(232, 166, 60, 0.5);
+      }
+      100% {
+        box-shadow: 0 8px 26px rgba(0, 0, 0, 0.85), 0 0 24px rgba(232, 166, 60, 0.85), inset 0 0 0 2px rgba(255, 255, 255, 0.9);
+      }
+    }
+
+    .progress-bar-bg.buffering::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(232, 166, 60, 0.75) 50%, transparent 100%);
+      animation: progressBufferingShimmer 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      border-radius: 4px;
+      pointer-events: none;
+    }
+
+    @keyframes progressBufferingShimmer {
+      0% {
+        transform: translateX(-100%);
+      }
+      100% {
+        transform: translateX(100%);
+      }
+    }
+
     .player-time {
       font-size: 12.5px;
       color: rgba(243, 230, 206, 0.85);
@@ -2271,10 +2321,33 @@
 
 
     var audioEl = new Audio();
+    audioEl.preload = 'auto';
     var trackIndex = 0;
     var isPlaying = false;
     var fadeInterval = null;
 
+    /* Background Audio & Cover Prefetching Engine */
+    var prefetchAudioEl = new Audio();
+    prefetchAudioEl.preload = 'auto';
+    var prefetchedTrackIndex = -1;
+    var prefetchedCoverImg = new Image();
+
+    function prefetchTrack(i) {
+      if (!TRACKS || !TRACKS.length) return;
+      var targetIdx = (i + TRACKS.length) % TRACKS.length;
+      if (targetIdx === prefetchedTrackIndex || targetIdx === trackIndex) return;
+      prefetchedTrackIndex = targetIdx;
+      var target = TRACKS[targetIdx];
+      if (target && target.src) {
+        prefetchAudioEl.src = target.src;
+        prefetchAudioEl.load();
+      }
+      if (target && target.cover) {
+        prefetchedCoverImg.src = target.cover;
+      }
+    }
+
+    var discWrap = document.getElementById('discWrap');
     var disc = document.getElementById('disc');
     var discCover = document.getElementById('discCover');
     var playBtn = document.getElementById('playBtn');
@@ -2284,6 +2357,24 @@
     var npTime = document.getElementById('npTime');
     var progressBar = document.getElementById('progressBar');
     var progressFill = document.getElementById('progressFill');
+
+    function setBuffering(isBuffering) {
+      if (isBuffering) {
+        if (discWrap) discWrap.classList.add('buffering');
+        if (progressBar) progressBar.classList.add('buffering');
+      } else {
+        if (discWrap) discWrap.classList.remove('buffering');
+        if (progressBar) progressBar.classList.remove('buffering');
+      }
+    }
+
+    audioEl.addEventListener('waiting', function () { setBuffering(true); });
+    audioEl.addEventListener('seeking', function () { setBuffering(true); });
+    audioEl.addEventListener('seeked', function () { setBuffering(false); });
+    audioEl.addEventListener('canplay', function () { setBuffering(false); });
+    audioEl.addEventListener('playing', function () { setBuffering(false); });
+    audioEl.addEventListener('pause', function () { setBuffering(false); });
+    audioEl.addEventListener('error', function () { setBuffering(false); });
 
     function formatTime(sec) {
       if (isNaN(sec) || sec === Infinity) return "0:00";
@@ -2307,6 +2398,7 @@
       npTime.textContent = "0:00 / 0:00";
       progressFill.style.width = "0%";
       updateRouteProgress(trackIndex);
+      if (typeof updateLightingShift === 'function') updateLightingShift(true);
 
       // Mobile Lockscreen MediaSession API Integration
       if ('mediaSession' in navigator) {
@@ -2328,11 +2420,12 @@
       }
 
       if (autoplay) {
+        // Optimistic UI update immediately on interaction
+        setPlaying(true);
         audioEl.volume = 1;
-        audioEl.play().then(function () {
-          setPlaying(true);
-        }).catch(function (err) {
-          console.warn("Autoplay error:", err);
+        audioEl.play().catch(function (err) {
+          console.warn("Playback error/interrupted:", err);
+          setPlaying(false);
         });
       }
     }
@@ -2360,10 +2453,12 @@
         audioEl.pause();
         setPlaying(false);
       } else {
+        setPlaying(true); // Optimistic UI update
         audioEl.volume = 1;
-        audioEl.play().then(function () {
-          setPlaying(true);
-        }).catch(function (err) { });
+        audioEl.play().catch(function (err) {
+          console.warn("Play error:", err);
+          setPlaying(false);
+        });
       }
     });
 
@@ -2371,14 +2466,26 @@
       playBtn.click();
     });
 
-    document.getElementById('prevBtn').addEventListener('click', function () { loadTrack(trackIndex - 1, true, false); });
-    document.getElementById('nextBtn').addEventListener('click', function () { loadTrack(trackIndex + 1, true, false); });
+    document.getElementById('prevBtn').addEventListener('click', function () {
+      loadTrack(trackIndex - 1, true, false);
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', function () {
+      loadTrack(trackIndex + 1, true, false);
+      // Fast skip prefetch: prefetch the track after next as well
+      prefetchTrack(trackIndex + 2);
+    });
 
     audioEl.addEventListener('timeupdate', function () {
       if (audioEl.duration) {
         var pct = (audioEl.currentTime / audioEl.duration) * 100;
         progressFill.style.width = pct + "%";
         npTime.textContent = formatTime(audioEl.currentTime) + " / " + formatTime(audioEl.duration);
+
+        // Preload next track when current track is >= 80% finished
+        if (audioEl.currentTime / audioEl.duration >= 0.80) {
+          prefetchTrack(trackIndex + 1);
+        }
       }
     });
 
@@ -2432,12 +2539,39 @@
     }
     tickClock(); setInterval(tickClock, 15000);
 
-    /* Aboard Count: Starts at random 1-40 and continuously fluctuates (increases & decreases) */
+    /* Aboard Count: Starts at random 1-40 and continuously fluctuates unless in a real shared ride */
     var aboardEl = document.getElementById('aboardCount');
     var currentAboard = Math.floor(Math.random() * 40) + 1;
+    var isInSharedRoom = false;
+
+    function setAboardDisplay(count, isLive) {
+      if (!aboardEl) return;
+      var strVal = String(count);
+      if (aboardEl.textContent === strVal && !isLive) return;
+
+      aboardEl.style.transition = 'opacity 0.2s ease';
+      aboardEl.style.opacity = '0.2';
+      setTimeout(function () {
+        aboardEl.textContent = strVal;
+        if (isInSharedRoom) {
+          aboardEl.style.color = '#57D06B';
+        } else {
+          aboardEl.style.color = '';
+        }
+        aboardEl.style.opacity = '1';
+      }, 200);
+    }
+
     if (aboardEl) aboardEl.textContent = currentAboard;
 
     function updateAboard() {
+      if (isInSharedRoom) {
+        // Skip random simulation when in a live shared ride room
+        var nextDelay = Math.floor(Math.random() * 2000) + 3000;
+        setTimeout(updateAboard, nextDelay);
+        return;
+      }
+
       var delta = Math.floor(Math.random() * 3) + 1;
       if (Math.random() < 0.5) delta = -delta;
 
@@ -2445,7 +2579,7 @@
       if (currentAboard < 1) currentAboard = Math.floor(Math.random() * 4) + 1;
       if (currentAboard > 40) currentAboard = 40 - Math.floor(Math.random() * 4);
 
-      if (aboardEl) aboardEl.textContent = currentAboard;
+      setAboardDisplay(currentAboard, false);
 
       var nextDelay = Math.floor(Math.random() * 2000) + 3000; // 3 to 5 seconds
       setTimeout(updateAboard, nextDelay);
@@ -2454,21 +2588,21 @@
 
     /* conductor audios & music volume ducking */
     var CONDUCTOR_AUDIOS = [
-      "conductor audios/agla stop aane wala he.wav",
-      "conductor audios/agla stop dewas bypass.wav",
-      "conductor audios/agla stop geetabhavan.wav",
-      "conductor audios/agla stop sanwer.wav",
-      "conductor audios/andar aajo .wav",
-      "conductor audios/bhawarkua wale taiyar rhena.wav",
-      "conductor audios/chalo chalo bus nikal rhi he.wav",
-      "conductor audios/dewas aane wala he indore piche chuth gya.wav",
-      "conductor audios/gate ke pas aajana.wav",
-      "conductor audios/kaha jana he.wav",
-      "conductor audios/kaha utroge.wav",
-      "conductor audios/lasudhia.wav",
-      "conductor audios/mangliya.wav",
-      "conductor audios/thoda sarak jao_part01.wav",
-      "conductor audios/ticket ticket (mp3cut.net).wav"
+      "conductor audios/agla stop aane wala he.mp3",
+      "conductor audios/agla stop dewas bypass.mp3",
+      "conductor audios/agla stop geetabhavan.mp3",
+      "conductor audios/agla stop sanwer.mp3",
+      "conductor audios/andar aajo .mp3",
+      "conductor audios/bhawarkua wale taiyar rhena.mp3",
+      "conductor audios/chalo chalo bus nikal rhi he.mp3",
+      "conductor audios/dewas aane wala he indore piche chuth gya.mp3",
+      "conductor audios/gate ke pas aajana.mp3",
+      "conductor audios/kaha jana he.mp3",
+      "conductor audios/kaha utroge.mp3",
+      "conductor audios/lasudhia.mp3",
+      "conductor audios/mangliya.mp3",
+      "conductor audios/thoda sarak jao_part01.mp3",
+      "conductor audios/ticket ticket (mp3cut.net).mp3"
     ];
 
     /* ---------------------------------------------------------------
@@ -2601,7 +2735,10 @@
     }
 
     function stopRainCanvas() {
-      if (rainAnimId) cancelAnimationFrame(rainAnimId);
+      if (rainAnimId) {
+        cancelAnimationFrame(rainAnimId);
+        rainAnimId = null;
+      }
       if (rainCanvas) {
         var ctx = rainCanvas.getContext('2d');
         ctx.clearRect(0, 0, rainCanvas.width, rainCanvas.height);
@@ -2646,21 +2783,27 @@
        INTERACTIVE BUS ROUTE MAP & CONDUCTOR AUDIO TRIGGERS (7 STOPS)
     --------------------------------------------------------------- */
     var BUS_STOPS = [
-      { name: "इंदौर", audio: "conductor audios/agla stop aane wala he.wav" },
-      { name: "भावरकुआं", audio: "conductor audios/bhawarkua wale taiyar rhena.wav" },
-      { name: "गीता भवन", audio: "conductor audios/agla stop geetabhavan.wav" },
-      { name: "लसूडिया", audio: "conductor audios/lasudhia.wav" },
-      { name: "मांगलिया", audio: "conductor audios/mangliya.wav" },
-      { name: "देवास Bypass", audio: "conductor audios/agla stop dewas bypass.wav" },
-      { name: "देवास बस स्टैंड", audio: "conductor audios/dewas aane wala he indore piche chuth gya.wav" }
+      { name: "इंदौर", audio: "conductor audios/agla stop aane wala he.mp3" },
+      { name: "भावरकुआं", audio: "conductor audios/bhawarkua wale taiyar rhena.mp3" },
+      { name: "गीता भवन", audio: "conductor audios/agla stop geetabhavan.mp3" },
+      { name: "लसूडिया", audio: "conductor audios/lasudhia.mp3" },
+      { name: "मांगलिया", audio: "conductor audios/mangliya.mp3" },
+      { name: "देवास Bypass", audio: "conductor audios/agla stop dewas bypass.mp3" },
+      { name: "देवास बस स्टैंड", audio: "conductor audios/dewas aane wala he indore piche chuth gya.mp3" }
     ];
 
     var stopNodes = document.querySelectorAll('.stop-node');
     var routeFill = document.getElementById('routeFill');
 
+    /*
+      NOTE: Assumes sequential trackIndex progression. If shuffle mode is added later,
+      these functions will need to key off elapsed-tracks-played-count or overall
+      listening-time-elapsed instead of raw trackIndex, or route/lighting will jump erratically.
+    */
     function updateRouteProgress(tIndex) {
       if (!BUS_STOPS.length || !TRACKS.length) return;
-      var stopIdx = Math.floor((tIndex / (TRACKS.length - 1)) * (BUS_STOPS.length - 1));
+      var stopIdx = Math.round((tIndex / (TRACKS.length - 1)) * (BUS_STOPS.length - 1));
+      if (stopIdx < 0) stopIdx = 0;
       if (stopIdx >= BUS_STOPS.length) stopIdx = BUS_STOPS.length - 1;
 
       var pct = (stopIdx / (BUS_STOPS.length - 1)) * 100;
@@ -2693,11 +2836,14 @@
         conductorAudioEl.currentTime = 0;
         if (conductorBtn) conductorBtn.classList.add('playing');
 
-        duckMusic();
-        conductorAudioEl.play().catch(function (err) {
-          if (conductorBtn) conductorBtn.classList.remove('playing');
-          restoreMusic();
-        });
+        duckMusic(); // Duck background song volume slightly
+        // 130ms lead-time so music volume is already attenuating before speech starts
+        setTimeout(function () {
+          conductorAudioEl.play().catch(function (err) {
+            if (conductorBtn) conductorBtn.classList.remove('playing');
+            restoreMusic();
+          });
+        }, 130);
       });
     });
 
@@ -2767,12 +2913,14 @@
         conductorBtn.classList.add('playing');
 
         duckMusic(); // Duck background song volume slightly
-
-        conductorAudioEl.play().catch(function (err) {
-          console.warn("Conductor audio error:", err);
-          conductorBtn.classList.remove('playing');
-          restoreMusic();
-        });
+        // 130ms lead-time so music volume is already attenuating before speech starts
+        setTimeout(function () {
+          conductorAudioEl.play().catch(function (err) {
+            console.warn("Conductor audio error:", err);
+            if (conductorBtn) conductorBtn.classList.remove('playing');
+            restoreMusic();
+          });
+        }, 130);
       });
       conductorAudioEl.addEventListener('ended', function () {
         conductorBtn.classList.remove('playing');
@@ -3019,18 +3167,55 @@
       if (document.visibilityState === 'hidden') {
         clearTimeout(idleTimer);
         wakeUI();
+        // Pause canvas raindrop animation loop & silence procedural rain audio when tab is backgrounded
+        if (isRainActive) {
+          if (rainAnimId) {
+            cancelAnimationFrame(rainAnimId);
+            rainAnimId = null;
+          }
+          if (rainGainNode && audioCtx && audioCtx.state !== 'closed') {
+            try {
+              rainGainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+            } catch (e) { }
+          }
+        }
       } else {
         resetIdleTimer();
+        // Resume canvas raindrops & restore procedural rain audio when tab becomes visible again
+        if (isRainActive) {
+          if (!rainAnimId) {
+            startRainCanvas();
+          }
+          if (rainGainNode && audioCtx && audioCtx.state !== 'closed') {
+            try {
+              rainGainNode.gain.setValueAtTime(rainGainNode.gain.value, audioCtx.currentTime);
+              rainGainNode.gain.linearRampToValueAtTime(0.18, audioCtx.currentTime + 0.8);
+            } catch (e) { }
+          }
+        }
       }
     });
 
+    /*
+      NOTE: Assumes sequential trackIndex progression. If shuffle mode is added later,
+      these functions will need to key off elapsed-tracks-played-count or overall
+      listening-time-elapsed instead of raw trackIndex, or route/lighting will jump erratically.
+    */
+    var lastAppliedLightingProgress = -1;
+
     // Progress-Based Lighting Shift (Golden Hour / Dusk Drift)
-    function updateLightingShift() {
+    function updateLightingShift(force) {
       var overlayEl = document.getElementById('lightingOverlay');
       if (!overlayEl || !TRACKS.length) return;
 
       var currentTrackPos = (audioEl.currentTime && audioEl.duration) ? (audioEl.currentTime / audioEl.duration) : 0;
       var totalProgress = (trackIndex + currentTrackPos) / TRACKS.length;
+
+      // Throttle: only calculate and update styles if progress shifted >= 0.5% or force requested
+      if (!force && lastAppliedLightingProgress >= 0 && Math.abs(totalProgress - lastAppliedLightingProgress) < 0.005) {
+        return;
+      }
+      lastAppliedLightingProgress = totalProgress;
 
       if (totalProgress < 0.25) {
         // Stage 1 (0-25%): Default bright afternoon look
@@ -3247,6 +3432,7 @@
 
     function initRealtimeRoom(roomId, isHostRole) {
       myRole = isHostRole ? 'host' : 'guest';
+      isInSharedRoom = true;
       loadSupabase(function () {
         currentRoomId = roomId;
         realtimeChannel = supabaseClient.channel('ride:' + roomId, {
@@ -3256,30 +3442,21 @@
           }
         });
 
-        // Presence sync handler
+        // Presence sync handler — uses real connection count in room
         realtimeChannel.on('presence', { event: 'sync' }, function () {
           var state = realtimeChannel.presenceState();
           var userIds = Object.keys(state);
           var peerCount = userIds.length;
-          var aboardEl = document.getElementById('aboardCount');
 
           if (peerCount > 1) {
             updateTicketUI();
-            if (aboardEl && !aboardEl.dataset.synced) {
-              aboardEl.dataset.synced = "true";
-              var baseVal = parseInt(aboardEl.innerText, 10) || 15;
-              aboardEl.innerText = baseVal + 1;
-              aboardEl.style.color = '#57D06B';
-            }
           } else {
             if (myRole === 'host') partnerName = '';
             updateTicketUI();
-            if (aboardEl && aboardEl.dataset.synced) {
-              delete aboardEl.dataset.synced;
-              var baseVal = parseInt(aboardEl.innerText, 10) || 16;
-              aboardEl.innerText = Math.max(1, baseVal - 1);
-              aboardEl.style.color = '';
-            }
+          }
+
+          if (isInSharedRoom) {
+            setAboardDisplay(Math.max(1, peerCount), true);
           }
         });
 
@@ -3451,6 +3628,15 @@
         });
       }
     });
+
+    // Register PWA Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('sw.js').catch(function (err) {
+          console.debug('ServiceWorker registration skipped:', err);
+        });
+      });
+    }
 
     /* landing -> transition -> journey */
     var landingView = document.getElementById('landingView');

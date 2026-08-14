@@ -1259,7 +1259,7 @@
       z-index: 15;
       opacity: 0;
       transform: translateY(6px) scale(0.96);
-      transition: opacity 2.2s cubic-bezier(0.16, 1, 0.3, 1), transform 2.2s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: opacity 1.8s cubic-bezier(0.16, 1, 0.3, 1), transform 1.8s cubic-bezier(0.16, 1, 0.3, 1);
       cursor: pointer;
       user-select: none;
       pointer-events: auto;
@@ -1270,14 +1270,34 @@
     }
     .bus-sticker-slot:hover {
       opacity: 1;
-      transform: scale(1.05);
+      transform: scale(1.06);
+    }
+    .bus-sticker-slot .edit-hint {
+      position: absolute;
+      top: -22px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 10, 6, 0.9);
+      border: 1px solid rgba(232, 166, 60, 0.4);
+      color: var(--marigold);
+      font-family: 'Space Mono', monospace;
+      font-size: 8px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .bus-sticker-slot:hover .edit-hint {
+      opacity: 1;
     }
 
     /* Sticker 1: Truck-Art Oval Badge */
     .sticker-1 {
       position: relative;
-      width: 142px;
-      height: 92px;
+      width: 144px;
+      height: 94px;
       transform: rotate(-4deg);
       background: linear-gradient(160deg, #c33d29, #8f2a1c);
       border-radius: 50%/45%;
@@ -1286,6 +1306,7 @@
       align-items: center;
       justify-content: center;
       box-shadow: 0 10px 22px rgba(0,0,0,0.55);
+      padding: 6px 14px;
     }
     .sticker-1::before {
       content: "";
@@ -1303,6 +1324,8 @@
       line-height: 1.15;
       text-shadow: 0 1.5px 0 rgba(0,0,0,0.3);
       z-index: 1;
+      max-width: 110px;
+      word-break: break-word;
     }
     .sticker-1 .sub {
       font-family: 'Space Mono', monospace;
@@ -1316,8 +1339,8 @@
     /* Sticker 2: Peeling Slogan Decal */
     .sticker-2 {
       position: relative;
-      width: 148px;
-      height: 80px;
+      width: 150px;
+      height: 82px;
       transform: rotate(3deg);
       background: #2c5c63;
       border-radius: 6px;
@@ -1349,18 +1372,21 @@
     .sticker-2 .txt2 {
       font-family: 'Baloo 2', sans-serif;
       font-weight: 600;
-      font-size: 9.5px;
+      font-size: 10.5px;
       color: #f3eddc;
       margin-top: 2px;
       letter-spacing: .02em;
       text-align: center;
+      max-width: 120px;
+      word-break: break-word;
+      line-height: 1.15;
     }
 
     /* Sticker 3: Stitched Heart Tag */
     .sticker-3 {
       position: relative;
-      width: 138px;
-      height: 86px;
+      width: 140px;
+      height: 88px;
       transform: rotate(-2.5deg);
       background: #f3eddc;
       border-radius: 12px;
@@ -1370,7 +1396,7 @@
       align-items: center;
       justify-content: center;
       gap: 1px;
-      padding: 6px;
+      padding: 6px 10px;
     }
     .sticker-3::before {
       content: "";
@@ -1386,11 +1412,13 @@
     .sticker-3 .txt {
       font-family: 'Kalam', cursive;
       font-weight: 700;
-      font-size: 14.5px;
+      font-size: 15px;
       color: #1c150f;
       text-align: center;
       line-height: 1.15;
       z-index: 1;
+      max-width: 115px;
+      word-break: break-word;
     }
     .sticker-3 .brand {
       font-family: 'Space Mono', monospace;
@@ -1401,51 +1429,479 @@
       z-index: 1;
     }
 
+    /* ================= STICKER CUSTOMIZER MODAL ================= */
+    .sticker-edit-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 96;
+      background: rgba(8, 5, 3, 0.85);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+    }
+    .sticker-edit-backdrop.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .sticker-edit-card {
+      background: linear-gradient(145deg, rgba(28, 18, 13, 0.94) 0%, rgba(15, 10, 7, 0.96) 100%);
+      border: 1.5px solid rgba(232, 166, 60, 0.35);
+      border-radius: 20px;
+      max-width: 480px;
+      width: 100%;
+      padding: 22px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      position: relative;
+    }
+    .se-header {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      position: relative;
+    }
+    .se-title {
+      font-family: 'Baloo 2', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--cream);
+    }
+    .se-sub {
+      font-size: 11.5px;
+      color: rgba(243, 230, 206, 0.7);
+    }
+    .se-close {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: none;
+      border: none;
+      color: var(--cream);
+      font-size: 16px;
+      cursor: pointer;
+      opacity: 0.7;
+      padding: 4px;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .se-close:hover {
+      opacity: 1;
+      transform: scale(1.2);
+    }
+
+    .se-design-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 4px;
+    }
+    .se-design-choice {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1.5px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 10px 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .se-design-choice:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(232, 166, 60, 0.4);
+    }
+    .se-design-choice.active {
+      background: rgba(232, 166, 60, 0.15);
+      border-color: var(--marigold);
+      box-shadow: 0 0 16px rgba(232, 166, 60, 0.35);
+    }
+    .se-design-name {
+      font-family: 'Space Mono', monospace;
+      font-size: 8px;
+      font-weight: 700;
+      color: var(--cream);
+      text-align: center;
+      opacity: 0.85;
+    }
+    .se-mini-sticker {
+      transform: scale(0.62);
+      transform-origin: center center;
+      margin: -14px 0;
+      pointer-events: none;
+    }
+
+    .se-live-preview-wrap {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 120px;
+      position: relative;
+    }
+    .se-preview-label {
+      position: absolute;
+      top: 6px;
+      left: 10px;
+      font-family: 'Space Mono', monospace;
+      font-size: 7.5px;
+      letter-spacing: 1px;
+      color: rgba(243, 230, 206, 0.5);
+    }
+    .se-preview-stage {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: scale(1.05);
+    }
+
+    .se-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .se-input-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--cream);
+    }
+    .se-text-input {
+      background: rgba(0, 0, 0, 0.45);
+      border: 1.5px solid rgba(255, 255, 255, 0.18);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 15px;
+      color: #ffffff;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .se-text-input:focus {
+      border-color: var(--marigold);
+      box-shadow: 0 0 12px rgba(232, 166, 60, 0.35);
+    }
+    .se-text-input.font-kalam {
+      font-family: 'Kalam', cursive;
+      font-weight: 700;
+    }
+    .se-text-input.font-baloo {
+      font-family: 'Baloo 2', sans-serif;
+      font-weight: 600;
+    }
+
+    .se-presets-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .se-presets-title {
+      font-family: 'Space Mono', monospace;
+      font-size: 8.5px;
+      letter-spacing: 0.5px;
+      color: rgba(243, 230, 206, 0.6);
+    }
+    .se-preset-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      max-height: 70px;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+    .se-preset-chips::-webkit-scrollbar { display: none; }
+    .se-chip {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--cream);
+      font-family: 'Kalam', cursive;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .se-chip:hover {
+      background: rgba(232, 166, 60, 0.2);
+      border-color: var(--marigold);
+      color: #ffffff;
+    }
+
+    .se-actions {
+      margin-top: 4px;
+    }
+    .se-save-btn {
+      width: 100%;
+      background: var(--rust);
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      padding: 11px 16px;
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(184, 61, 41, 0.4);
+      transition: background 0.2s, transform 0.2s;
+    }
+    .se-save-btn:hover {
+      background: #c33d29;
+      transform: translateY(-1px);
+    }
+
+    /* ================= DARK LIQUID GLASS TRACKLIST DRAWER ================= */
+    .tracklist-drawer {
+      position: absolute;
+      bottom: calc(100% + 14px);
+      width: min(780px, calc(100vw - 32px));
+      max-width: 780px;
+      max-height: 420px;
+      background: linear-gradient(145deg, rgba(25, 16, 12, 0.78) 0%, rgba(12, 8, 6, 0.88) 100%);
+      backdrop-filter: blur(32px) saturate(190%) brightness(0.95);
+      -webkit-backdrop-filter: blur(32px) saturate(190%) brightness(0.95);
+      border: 1.5px solid rgba(255, 255, 255, 0.16);
+      border-radius: 24px;
+      box-shadow:
+        0 30px 70px rgba(0, 0, 0, 0.85),
+        0 12px 30px rgba(0, 0, 0, 0.5),
+        inset 0 1px 1px rgba(255, 255, 255, 0.18);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 60;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(16px) scale(0.97);
+      transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .tracklist-drawer.open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+
+    .tl-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 22px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .tl-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .tl-title {
+      font-family: 'Baloo 2', sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--cream);
+    }
+
+    .tl-count {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--marigold);
+      background: rgba(232, 166, 60, 0.18);
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    .tl-close-btn {
+      background: transparent;
+      border: none;
+      color: var(--cream);
+      font-size: 16px;
+      opacity: 0.7;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 50%;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+
+    .tl-close-btn:hover {
+      opacity: 1;
+      transform: scale(1.15);
+    }
+
+    .tl-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(232, 166, 60, 0.4) transparent;
+    }
+
+    .tl-list::-webkit-scrollbar {
+      width: 5px;
+    }
+    .tl-list::-webkit-scrollbar-thumb {
+      background: rgba(232, 166, 60, 0.4);
+      border-radius: 4px;
+    }
+
+    .tl-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+
+    .tl-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateX(4px);
+    }
+
+    .tl-item.active {
+      background: linear-gradient(90deg, rgba(232, 166, 60, 0.22) 0%, rgba(184, 61, 41, 0.15) 100%);
+      border: 1px solid rgba(232, 166, 60, 0.35);
+    }
+
+    .tl-num {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--marigold);
+      width: 24px;
+      text-align: center;
+      opacity: 0.85;
+    }
+
+    .tl-item.active .tl-num {
+      font-weight: 700;
+      opacity: 1;
+    }
+
+    .tl-thumb {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    }
+
+    .tl-info {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .tl-song-name {
+      font-family: 'Baloo 2', sans-serif;
+      font-weight: 600;
+      font-size: 14.5px;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tl-item.active .tl-song-name {
+      color: var(--marigold);
+      font-weight: 700;
+    }
+
+    .tl-artist-name {
+      font-size: 11.5px;
+      color: rgba(243, 230, 206, 0.7);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tl-playing-icon {
+      display: none;
+      align-items: center;
+      gap: 2px;
+      height: 12px;
+    }
+    .tl-item.active .tl-playing-icon {
+      display: flex;
+    }
+    .tl-playing-bar {
+      width: 3px;
+      background: var(--marigold);
+      border-radius: 2px;
+      animation: tlEqualizer 0.8s ease-in-out infinite alternate;
+    }
+    .tl-playing-bar:nth-child(1) { height: 6px; animation-delay: 0.1s; }
+    .tl-playing-bar:nth-child(2) { height: 12px; animation-delay: 0.3s; }
+    .tl-playing-bar:nth-child(3) { height: 8px; animation-delay: 0.2s; }
+
+    @keyframes tlEqualizer {
+      0% { height: 3px; }
+      100% { height: 14px; }
+    }
+
     /* ================= SHARED-LISTENING FLOATING REACTIONS ================= */
-    .react-dock-btn {
+    .react-player-btn {
       display: none;
       position: relative;
     }
-    .react-dock-btn.show {
+    .react-player-btn.show {
       display: flex;
     }
-    .react-dock-btn.active {
+    .react-player-btn.active {
       color: var(--marigold);
-      background: rgba(232, 166, 60, 0.25);
+      transform: scale(1.15);
     }
-    .react-dock-btn.pulse {
+    .react-player-btn.pulse {
       animation: reactBtnPulse 0.4s ease-out;
     }
     @keyframes reactBtnPulse {
       0% { transform: scale(1); }
-      50% { transform: scale(1.25); }
+      50% { transform: scale(1.3); }
       100% { transform: scale(1); }
     }
 
     .reaction-picker {
-      position: fixed;
-      right: 74px;
-      top: 50%;
-      transform: translateY(-50%) scale(0.92);
-      background: rgba(18, 12, 8, 0.88);
+      position: absolute;
+      bottom: calc(100% + 14px);
+      right: 16px;
+      background: linear-gradient(135deg, rgba(25, 16, 12, 0.92) 0%, rgba(12, 8, 6, 0.95) 100%);
       border: 1px solid rgba(232, 166, 60, 0.45);
       border-radius: 999px;
       padding: 5px 8px;
       display: flex;
       align-items: center;
       gap: 4px;
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.65);
-      z-index: 85;
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.7);
+      z-index: 90;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: translateY(8px) scale(0.95);
+      transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .reaction-picker.open {
       opacity: 1;
       pointer-events: auto;
-      transform: translateY(-50%) scale(1);
+      transform: translateY(0) scale(1);
     }
     .react-item-btn {
       background: transparent;
@@ -1468,7 +1924,7 @@
       transform: scale(0.95);
     }
 
-    /* Floating Reaction Bubbles Container */
+    /* Floating Reaction Bubbles Overlay */
     .reaction-bubble-container {
       position: fixed;
       inset: 0;
@@ -1478,18 +1934,21 @@
     }
 
     .reaction-bubble {
-      position: absolute;
-      bottom: 60px;
+      position: fixed;
+      bottom: 80px;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 3px;
-      animation: floatReactionBubble 2.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+      pointer-events: none;
+      z-index: 85;
+      animation: floatUpSeamless 3.2s linear forwards;
       will-change: transform, opacity;
     }
-    .reaction-bubble .emoji-glyph {
+    .reaction-bubble .emoji-inner {
       font-size: 32px;
-      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.6));
+      filter: drop-shadow(0 4px 14px rgba(0,0,0,0.65));
+      animation: floatWobble 1.6s ease-in-out infinite alternate;
     }
     .reaction-bubble .sender-tag {
       font-family: 'Space Mono', monospace;
@@ -1502,32 +1961,39 @@
       border-radius: 999px;
       white-space: nowrap;
       opacity: 0.9;
+      animation: floatWobble 1.6s ease-in-out infinite alternate;
     }
 
-    @keyframes floatReactionBubble {
+    @keyframes floatUpSeamless {
       0% {
         opacity: 0;
-        transform: translateY(0) translateX(0) scale(0.6);
+        transform: translate3d(0, 0, 0) scale(0.6);
       }
-      15% {
+      10% {
         opacity: 1;
-        transform: translateY(-50px) translateX(var(--drift-1, 10px)) scale(1.15);
+        transform: translate3d(0, -60px, 0) scale(1.15);
       }
-      50% {
-        transform: translateY(-180px) translateX(var(--drift-2, -15px)) scale(1.05);
-      }
-      80% {
-        opacity: 0.85;
-        transform: translateY(-320px) translateX(var(--drift-3, 8px)) scale(0.95);
+      75% {
+        opacity: 0.95;
+        transform: translate3d(0, -380px, 0) scale(1);
       }
       100% {
         opacity: 0;
-        transform: translateY(-460px) translateX(var(--drift-4, -5px)) scale(0.8);
+        transform: translate3d(0, -520px, 0) scale(0.85);
+      }
+    }
+
+    @keyframes floatWobble {
+      0% {
+        transform: translateX(var(--drift-left, -14px)) rotate(-4deg);
+      }
+      100% {
+        transform: translateX(var(--drift-right, 14px)) rotate(4deg);
       }
     }
 
     /* Resonance Match Special Glow */
-    .reaction-bubble.resonance .emoji-glyph {
+    .reaction-bubble.resonance .emoji-inner {
       animation: resonanceGlow 1.2s ease-in-out infinite alternate;
     }
     @keyframes resonanceGlow {
@@ -2432,7 +2898,30 @@
       </div>
     </div>
 
-    <div class="journey-center">
+    <div class="journey-center" id="journeyCenter">
+      <!-- Dark Liquid Glass Tracklist Drawer (Floats above player) -->
+      <div class="tracklist-drawer" id="tracklistDrawer">
+        <div class="tl-header">
+          <div class="tl-title-wrap">
+            <span class="tl-title">कैसेट की ट्रैकलिस्ट</span>
+            <span class="tl-count">50 Songs</span>
+          </div>
+          <button class="tl-close-btn" id="tlCloseBtn" aria-label="Close tracklist">✕</button>
+        </div>
+        <div class="tl-list" id="tlList"></div>
+      </div>
+
+      <!-- Reaction Emoji Shelf (Floats above player) -->
+      <div id="reactionPicker" class="reaction-picker">
+        <button class="react-item-btn" data-emoji="🥹" title="याद आ गई (Nostalgia)">🥹</button>
+        <button class="react-item-btn" data-emoji="😵" title="चकरा गया (Crazy/Intense)">😵</button>
+        <button class="react-item-btn" data-emoji="😴" title="सुकून (Soothing)">😴</button>
+        <button class="react-item-btn" data-emoji="🚌💨" title="बस का सफर (Bus vibe)">🚌💨</button>
+        <button class="react-item-btn" data-emoji="🎶" title="गुनगुनाना (Humming along)">🎶</button>
+        <button class="react-item-btn" data-emoji="😭" title="इमोशनल (Emotional)">😭</button>
+        <button class="react-item-btn" data-emoji="🙌" title="क्या बात है (Favorite line)">🙌</button>
+      </div>
+
       <div class="glass-player-pill">
         <!-- Spinning Disc with Song Artwork (Left) -->
         <div class="player-disc-wrap" id="discWrap">
@@ -2457,7 +2946,7 @@
 
         <!-- Controls (Right) -->
         <div class="player-controls">
-          <button class="ctrl-btn" id="prevBtn" aria-label="Previous track">
+          <button class="ctrl-btn" id="prevBtn" aria-label="Previous track" title="पिछला गाना (Previous)">
             <svg viewBox="0 0 24 24">
               <path d="M6 6h2v12H6zM20 6L9 12l11 6z" />
             </svg>
@@ -2467,9 +2956,24 @@
               <path d="M8 5v14l11-7z" />
             </svg>
           </button>
-          <button class="ctrl-btn" id="nextBtn" aria-label="Next track">
+          <button class="ctrl-btn" id="nextBtn" aria-label="Next track" title="अगला गाना (Next)">
             <svg viewBox="0 0 24 24">
               <path d="M16 6h2v12h-2zM4 6l11 6-11 6z" />
+            </svg>
+          </button>
+          <button class="ctrl-btn" id="tracklistBtn" aria-label="Open Tracklist" title="ट्रैकलिस्ट (Tracklist)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="8" y1="6" x2="21" y2="6"></line>
+              <line x1="8" y1="12" x2="21" y2="12"></line>
+              <line x1="8" y1="18" x2="21" y2="18"></line>
+              <line x1="3" y1="6" x2="3.01" y2="6"></line>
+              <line x1="3" y1="12" x2="3.01" y2="12"></line>
+              <line x1="3" y1="18" x2="3.01" y2="18"></line>
+            </svg>
+          </button>
+          <button class="ctrl-btn react-player-btn" id="playerReactBtn" aria-label="Reaction Emojis" title="प्रतिक्रिया (Share Reaction Emoji)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
             </svg>
           </button>
         </div>
@@ -2511,11 +3015,6 @@
           <path d="M16 14v6M8 14v6M12 16v6"/>
         </svg>
       </button>
-      <button id="reactDockBtn" class="react-dock-btn" aria-label="Reaction Emojis" title="प्रतिक्रिया (Share Reaction Emoji)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-        </svg>
-      </button>
       <button id="fullscreenBtn" aria-label="Toggle Fullscreen" title="फुलस्क्रीन (Toggle Fullscreen)">
         <svg id="fullscreenIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M8 3H5a2 2 0 0 0-2 2v3m18-5h-3a2 2 0 0 0-2 2v3M3 16v3a2 2 0 0 2 2h3m13 0h-3a2 2 0 0 1-2-2v-3"/>
@@ -2523,22 +3022,83 @@
       </button>
     </div>
 
-    <!-- Floating Reaction Picker Shelf (Active in Shared Ride) -->
-    <div id="reactionPicker" class="reaction-picker">
-      <button class="react-item-btn" data-emoji="🥹" title="याद आ गई (Nostalgia)">🥹</button>
-      <button class="react-item-btn" data-emoji="😵" title="चकरा गया (Crazy/Intense)">😵</button>
-      <button class="react-item-btn" data-emoji="😴" title="सुकून (Soothing)">😴</button>
-      <button class="react-item-btn" data-emoji="🚌💨" title="बस का सफर (Bus vibe)">🚌💨</button>
-      <button class="react-item-btn" data-emoji="🎶" title="गुनगुनाना (Humming along)">🎶</button>
-      <button class="react-item-btn" data-emoji="😭" title="इमोशनल (Emotional)">😭</button>
-      <button class="react-item-btn" data-emoji="🙌" title="क्या बात है (Favorite line)">🙌</button>
-    </div>
-
     <!-- Floating Bubbles Stream Layer -->
     <div id="reactionBubbleContainer" class="reaction-bubble-container"></div>
 
     <!-- Bus Body Sticker / Graffiti Slot -->
-    <div id="busStickerSlot" class="bus-sticker-slot" title="बस का स्टीकर · Click to explore"></div>
+    <div id="busStickerSlot" class="bus-sticker-slot" title="कस्टमाइज़ करें · Click to customize sticker">
+      <span class="edit-hint">✏️ Edit</span>
+    </div>
+
+    <!-- Sticker Customizer & Text Editor Modal -->
+    <div id="stickerEditModal" class="sticker-edit-backdrop">
+      <div class="sticker-edit-card">
+        <div class="se-header">
+          <div class="se-title">बस स्टीकर कस्टमाइज़ करें</div>
+          <div class="se-sub">Choose a design and write your custom text</div>
+          <button class="se-close" id="seCloseBtn" aria-label="Close modal">✕</button>
+        </div>
+
+        <!-- 3 Design Selector Choice Cards -->
+        <div class="se-design-grid">
+          <div class="se-design-choice active" id="seChoice1" data-design="1">
+            <div class="se-mini-sticker sticker-1">
+              <div class="txt">सफ़र<br>मुबारक</div>
+              <div class="sub">MALWA EXPRESS</div>
+            </div>
+            <div class="se-design-name">1 · Truck Oval</div>
+          </div>
+          <div class="se-design-choice" id="seChoice2" data-design="2">
+            <div class="se-mini-sticker sticker-2">
+              <div class="txt">Horn Please</div>
+              <div class="txt2">माँ की दुआ साथ है</div>
+            </div>
+            <div class="se-design-name">2 · Peeling Decal</div>
+          </div>
+          <div class="se-design-choice" id="seChoice3" data-design="3">
+            <div class="se-mini-sticker sticker-3">
+              <div class="heart">❤</div>
+              <div class="txt">दिल से</div>
+              <div class="brand">MALWA EXPRESS</div>
+            </div>
+            <div class="se-design-name">3 · Stitched Tag</div>
+          </div>
+        </div>
+
+        <!-- Live Preview Stage -->
+        <div class="se-live-preview-wrap">
+          <div class="se-preview-label">LIVE PREVIEW</div>
+          <div class="se-preview-stage" id="sePreviewStage"></div>
+        </div>
+
+        <!-- Custom Text Input with Design-Specific Font -->
+        <div class="se-input-group">
+          <label for="seTextInput" class="se-input-label" id="seInputLabel">स्टीकर पर लिखें (Custom Text):</label>
+          <input type="text" id="seTextInput" class="se-text-input font-kalam" placeholder="अपना टेक्स्ट लिखें..." maxlength="30" autocomplete="off" />
+        </div>
+
+        <!-- Quick Idea Chips -->
+        <div class="se-presets-wrap">
+          <span class="se-presets-title">सुझाव (Quick ideas):</span>
+          <div class="se-preset-chips" id="sePresetChips">
+            <button class="se-chip" data-text="सफ़र मुबारक">सफ़र मुबारक</button>
+            <button class="se-chip" data-text="बुरी नज़र वाले तेरा मुँह काला">बुरी नज़र वाले</button>
+            <button class="se-chip" data-text="हंस मत पगली प्यार हो जाएगा">हंस मत पगली</button>
+            <button class="se-chip" data-text="जय महाकाल">जय महाकाल</button>
+            <button class="se-chip" data-text="दम है तो क्रॉस कर">दम है तो क्रॉस कर</button>
+            <button class="se-chip" data-text="माँ की दुआ साथ है">माँ की दुआ साथ है</button>
+            <button class="se-chip" data-text="दिल से">दिल से</button>
+            <button class="se-chip" data-text="राम भरोसे">राम भरोसे</button>
+            <button class="se-chip" data-text="सुरक्षित यात्रा">सुरक्षित यात्रा</button>
+            <button class="se-chip" data-text="मालिक की गाड़ी">मालिक की गाड़ी</button>
+          </div>
+        </div>
+
+        <div class="se-actions">
+          <button id="seSaveBtn" class="se-save-btn">स्टीकर लगाएं · Apply Sticker</button>
+        </div>
+      </div>
+    </div>
 
     <!-- "Journey Together" Unlockable Memory Card Modal -->
     <div id="journeyTogetherModal" class="jt-modal-backdrop">
@@ -3108,6 +3668,17 @@
 
       if (typeof realtimeChannel !== 'undefined' && realtimeChannel && !isRemoteUpdate) {
         broadcastEvent('track-change', { trackIndex: trackIndex, currentTime: 0 });
+      }
+
+      // Sync active state in tracklist drawer
+      var activeTl = document.querySelector('.tl-item.active');
+      if (activeTl) activeTl.classList.remove('active');
+      var newTl = document.querySelector('.tl-item[data-index="' + trackIndex + '"]');
+      if (newTl) {
+        newTl.classList.add('active');
+        if (typeof tracklistDrawer !== 'undefined' && tracklistDrawer && tracklistDrawer.classList.contains('open')) {
+          newTl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
       }
 
       if (autoplay) {
@@ -4334,81 +4905,260 @@
     }
 
     /* ===============================================================
-       BUS STICKER ROTATION ENGINE (15-20 Min Interval, 3 Styles)
+       BUS STICKER CUSTOMIZATION & ROTATION ENGINE
     =============================================================== */
-    var STICKER_POOL = [
-      { type: 1, text: "सफ़र<br>मुबारक", sub: "MALWA EXPRESS" },
-      { type: 2, text: "Horn Please", sub: "माँ की दुआ साथ है" },
-      { type: 3, text: "दिल से", heart: "❤", sub: "MALWA EXPRESS" },
-      { type: 1, text: "बुरी नज़र वाले<br>तेरा मुँह काला", sub: "MALWA EXPRESS" },
-      { type: 2, text: "Use Dipper", sub: "at Night" },
-      { type: 3, text: "सुरक्षित यात्रा", heart: "🚌", sub: "MALWA EXPRESS" },
-      { type: 1, text: "हंस मत पगली<br>प्यार हो जाएगा", sub: "MALWA EXPRESS" },
-      { type: 2, text: "समय से पहले", sub: "भाग्य से ज्यादा कभी नहीं" },
-      { type: 1, text: "दम है तो क्रॉस कर<br>वरना बर्दाश्त कर", sub: "MALWA EXPRESS" },
-      { type: 2, text: "चलती है गाड़ी", sub: "उड़ती है धूल" },
-      { type: 3, text: "जय महाकाल", heart: "🔱", sub: "INDORE ➔ DEWAS" },
-      { type: 1, text: "मालिक की गाड़ी<br>ड्राइवर का पसीना", sub: "MALWA EXPRESS" },
-      { type: 2, text: "राम भरोसे", sub: "चलती है गाड़ी" },
-      { type: 3, text: "यात्री अपने सामान की<br>स्वयं रक्षा करें", heart: "🛡️", sub: "MALWA EXPRESS" },
-      { type: 2, text: "धीरे चलो", sub: "सुरक्षित घर पहुँचो" }
-    ];
+    var STICKER_DEFAULTS = {
+      1: { type: 1, text: "सफ़र मुबारक", sub: "MALWA EXPRESS" },
+      2: { type: 2, text: "Horn Please", sub: "माँ की दुआ साथ है" },
+      3: { type: 3, text: "दिल से", heart: "❤", sub: "MALWA EXPRESS" }
+    };
+
+    var userCustomSticker = null;
+    try {
+      var savedSticker = localStorage.getItem('malwa_user_sticker');
+      if (savedSticker) userCustomSticker = JSON.parse(savedSticker);
+    } catch (e) { }
 
     var stickerSlot = document.getElementById('busStickerSlot');
-    var currentStickerIdx = -1;
-    var stickerHistory = [];
-    var stickerTimer = null;
+    var stickerModal = document.getElementById('stickerEditModal');
+    var seCloseBtn = document.getElementById('seCloseBtn');
+    var seTextInput = document.getElementById('seTextInput');
+    var seInputLabel = document.getElementById('seInputLabel');
+    var sePreviewStage = document.getElementById('sePreviewStage');
+    var seSaveBtn = document.getElementById('seSaveBtn');
+    var selectedDesignId = userCustomSticker ? userCustomSticker.design : 1;
+    var customTextVal = userCustomSticker ? userCustomSticker.text : 'सफ़र मुबारक';
 
-    function renderStickerHTML(st) {
-      if (st.type === 1) {
-        return '<div class="sticker-1"><div class="txt">' + st.text + '</div><div class="sub">' + (st.sub || 'MALWA EXPRESS') + '</div></div>';
-      } else if (st.type === 2) {
-        return '<div class="sticker-2"><div class="txt">' + st.text + '</div><div class="txt2">' + (st.sub || '') + '</div></div>';
+    function renderStickerMarkup(designId, textVal) {
+      var safeText = (textVal || '').trim();
+      if (designId === 1) {
+        var displayText = safeText || 'सफ़र मुबारक';
+        displayText = displayText.replace(/\n/g, '<br>');
+        return '<div class="sticker-1"><span class="edit-hint">✏️ Edit</span><div class="txt">' + displayText + '</div><div class="sub">MALWA EXPRESS</div></div>';
+      } else if (designId === 2) {
+        var displayText2 = safeText || 'माँ की दुआ साथ है';
+        return '<div class="sticker-2"><span class="edit-hint">✏️ Edit</span><div class="txt">Horn Please</div><div class="txt2">' + displayText2 + '</div></div>';
       } else {
-        return '<div class="sticker-3"><div class="heart">' + (st.heart || '❤') + '</div><div class="txt">' + st.text + '</div><div class="brand">' + (st.sub || 'MALWA EXPRESS') + '</div></div>';
+        var displayText3 = safeText || 'दिल से';
+        return '<div class="sticker-3"><span class="edit-hint">✏️ Edit</span><div class="heart">❤</div><div class="txt">' + displayText3 + '</div><div class="brand">MALWA EXPRESS</div></div>';
       }
     }
 
-    function showNextSticker() {
-      if (!stickerSlot || !STICKER_POOL.length) return;
-
-      // Pick random sticker not in last 4 displayed
-      var available = [];
-      for (var i = 0; i < STICKER_POOL.length; i++) {
-        if (stickerHistory.indexOf(i) === -1) available.push(i);
-      }
-      if (!available.length) available = [Math.floor(Math.random() * STICKER_POOL.length)];
-      var nextIdx = available[Math.floor(Math.random() * available.length)];
-
-      stickerHistory.push(nextIdx);
-      if (stickerHistory.length > 4) stickerHistory.shift();
-      currentStickerIdx = nextIdx;
-
-      // Fade out smoothly, swap content, fade back in
-      stickerSlot.classList.remove('show');
-      setTimeout(function () {
-        stickerSlot.innerHTML = renderStickerHTML(STICKER_POOL[nextIdx]);
-        stickerSlot.classList.add('show');
-      }, 1200);
+    function updateStickerDisplay() {
+      if (!stickerSlot) return;
+      var d = userCustomSticker ? userCustomSticker.design : 1;
+      var t = userCustomSticker ? userCustomSticker.text : 'सफ़र मुबारक';
+      stickerSlot.innerHTML = renderStickerMarkup(d, t);
+      stickerSlot.classList.add('show');
     }
 
-    // Initialize sticker after entrance transition & cycle every 16 minutes
-    setTimeout(function () {
-      showNextSticker();
-      stickerTimer = setInterval(showNextSticker, 16 * 60 * 1000);
-    }, 3500);
+    function updateModalPreview() {
+      if (!sePreviewStage) return;
+      var currentVal = seTextInput ? seTextInput.value : customTextVal;
+      sePreviewStage.innerHTML = renderStickerMarkup(selectedDesignId, currentVal);
+    }
 
-    if (stickerSlot) {
-      stickerSlot.addEventListener('click', function () {
-        playTapeClick();
-        showNextSticker();
+    function openStickerModal() {
+      if (!stickerModal) return;
+      playTapeClick();
+      selectedDesignId = userCustomSticker ? userCustomSticker.design : 1;
+      customTextVal = userCustomSticker ? userCustomSticker.text : (selectedDesignId === 2 ? 'माँ की दुआ साथ है' : (selectedDesignId === 3 ? 'दिल से' : 'सफ़र मुबारक'));
+
+      // Update active card styling
+      document.querySelectorAll('.se-design-choice').forEach(function (card) {
+        var did = parseInt(card.getAttribute('data-design'), 10);
+        if (did === selectedDesignId) card.classList.add('active');
+        else card.classList.remove('active');
+      });
+
+      // Update input and font classes
+      if (seTextInput) {
+        seTextInput.value = customTextVal;
+        seTextInput.className = 'se-text-input ' + (selectedDesignId === 2 ? 'font-baloo' : 'font-kalam');
+        if (selectedDesignId === 1) {
+          seInputLabel.textContent = 'सफ़र मुबारक बदलें (Design 1 - Kalam font):';
+          seTextInput.placeholder = 'e.g. सफ़र मुबारक...';
+        } else if (selectedDesignId === 2) {
+          seInputLabel.textContent = 'माँ की दुआ साथ है बदलें (Design 2 - Baloo 2 font):';
+          seTextInput.placeholder = 'e.g. माँ की दुआ साथ है...';
+        } else {
+          seInputLabel.textContent = 'दिल से बदलें (Design 3 - Kalam font):';
+          seTextInput.placeholder = 'e.g. दिल से...';
+        }
+      }
+
+      updateModalPreview();
+      stickerModal.classList.add('show');
+      if (seTextInput) setTimeout(function () { seTextInput.focus(); }, 150);
+    }
+
+    function closeStickerModal() {
+      if (stickerModal) stickerModal.classList.remove('show');
+    }
+
+    if (stickerSlot) stickerSlot.addEventListener('click', openStickerModal);
+    if (seCloseBtn) seCloseBtn.addEventListener('click', closeStickerModal);
+    if (stickerModal) {
+      stickerModal.addEventListener('click', function (e) {
+        if (e.target === stickerModal) closeStickerModal();
       });
     }
+
+    document.querySelectorAll('.se-design-choice').forEach(function (choice) {
+      choice.addEventListener('click', function () {
+        playTapeClick();
+        selectedDesignId = parseInt(choice.getAttribute('data-design'), 10);
+        document.querySelectorAll('.se-design-choice').forEach(function (c) { c.classList.remove('active'); });
+        choice.classList.add('active');
+
+        // Adjust default text if current input is empty or default
+        if (selectedDesignId === 1) {
+          seInputLabel.textContent = 'सफ़र मुबारक बदलें (Design 1 - Kalam font):';
+          seTextInput.className = 'se-text-input font-kalam';
+          if (!seTextInput.value || seTextInput.value === 'माँ की दुआ साथ है' || seTextInput.value === 'दिल से') {
+            seTextInput.value = 'सफ़र मुबारक';
+          }
+        } else if (selectedDesignId === 2) {
+          seInputLabel.textContent = 'माँ की दुआ साथ है बदलें (Design 2 - Baloo 2 font):';
+          seTextInput.className = 'se-text-input font-baloo';
+          if (!seTextInput.value || seTextInput.value === 'सफ़र मुबारक' || seTextInput.value === 'दिल से') {
+            seTextInput.value = 'माँ की दुआ साथ है';
+          }
+        } else {
+          seInputLabel.textContent = 'दिल से बदलें (Design 3 - Kalam font):';
+          seTextInput.className = 'se-text-input font-kalam';
+          if (!seTextInput.value || seTextInput.value === 'सफ़र मुबारक' || seTextInput.value === 'माँ की दुआ साथ है') {
+            seTextInput.value = 'दिल से';
+          }
+        }
+
+        updateModalPreview();
+      });
+    });
+
+    if (seTextInput) {
+      seTextInput.addEventListener('input', updateModalPreview);
+    }
+
+    document.querySelectorAll('.se-chip').forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        playTapeClick();
+        var txt = chip.getAttribute('data-text');
+        if (seTextInput) {
+          seTextInput.value = txt;
+          updateModalPreview();
+        }
+      });
+    });
+
+    if (seSaveBtn) {
+      seSaveBtn.addEventListener('click', function () {
+        playTapeClick();
+        var finalTxt = seTextInput ? seTextInput.value.trim() : '';
+        if (!finalTxt) {
+          finalTxt = (selectedDesignId === 2 ? 'माँ की दुआ साथ है' : (selectedDesignId === 3 ? 'दिल से' : 'सफ़र मुबारक'));
+        }
+        userCustomSticker = { design: selectedDesignId, text: finalTxt };
+        try {
+          localStorage.setItem('malwa_user_sticker', JSON.stringify(userCustomSticker));
+        } catch (e) { }
+
+        updateStickerDisplay();
+        closeStickerModal();
+        showToast('Aapka customized sticker bus par lag gaya! 🚌 ✨');
+      });
+    }
+
+    // Initial render
+    setTimeout(updateStickerDisplay, 1500);
+
+    /* ===============================================================
+       DARK LIQUID GLASS TRACKLIST DRAWER LOGIC
+    =============================================================== */
+    var tracklistDrawer = document.getElementById('tracklistDrawer');
+    var tracklistBtn = document.getElementById('tracklistBtn');
+    var tlCloseBtn = document.getElementById('tlCloseBtn');
+    var tlList = document.getElementById('tlList');
+
+    function renderTracklistItems() {
+      if (!tlList || !TRACKS || !TRACKS.length) return;
+      tlList.innerHTML = TRACKS.map(function (t, idx) {
+        var isActive = (idx === trackIndex);
+        var numStr = (idx + 1) < 10 ? '0' + (idx + 1) : (idx + 1);
+        var coverSrc = t.cover || ('assets/covers/cover_' + (idx < 9 ? '0' + (idx + 1) : (idx + 1)) + '.jpg');
+        return '<div class="tl-item ' + (isActive ? 'active' : '') + '" data-index="' + idx + '">' +
+          '<span class="tl-num">' + numStr + '</span>' +
+          '<img src="' + coverSrc + '" class="tl-thumb" alt="' + t.title + '" loading="lazy" />' +
+          '<div class="tl-info">' +
+            '<span class="tl-song-name">' + t.title + '</span>' +
+            '<span class="tl-artist-name">' + t.artist + '</span>' +
+          '</div>' +
+          '<div class="tl-playing-icon">' +
+            '<div class="tl-playing-bar"></div>' +
+            '<div class="tl-playing-bar"></div>' +
+            '<div class="tl-playing-bar"></div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+
+      document.querySelectorAll('.tl-item').forEach(function (el) {
+        el.addEventListener('click', function () {
+          var idx = parseInt(el.getAttribute('data-index'), 10);
+          if (idx !== trackIndex) {
+            playTapeClick();
+            loadTrack(idx, true, false);
+            broadcastEvent('track-change', { trackIndex: idx, currentTime: 0 });
+          }
+          toggleTracklist(false);
+        });
+      });
+    }
+
+    function toggleTracklist(forceState) {
+      if (!tracklistDrawer) return;
+      playTapeClick();
+      var isOpen = (typeof forceState === 'boolean') ? forceState : !tracklistDrawer.classList.contains('open');
+      if (isOpen) {
+        renderTracklistItems();
+        tracklistDrawer.classList.add('open');
+        if (tracklistBtn) tracklistBtn.style.color = 'var(--marigold)';
+        // Scroll to active song
+        setTimeout(function () {
+          var activeEl = tlList.querySelector('.tl-item.active');
+          if (activeEl) activeEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }, 100);
+      } else {
+        tracklistDrawer.classList.remove('open');
+        if (tracklistBtn) tracklistBtn.style.color = '';
+      }
+    }
+
+    if (tracklistBtn) {
+      tracklistBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        toggleTracklist();
+      });
+    }
+    if (tlCloseBtn) {
+      tlCloseBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        toggleTracklist(false);
+      });
+    }
+
+    // Close drawers when clicking outside
+    document.addEventListener('click', function (e) {
+      if (tracklistDrawer && tracklistDrawer.classList.contains('open')) {
+        if (!tracklistDrawer.contains(e.target) && e.target !== tracklistBtn && !tracklistBtn.contains(e.target)) {
+          toggleTracklist(false);
+        }
+      }
+    });
 
     /* ===============================================================
        SHARED-LISTENING FLOATING REACTION EMOJIS & RESONANCE ENGINE
     =============================================================== */
-    var reactDockBtn = document.getElementById('reactDockBtn');
+    var playerReactBtn = document.getElementById('playerReactBtn');
     var reactionPicker = document.getElementById('reactionPicker');
     var bubbleContainer = document.getElementById('reactionBubbleContainer');
     var lastSentEmoji = null;
@@ -4421,14 +5171,14 @@
       if (!reactionPicker) return;
       playTapeClick();
       var isOpen = reactionPicker.classList.toggle('open');
-      if (reactDockBtn) {
-        if (isOpen) reactDockBtn.classList.add('active');
-        else reactDockBtn.classList.remove('active');
+      if (playerReactBtn) {
+        if (isOpen) playerReactBtn.classList.add('active');
+        else playerReactBtn.classList.remove('active');
       }
     }
 
-    if (reactDockBtn) {
-      reactDockBtn.addEventListener('click', function (e) {
+    if (playerReactBtn) {
+      playerReactBtn.addEventListener('click', function (e) {
         e.stopPropagation();
         toggleReactionPicker();
       });
@@ -4436,9 +5186,9 @@
 
     document.addEventListener('click', function (e) {
       if (reactionPicker && reactionPicker.classList.contains('open')) {
-        if (!reactionPicker.contains(e.target) && e.target !== reactDockBtn) {
+        if (!reactionPicker.contains(e.target) && e.target !== playerReactBtn && !playerReactBtn.contains(e.target)) {
           reactionPicker.classList.remove('open');
-          if (reactDockBtn) reactDockBtn.classList.remove('active');
+          if (playerReactBtn) playerReactBtn.classList.remove('active');
         }
       }
     });
@@ -4449,21 +5199,20 @@
       var bubble = document.createElement('div');
       bubble.className = 'reaction-bubble' + (isResonance ? ' resonance' : '');
 
-      // Position bubble near the dock area with random horizontal offset
-      var dockRect = (reactDockBtn && reactDockBtn.offsetParent) ? reactDockBtn.getBoundingClientRect() : null;
-      var startRight = dockRect ? (window.innerWidth - dockRect.right + (Math.random() * 40 - 20)) : (40 + Math.random() * 40);
-      bubble.style.right = Math.max(16, startRight) + 'px';
+      // Position bubble near the player controls with random horizontal variation
+      var playerControls = document.querySelector('.player-controls');
+      var startX = playerControls ? (playerControls.getBoundingClientRect().left + Math.random() * 80) : (window.innerWidth / 2 + (Math.random() * 120 - 60));
+      bubble.style.left = Math.max(20, Math.min(window.innerWidth - 60, startX)) + 'px';
 
-      // Random gentle sine drift wobble
-      bubble.style.setProperty('--drift-1', (Math.random() * 30 - 15) + 'px');
-      bubble.style.setProperty('--drift-2', (Math.random() * 40 - 20) + 'px');
-      bubble.style.setProperty('--drift-3', (Math.random() * 30 - 15) + 'px');
-      bubble.style.setProperty('--drift-4', (Math.random() * 20 - 10) + 'px');
+      // Continuous wobble parameters
+      var driftAmount = 14 + Math.random() * 10;
+      bubble.style.setProperty('--drift-left', '-' + driftAmount + 'px');
+      bubble.style.setProperty('--drift-right', '+' + driftAmount + 'px');
 
-      var glyph = document.createElement('div');
-      glyph.className = 'emoji-glyph';
-      glyph.textContent = emoji;
-      bubble.appendChild(glyph);
+      var inner = document.createElement('div');
+      inner.className = 'emoji-inner';
+      inner.textContent = emoji;
+      bubble.appendChild(inner);
 
       if (senderName && !isResonance) {
         var tag = document.createElement('div');
@@ -4476,7 +5225,7 @@
 
       setTimeout(function () {
         if (bubble.parentNode) bubble.parentNode.removeChild(bubble);
-      }, 3000);
+      }, 3400);
     }
 
     function sendReaction(emoji) {
@@ -4493,9 +5242,9 @@
 
       spawnReactionBubble(emoji, myName || 'You', isResonance, true);
 
-      if (reactDockBtn) {
-        reactDockBtn.classList.add('pulse');
-        setTimeout(function () { reactDockBtn.classList.remove('pulse'); }, 400);
+      if (playerReactBtn) {
+        playerReactBtn.classList.add('pulse');
+        setTimeout(function () { playerReactBtn.classList.remove('pulse'); }, 400);
       }
 
       if (isResonance) {
@@ -4534,10 +5283,17 @@
         if (emoji) sendReaction(emoji);
         if (reactionPicker) {
           reactionPicker.classList.remove('open');
-          if (reactDockBtn) reactDockBtn.classList.remove('active');
+          if (playerReactBtn) playerReactBtn.classList.remove('active');
         }
       });
     });
+
+    // Toggle react button visibility in player controls on shared room state
+    var origInitRealtimeRoom = initRealtimeRoom;
+    initRealtimeRoom = function (roomId, isHostRole) {
+      if (playerReactBtn) playerReactBtn.classList.add('show');
+      return origInitRealtimeRoom.apply(this, arguments);
+    };
 
     /* ===============================================================
        "JOURNEY TOGETHER" UNLOCKABLE CARD & HTML5 CANVAS EXPORT
